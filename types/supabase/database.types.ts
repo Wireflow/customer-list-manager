@@ -31,19 +31,29 @@ export type Database = {
         Row: {
           createdAt: string
           id: number
+          listId: string
           productId: string
         }
         Insert: {
           createdAt?: string
           id?: number
+          listId: string
           productId: string
         }
         Update: {
           createdAt?: string
           id?: number
+          listId?: string
           productId?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "listItems_listId_fkey"
+            columns: ["listId"]
+            isOneToOne: false
+            referencedRelation: "lists"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "listItems_productId_fkey"
             columns: ["productId"]
@@ -56,18 +66,21 @@ export type Database = {
       lists: {
         Row: {
           createdAt: string
-          expirationToken: string
+          favorited: boolean
           id: string
+          name: string
         }
         Insert: {
           createdAt?: string
-          expirationToken: string
+          favorited?: boolean
           id?: string
+          name: string
         }
         Update: {
           createdAt?: string
-          expirationToken?: string
+          favorited?: boolean
           id?: string
+          name?: string
         }
         Relationships: []
       }
@@ -173,6 +186,48 @@ export type Database = {
           unit?: string | null
         }
         Relationships: []
+      }
+      sharedLists: {
+        Row: {
+          accountId: string
+          createdAt: string
+          expirationToken: string
+          id: string
+          instructions: string | null
+          listId: string
+        }
+        Insert: {
+          accountId: string
+          createdAt?: string
+          expirationToken: string
+          id?: string
+          instructions?: string | null
+          listId: string
+        }
+        Update: {
+          accountId?: string
+          createdAt?: string
+          expirationToken?: string
+          id?: string
+          instructions?: string | null
+          listId?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sharedLists_accountId_fkey"
+            columns: ["accountId"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sharedLists_listId_fkey"
+            columns: ["listId"]
+            isOneToOne: false
+            referencedRelation: "lists"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

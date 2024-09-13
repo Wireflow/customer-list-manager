@@ -46,7 +46,7 @@ const MobileSidebar = () => {
           >
             <div>
               <SheetHeader>
-                <SheetTitle>Menu</SheetTitle>
+                <SheetTitle className="pl-4">Menu</SheetTitle>
               </SheetHeader>
               <nav className="mt-6">
                 {dashboardRoutes.map((route) => {

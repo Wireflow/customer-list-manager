@@ -1,0 +1,42 @@
+import React from "react";
+import { AlertCircle, Ban, FileQuestion } from "lucide-react";
+
+type Variant = "no-records" | "error" | "failed";
+
+type NoDataProps = {
+  variant?: Variant;
+  message?: string;
+};
+
+const variantConfig = {
+  "no-records": {
+    icon: FileQuestion,
+    color: "text-blue-600",
+    defaultMessage: "No records found. Start by creating a new entry.",
+  },
+  error: {
+    icon: AlertCircle,
+    color: "text-red-600",
+    defaultMessage: "An error occurred. Please try again later.",
+  },
+  failed: {
+    icon: Ban,
+    color: "text-yellow-600",
+    defaultMessage: "Operation failed. Please check your input and try again.",
+  },
+};
+
+const NoData: React.FC<NoDataProps> = ({ variant = "no-records", message }) => {
+  const { icon: Icon, color, defaultMessage } = variantConfig[variant];
+
+  return (
+    <div className="flex flex-col items-center justify-center h-[calc(100vh-200px)]">
+      <Icon className={`w-12 h-12 mb-4 ${color}`} />
+      <p className="text-lg font-semibold text-center">
+        {message || defaultMessage}
+      </p>
+    </div>
+  );
+};
+
+export default NoData;

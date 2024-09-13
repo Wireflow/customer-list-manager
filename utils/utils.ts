@@ -10,7 +10,14 @@ import { redirect } from "next/navigation";
 export function encodedRedirect(
   type: "error" | "success",
   path: string,
-  message: string,
+  message: string
 ) {
   return redirect(`${path}?${type}=${encodeURIComponent(message)}`);
 }
+
+export const formatCurrency = (price?: number) => {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(price || 0);
+};
