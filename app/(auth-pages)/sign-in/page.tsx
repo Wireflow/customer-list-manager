@@ -1,23 +1,63 @@
-import { signInAction } from "@/app/actions";
-import { FormMessage, Message } from "@/components/form-message";
-import { SubmitButton } from "@/components/submit-button";
+"use client";
+
+import { signInAction } from "@/actions/auth";
+import SubmitButton from "@/components/form/SubmitButton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { signInSchema, signInType } from "@/types/auth/sign-in";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
-export default function Login({ searchParams }: { searchParams: Message }) {
+export default function Login() {
+  const router = useRouter();
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: signInAction,
+    onSuccess: (data) => {
+      if (data.success) {
+        toast.success("Signed in successfully");
+        router.push("/dashboard/lists");
+      } else {
+        toast.error(data.error || "An error occurred during sign in");
+      }
+    },
+    onError: (error) => {
+      toast.error("An unexpected error occurred");
+    },
+  });
+
+  const form = useForm<signInType>({
+    resolver: zodResolver(signInSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = (data: signInType) => {
+    mutate(data);
+  };
+
   return (
-    <form className="flex-1 flex flex-col min-w-64">
+    <form
+      className="flex-1 flex flex-col max-w-96 w-full justify-center"
+      onSubmit={form.handleSubmit(onSubmit)}
+    >
       <h1 className="text-2xl font-medium">Sign in</h1>
       <p className="text-sm text-foreground">
-        Don't have an account?{" "}
-        <Link className="text-foreground font-medium underline" href="/sign-up">
-          Sign up
-        </Link>
+        Enter your credentials to sign in
       </p>
       <div className="flex flex-col gap-2 [&>input]:mb-3 mt-8">
         <Label htmlFor="email">Email</Label>
-        <Input name="email" placeholder="you@example.com" required />
+        <Input
+          {...form.register("email")}
+          placeholder="you@example.com"
+          required
+        />
         <div className="flex justify-between items-center">
           <Label htmlFor="password">Password</Label>
           <Link
@@ -29,14 +69,19 @@ export default function Login({ searchParams }: { searchParams: Message }) {
         </div>
         <Input
           type="password"
-          name="password"
+          {...form.register("password")}
           placeholder="Your password"
           required
         />
-        <SubmitButton pendingText="Signing In..." formAction={signInAction}>
+
+        <SubmitButton
+          pending={isPending}
+          type="submit"
+          pendingText="Signing In..."
+          size={"lg"}
+        >
           Sign in
         </SubmitButton>
-        <FormMessage message={searchParams} />
       </div>
     </form>
   );
