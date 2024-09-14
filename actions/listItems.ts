@@ -1,8 +1,7 @@
 "use server";
 
-import { Insert, Row } from "@/types/supabase/table.types";
+import { Insert, Row } from "@/types/supabase/table";
 import { createClient } from "@/utils/supabase/server";
-import { revalidatePath } from "next/cache";
 
 export const deleteListItem = async (listItemId: number) => {
   const supabase = createClient();

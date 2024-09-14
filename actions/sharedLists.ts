@@ -1,4 +1,4 @@
-import { Insert } from "@/types/supabase/table.types";
+import { Insert } from "@/types/supabase/table";
 import { createClient } from "@/utils/supabase/client";
 
 export const createSharedList = async (sharedList: Insert<"sharedLists">) => {

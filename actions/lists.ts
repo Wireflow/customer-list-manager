@@ -1,6 +1,6 @@
 "use server";
 
-import { Insert } from "@/types/supabase/table.types";
+import { Insert } from "@/types/supabase/table";
 import { createClient } from "@/utils/supabase/server";
 
 export const deleteList = async (listId: string) => {

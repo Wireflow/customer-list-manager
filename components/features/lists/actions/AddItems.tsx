@@ -15,7 +15,7 @@ import {
 import React, { useState } from "react";
 import ProductsSelector from "../../products/ProductsSelector";
 import { useProducts } from "@/hooks/queries/products/useProducts";
-import { Row } from "@/types/supabase/table.types";
+import { Row } from "@/types/supabase/table";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createBulkListItems } from "@/actions/listItems";
 import { toast } from "sonner";

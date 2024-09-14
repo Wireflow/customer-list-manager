@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import DangerDialog from "@/components/ui/danger-dialog";
-import { Row } from "@/types/supabase/table.types";
+import { Row } from "@/types/supabase/table";
 import { formatCurrency } from "@/utils/utils";
 import { Trash } from "lucide-react";
 import Image from "next/image";

@@ -1,4 +1,4 @@
-import { Row } from "@/types/supabase/table.types";
+import { Row } from "@/types/supabase/table";
 import { useEffect, useState } from "react";
 import ListFilter from "../lists/ListFilter";
 import ProductCard from "./ProductCard";
