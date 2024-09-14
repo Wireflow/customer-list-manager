@@ -28,3 +28,13 @@ export const createClient = () => {
     }
   );
 };
+
+export const getUserBranchId = async (): Promise<string> => {
+  const client = createClient();
+
+  const {
+    data: { user },
+  } = await client.auth.getUser();
+
+  return user?.user_metadata.branchId || "";
+};

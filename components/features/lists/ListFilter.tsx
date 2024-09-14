@@ -20,13 +20,13 @@ const ListFilter = ({ onChangeText, label, description }: Props) => {
   }, [debounced]);
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-2">
       {label && <Label>{label}</Label>}
       <Input
         placeholder="Item name"
         onChange={(e) => setQuery(e.target.value)}
         value={query}
-        className="max-w-[400px]"
+        className="md:max-w-[400px]"
       />
       {description && <p className="text-gray-600 text-xs">{description}</p>}
     </div>

@@ -11,21 +11,79 @@ export type Database = {
     Tables: {
       accounts: {
         Row: {
+          branchId: string
           createdAt: string
           id: string
           phoneNumber: string
         }
         Insert: {
+          branchId: string
           createdAt?: string
           id?: string
           phoneNumber: string
         }
         Update: {
+          branchId?: string
           createdAt?: string
           id?: string
           phoneNumber?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "accounts_branchId_fkey"
+            columns: ["branchId"]
+            isOneToOne: false
+            referencedRelation: "branch"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      branch: {
+        Row: {
+          createdAt: string
+          id: string
+          name: string
+        }
+        Insert: {
+          createdAt?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          createdAt?: string
+          id?: string
+          name?: string
+        }
         Relationships: []
+      }
+      categories: {
+        Row: {
+          branchId: string
+          createdAt: string
+          id: string
+          name: string
+        }
+        Insert: {
+          branchId: string
+          createdAt?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          branchId?: string
+          createdAt?: string
+          id?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "categories_branchId_fkey"
+            columns: ["branchId"]
+            isOneToOne: false
+            referencedRelation: "branch"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       listItems: {
         Row: {
@@ -65,24 +123,35 @@ export type Database = {
       }
       lists: {
         Row: {
+          branchId: string
           createdAt: string
           favorited: boolean
           id: string
           name: string
         }
         Insert: {
+          branchId: string
           createdAt?: string
           favorited?: boolean
           id?: string
           name: string
         }
         Update: {
+          branchId?: string
           createdAt?: string
           favorited?: boolean
           id?: string
           name?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "lists_branchId_fkey"
+            columns: ["branchId"]
+            isOneToOne: false
+            referencedRelation: "branch"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       orderItems: {
         Row: {
@@ -128,6 +197,7 @@ export type Database = {
       orders: {
         Row: {
           accountId: string
+          branchId: string
           createdAt: string
           id: string
           totalAmount: number
@@ -135,6 +205,7 @@ export type Database = {
         }
         Insert: {
           accountId: string
+          branchId: string
           createdAt?: string
           id?: string
           totalAmount: number
@@ -142,6 +213,7 @@ export type Database = {
         }
         Update: {
           accountId?: string
+          branchId?: string
           createdAt?: string
           id?: string
           totalAmount?: number
@@ -155,10 +227,19 @@ export type Database = {
             referencedRelation: "accounts"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "orders_branchId_fkey"
+            columns: ["branchId"]
+            isOneToOne: false
+            referencedRelation: "branch"
+            referencedColumns: ["id"]
+          },
         ]
       }
       products: {
         Row: {
+          branchId: string
+          categoryId: string | null
           createdAt: string
           description: string | null
           id: string
@@ -168,6 +249,8 @@ export type Database = {
           unit: string | null
         }
         Insert: {
+          branchId: string
+          categoryId?: string | null
           createdAt?: string
           description?: string | null
           id?: string
@@ -177,6 +260,8 @@ export type Database = {
           unit?: string | null
         }
         Update: {
+          branchId?: string
+          categoryId?: string | null
           createdAt?: string
           description?: string | null
           id?: string
@@ -185,32 +270,53 @@ export type Database = {
           price?: number
           unit?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "products_branchId_fkey"
+            columns: ["branchId"]
+            isOneToOne: false
+            referencedRelation: "branch"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_categoryId_fkey"
+            columns: ["categoryId"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       sharedLists: {
         Row: {
           accountId: string
+          branchId: string
           createdAt: string
           expirationToken: string
           id: string
           instructions: string | null
           listId: string
+          type: Database["public"]["Enums"]["shared_list_type"]
         }
         Insert: {
           accountId: string
+          branchId: string
           createdAt?: string
           expirationToken: string
           id?: string
           instructions?: string | null
           listId: string
+          type?: Database["public"]["Enums"]["shared_list_type"]
         }
         Update: {
           accountId?: string
+          branchId?: string
           createdAt?: string
           expirationToken?: string
           id?: string
           instructions?: string | null
           listId?: string
+          type?: Database["public"]["Enums"]["shared_list_type"]
         }
         Relationships: [
           {
@@ -218,6 +324,13 @@ export type Database = {
             columns: ["accountId"]
             isOneToOne: false
             referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sharedLists_branchId_fkey"
+            columns: ["branchId"]
+            isOneToOne: false
+            referencedRelation: "branch"
             referencedColumns: ["id"]
           },
           {
@@ -237,7 +350,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      shared_list_type: "custom" | "full"
     }
     CompositeTypes: {
       [_ in never]: never

@@ -14,6 +14,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "../ui/sheet";
+import { useState } from "react";
 
 const Sidebar = () => {
   const device = useDeviceType();
@@ -28,13 +29,14 @@ const Sidebar = () => {
 export default Sidebar;
 
 const MobileSidebar = () => {
+  const [open, setOpen] = useState(false);
   const path = usePathname();
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-white border-b z-10">
       <div className="flex justify-between items-center p-4">
         <h1 className="text-lg font-semibold">Dashboard</h1>
-        <Sheet>
+        <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon">
               <Menu size={30} />
@@ -52,7 +54,11 @@ const MobileSidebar = () => {
                 {dashboardRoutes.map((route) => {
                   const isActive = route.route === path;
                   return (
-                    <Link key={route.route} href={route.route}>
+                    <Link
+                      key={route.route}
+                      href={route.route}
+                      onClick={() => setOpen(false)}
+                    >
                       <Button
                         className="w-full text-start items-start justify-start mb-2"
                         variant={isActive ? "secondary" : "ghost"}

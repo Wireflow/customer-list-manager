@@ -74,7 +74,31 @@ const config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    //@ts-ignore
+    function ({ addUtilities }) {
+      const newUtilities = {
+        ".no-scrollbar::-webkit-scrollbar": {
+          display: "none",
+        },
+        ".no-scrollbar": {
+          "-ms-overflow-style": "none",
+          "scrollbar-width": "none",
+        },
+        ".no-spinners": {
+          "&::-webkit-outer-spin-button, &::-webkit-inner-spin-button": {
+            "-webkit-appearance": "none",
+            margin: "0",
+          },
+          '&[type="number"]': {
+            "-moz-appearance": "textfield",
+          },
+        },
+      };
+      addUtilities(newUtilities);
+    },
+  ],
 } satisfies Config;
 
 export default config;
