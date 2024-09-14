@@ -1,4 +1,4 @@
-import { Database } from "./database.types";
+import { Database } from "./database";
 
 export type EnumName = keyof Database["public"]["Enums"];
 

@@ -1,4 +1,4 @@
-import { Row } from "../supabase/table.types";
+import { Row } from "../supabase/table";
 
 export type ListItemWithProduct = Row<"listItems"> & {
   product: Row<"products">;
