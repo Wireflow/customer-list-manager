@@ -1,5 +1,5 @@
 import PageHeader from "@/components/layout/PageHeader";
-import ListsPage from "@/pages/lists/ListsPage";
+import ListsPage from "@/webpages/lists/ListsPage";
 
 export const revalidate = 3600; // Revalidate every hour
 

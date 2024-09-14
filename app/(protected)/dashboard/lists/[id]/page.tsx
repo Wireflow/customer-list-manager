@@ -1,5 +1,5 @@
 import PageHeader from "@/components/layout/PageHeader";
-import ListDetailsPage from "@/pages/lists/ListDetailsPage";
+import ListDetailsPage from "@/webpages/lists/ListDetailsPage";
 
 type Props = {
   params: {
