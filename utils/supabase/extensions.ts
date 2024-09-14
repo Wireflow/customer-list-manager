@@ -1,4 +1,4 @@
-import { Database } from "@/types/supabase/database.types";
+import { Database } from "@/types/supabase/database";
 import { SupabaseClient } from "@supabase/supabase-js";
 
 export type BranchFilteredClient = Omit<SupabaseClient<Database>, "from"> & {
