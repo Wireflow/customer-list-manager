@@ -11,7 +11,7 @@ const ListDetailsActions = (props: Props) => {
   const listId = params?.id as string;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 items-center md:grid-cols-2 gap-4">
       <DeleteList listId={listId} />
       <AddItems listId={listId} />
     </div>

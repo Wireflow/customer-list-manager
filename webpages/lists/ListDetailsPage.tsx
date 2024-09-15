@@ -2,10 +2,12 @@
 
 import NoData from "@/components/ui/no-data";
 import { useListById } from "@/hooks/queries/lists/useListById";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ListFilter from "../../components/features/lists/ListFilter";
 import ListItems from "../../components/features/lists/ListItems";
 import ListDetailsActions from "@/components/features/lists/ListDetailsActions";
+import { Label } from "@/components/ui/label";
+import { useFilterItems } from "@/hooks/useFilterItems";
 
 type ListDetailsPageProps = {
   id: string;
@@ -14,21 +16,14 @@ type ListDetailsPageProps = {
 const ListDetailsPage = ({ id }: ListDetailsPageProps) => {
   const { data: list, isLoading, error } = useListById(id);
 
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filteredItems, setFilteredItems] = useState(list?.items ?? []);
+  const products = useMemo(() => {
+    return list?.items.map((product) => product);
+  }, [list?.items]);
 
-  useEffect(() => {
-    if (list?.items) {
-      if (!searchQuery) {
-        setFilteredItems(list.items);
-      } else {
-        const filtered = list.items.filter((item) =>
-          item.product.name.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-        setFilteredItems(filtered);
-      }
-    }
-  }, [searchQuery, list?.items]);
+  const { setSearchQuery, filteredItems } = useFilterItems({
+    items: list?.items ?? [],
+    field: "product.name", // product name
+  });
 
   if (isLoading) {
     return <p>Loading...</p>;
@@ -54,6 +49,10 @@ const ListDetailsPage = ({ id }: ListDetailsPageProps) => {
 
   return (
     <div className="grid gap-4">
+      <div>
+        <Label className="font-normal">List Name</Label>
+        <p className="font-bold text-lg">{list.name}</p>
+      </div>
       <div className="flex flex-col gap-4 md:flex-row justify-between md:items-end">
         <ListFilter
           onChangeText={setSearchQuery}
@@ -62,6 +61,7 @@ const ListDetailsPage = ({ id }: ListDetailsPageProps) => {
         />
         <ListDetailsActions />
       </div>
+
       <ListItems items={filteredItems} listId={id} />
     </div>
   );

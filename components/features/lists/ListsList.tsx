@@ -20,12 +20,12 @@ const ListsList = ({ lists }: Props) => {
   const router = useRouter();
 
   return (
-    <div className="flex flex-wrap gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
       {lists.map((list) => (
         <Card
           key={list.id}
           onClick={() => router.push(`/dashboard/lists/${list.id}`)}
-          className="w-full md:w-auto md:min-w-[350px] hover:cursor-pointer hover:shadow-lg transition-all duration-500 hover:bg-secondary/15"
+          className="w-full md:w-auto  hover:cursor-pointer hover:shadow-lg transition-all duration-500 hover:bg-secondary/15"
         >
           <CardHeader>
             <CardTitle className="flex gap-2 items-center">

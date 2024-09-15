@@ -62,7 +62,7 @@ const CreateList = (props: Props) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>
+      <DialogTrigger asChild>
         <Button size="lg" className="w-full sm:w-auto">
           <PlusCircle className="mr-2 h-4 w-4 -ml-2" /> New Custom List
         </Button>

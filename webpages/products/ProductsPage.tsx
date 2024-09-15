@@ -1,0 +1,36 @@
+"use client";
+
+import ListFilter from "@/components/features/lists/ListFilter";
+import CreateProduct from "@/components/features/products/actions/CreateProduct";
+import ProductsList from "@/components/features/products/ProductsList";
+import { Button } from "@/components/ui/button";
+import { useProducts } from "@/hooks/queries/products/useProducts";
+import { useFilterItems } from "@/hooks/useFilterItems";
+import { PlusCircle } from "lucide-react";
+
+type ProductsPageProps = {};
+
+const ProductsPage = (props: ProductsPageProps) => {
+  const { data: products } = useProducts();
+
+  const { setSearchQuery, filteredItems } = useFilterItems({
+    items: products ?? [],
+    field: "name",
+  });
+
+  return (
+    <div className="flex flex-col gap-8">
+      <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-6 w-full">
+        <CreateProduct />
+        <ListFilter
+          onChangeText={setSearchQuery}
+          label="Search"
+          description="Search product by name..."
+        />
+      </div>
+      <ProductsList products={filteredItems || []} />
+    </div>
+  );
+};
+
+export default ProductsPage;

@@ -1,23 +1,9 @@
 import { deleteListItem } from "@/actions/listItems";
-import SubmitButton from "@/components/form/SubmitButton";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardTitle,
-} from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import DangerDialog from "@/components/ui/danger-dialog";
 import { ListItemWithProduct } from "@/types/schema/listItems";
-import { formatCurrency } from "@/utils/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Trash } from "lucide-react";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import ProductCard from "../products/ProductCard";
-import AddItems from "./actions/AddItems";
 
 type Props = {
   items: ListItemWithProduct[];
@@ -61,7 +47,7 @@ const ListItems = ({ items, onItemsSelect, listId }: Props) => {
 
   return (
     <div>
-      <p className="font-semibold mb-2">Items</p>
+      <p className="font-semibold mb-2">Items ({items.length || 0})</p>
       <div className="grid gap-4">
         {items.length > 0 ? (
           items.map((item) => (

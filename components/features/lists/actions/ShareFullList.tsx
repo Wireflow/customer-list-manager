@@ -25,6 +25,12 @@ const ShareFullList = (props: Props) => {
   const { mutate, isPending } = useMutation({
     mutationKey: ["share-full-list"],
     mutationFn: createSharedList,
+    onSuccess: (data) => {
+      console.log(data);
+    },
+    onError: (err) => {
+      console.log(err);
+    },
   });
 
   const formatPhoneNumber = (value: string) => {
@@ -46,9 +52,17 @@ const ShareFullList = (props: Props) => {
     setPhone(formattedValue);
   };
 
+  const onSend = () => {
+    const cleanedPhone = phone.replace(/[\s()]/g, "");
+    mutate({
+      phoneNumber: cleanedPhone,
+      originUrl: window.location.origin,
+    });
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>
+      <DialogTrigger asChild>
         <Button variant="outline" size="lg" className="w-full sm:w-auto">
           <Share className="mr-2 h-4 w-4 -ml-2" /> Share Full List
         </Button>
@@ -78,13 +92,13 @@ const ShareFullList = (props: Props) => {
             This phone number will be sent the list.
           </p>
         </div>
-        <DialogFooter>
+        <DialogFooter className="gap-3">
           <DialogClose asChild>
             <Button variant={"outline"} disabled={isPending}>
               Cancel
             </Button>
           </DialogClose>
-          <Button disabled={isPending || phone.length < 14}>
+          <Button disabled={isPending || phone.length < 14} onClick={onSend}>
             {isPending ? "Sending..." : "Send List"}
           </Button>
         </DialogFooter>
