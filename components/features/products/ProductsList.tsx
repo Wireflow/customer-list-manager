@@ -5,12 +5,14 @@ import { Row } from "@/types/supabase/table";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import ProductCard from "../products/ProductCard";
+import { useProductStore } from "@/store/useProductStore";
 
 type ProductsListProps = {
   products: Row<"products">[];
 };
 
 const ProductsList = ({ products }: ProductsListProps) => {
+  const { setOpen, setProduct } = useProductStore();
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
@@ -40,6 +42,10 @@ const ProductsList = ({ products }: ProductsListProps) => {
               product={item}
               key={item.id}
               disableSelect={true}
+              onClick={() => {
+                setProduct(item);
+                setOpen(true);
+              }}
               onDelete={() => mutate(item.id)}
               isDeleting={isPending}
             />

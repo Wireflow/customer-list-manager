@@ -9,14 +9,13 @@ import {
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import DangerDialog from "@/components/ui/danger-dialog";
+import { PLACEHOLDER_IMG_URL } from "@/data/constants";
 import { Row } from "@/types/supabase/table";
+import { cn } from "@/utils/cn";
 import { formatCurrency } from "@/utils/utils";
 import { Trash } from "lucide-react";
 import Image from "next/image";
 import React from "react";
-
-const PLACEHOLDER_IMG_URL =
-  "https://archive.org/download/placeholder-image/placeholder-image.jpg";
 
 type Props = {
   product: Row<"products">;
@@ -40,7 +39,13 @@ const ProductCard = ({
   checked = false,
 }: Props) => {
   return (
-    <Card onClick={onClick} className="shadow-none ">
+    <Card
+      onClick={onClick}
+      className={cn("shadow-none", {
+        "cursor-pointer hover:shadow-[0px_0px_20px_1px_rgba(0,0,0,0.1)] transition-all duration-500":
+          !!onClick,
+      })}
+    >
       <CardContent className="p-2 px-6 flex flex-row items-center justify-between h-[75px]">
         <div className="flex gap-2 items-center">
           <div className="flex gap-4 items-center">
