@@ -200,6 +200,7 @@ export type Database = {
           branchId: string
           createdAt: string
           id: string
+          OrderNumber: number
           totalAmount: number
           totalQuantity: number
         }
@@ -208,6 +209,7 @@ export type Database = {
           branchId: string
           createdAt?: string
           id?: string
+          OrderNumber?: number
           totalAmount: number
           totalQuantity: number
         }
@@ -216,6 +218,7 @@ export type Database = {
           branchId?: string
           createdAt?: string
           id?: string
+          OrderNumber?: number
           totalAmount?: number
           totalQuantity?: number
         }
