@@ -29,7 +29,7 @@ const ListsList = ({ lists }: Props) => {
         >
           <CardHeader>
             <CardTitle className="flex gap-2 items-center">
-              {list.name}{" "}
+              {list.name}
               {list.favorited && <Badge variant={"outline"}>Favorite</Badge>}
             </CardTitle>
             <CardDescription>{list.items.length} Items</CardDescription>
@@ -37,7 +37,6 @@ const ListsList = ({ lists }: Props) => {
           <CardFooter className="flex gap-4 justify-end">
             <Button variant={"outline"}>Edit</Button>
             <Button
-              className="z-20"
               onClick={(e) => {
                 e.stopPropagation();
               }}

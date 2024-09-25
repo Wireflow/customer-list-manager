@@ -82,3 +82,46 @@ export const createProduct = async (formData: FormData) => {
 
   return { success: true, data };
 };
+
+export const updateProduct = async (id: string, formData: FormData) => {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session) {
+    return { success: false, error: "Unauthorized" };
+  }
+
+  const productData = JSON.parse(
+    formData.get("product") as string
+  ) as CreateProductType;
+  const imageBase64 = formData.get("imageBase64") as string;
+  const fileName = formData.get("fileName") as string;
+
+  let imageUrl = undefined;
+
+  if (imageBase64 && fileName) {
+    const uploadResult = await uploadProductImage(imageBase64, fileName);
+    if (!uploadResult.success) {
+      return { success: false, error: uploadResult.error };
+    }
+    imageUrl = uploadResult.publicUrl;
+  }
+
+  const { error, data } = await supabase
+    .from("products")
+    .update({
+      ...productData,
+      imageUrl,
+      branchId: session.user.user_metadata.branchId,
+    })
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  return { success: true, data };
+};
