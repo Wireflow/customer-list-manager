@@ -105,7 +105,7 @@ const AddItemsToOrderForm: React.FC<Props> = ({ onOpenChange }) => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className=" mt-5">
-            <div className="flex flex-col gap-4 pr-2 overflow-auto">
+            <div className="flex flex-col gap-4 pr-2 overflow-auto no-scrollbar">
               {filteredProducts?.map((product) => (
                 <ProductCard
                   product={product}

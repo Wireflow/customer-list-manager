@@ -9,6 +9,7 @@ import { useState } from "react";
 import AddItemsToOrderForm from "./AddItemsToOrderForm";
 import OrderDetailsHeader from "./OrderDetailsHeader";
 import OrderItemsTable from "./OrderItemsTable";
+import DangerDialog from "@/components/ui/danger-dialog";
 
 type Props = {
   id: string;
@@ -35,6 +36,12 @@ const OrderDetailsPage = ({ id }: Props) => {
               open={open}
               onOpenChange={setOpen}
               content={<AddItemsToOrderForm onOpenChange={setOpen} />}
+            />
+            <DangerDialog
+              trigger={<Button variant={"destructive"}>Void</Button>}
+              title="Void Order"
+              description="Are you sure you want to void this order?"
+              onConfirm={() => console.log("Void order")}
             />
           </div>
         }
