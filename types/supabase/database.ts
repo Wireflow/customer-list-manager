@@ -14,18 +14,27 @@ export type Database = {
           branchId: string
           createdAt: string
           id: string
+          name: string | null
+          opted: boolean
+          optedAt: string | null
           phoneNumber: string
         }
         Insert: {
           branchId: string
           createdAt?: string
           id?: string
+          name?: string | null
+          opted?: boolean
+          optedAt?: string | null
           phoneNumber: string
         }
         Update: {
           branchId?: string
           createdAt?: string
           id?: string
+          name?: string | null
+          opted?: boolean
+          optedAt?: string | null
           phoneNumber?: string
         }
         Relationships: [

@@ -8,6 +8,7 @@ export const UpdateOrderSchema = z.object({
     z.object({
       productId: z.string(),
       quantity: z.number().positive(),
+      price: z.number().positive(),
     })
   ),
 });

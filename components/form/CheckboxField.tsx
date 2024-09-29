@@ -1,5 +1,4 @@
-import { useController } from "react-hook-form";
-import { Checkbox } from "../ui/checkbox";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   FormControl,
   FormDescription,
@@ -7,39 +6,35 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
-import { InputProps } from "../ui/input";
+} from "@/components/ui/form";
+import { UseFormReturn } from "react-hook-form";
 
-type Props = InputProps & {
-  control: any;
+type Props = {
   name: string;
   label?: string;
   description?: string;
+  form: UseFormReturn<any>;
 };
 
-const CheckboxField = ({
-  control,
-  name,
-  label,
-  description,
-  ...props
-}: Props) => {
-  const { field } = useController({
-    name,
-    control,
-  });
-
+const CheckboxField = ({ name, label, description, form }: Props) => {
   return (
     <FormField
+      control={form.control}
       name={name}
-      control={control}
-      render={() => (
+      render={({ field }) => (
         <FormItem>
-          <FormLabel>{label}</FormLabel>
-          <FormControl>
-            <Checkbox {...props} {...field} ref={field.ref} />
-          </FormControl>
-          <FormDescription>{description}</FormDescription>
+          <div className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+            <FormControl>
+              <Checkbox
+                checked={field.value}
+                onCheckedChange={field.onChange}
+              />
+            </FormControl>
+            <div className="space-y-1 leading-none">
+              {label && <FormLabel>{label}</FormLabel>}
+              {description && <FormDescription>{description}</FormDescription>}
+            </div>
+          </div>
           <FormMessage />
         </FormItem>
       )}

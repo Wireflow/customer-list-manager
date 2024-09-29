@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { formatPhoneInputValue } from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
 import { Share } from "lucide-react";
 import React, { useState } from "react";
@@ -33,22 +34,8 @@ const ShareFullList = (props: Props) => {
     },
   });
 
-  const formatPhoneNumber = (value: string) => {
-    // Remove all non-digit characters
-    const digits = value.replace(/\D/g, "").slice(0, 10);
-
-    // Format the phone number
-    if (digits.length <= 3) {
-      return `${digits}`;
-    } else if (digits.length <= 6) {
-      return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
-    } else {
-      return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)} ${digits.slice(6)}`;
-    }
-  };
-
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formattedValue = formatPhoneNumber(e.target.value);
+    const formattedValue = formatPhoneInputValue(e.target.value);
     setPhone(formattedValue);
   };
 

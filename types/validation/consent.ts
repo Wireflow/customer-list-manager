@@ -2,9 +2,9 @@ import { z } from "zod";
 
 export const ConsentSchema = z.object({
   phoneNumber: z.string(),
-  consent: z.boolean(),
+  opted: z.boolean(),
+  optedAt: z.string().optional(),
   branchId: z.string(),
-  userId: z.string(),
   name: z.string().optional(),
 });
 

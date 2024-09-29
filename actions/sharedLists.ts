@@ -1,5 +1,4 @@
 import { sendMessage } from "@/lib/ez-texting";
-import { sendSMS } from "@/lib/twilio/sendSMS";
 import { createClient } from "@/utils/supabase/client";
 
 export type FullListParams = {

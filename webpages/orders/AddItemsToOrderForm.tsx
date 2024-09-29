@@ -1,21 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PageHeader from "@/components/layout/PageHeader";
 import { Input } from "@/components/ui/input";
 import { useProducts } from "@/hooks/queries/products/useProducts";
 import { formatCurrency } from "@/utils/utils";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Minus, Plus } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { UpdateOrderType, UpdateOrderSchema } from "@/types/validation/order";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Form } from "@/components/ui/form";
+import { useParams } from "next/navigation";
+import { Row } from "@/types/supabase/table";
+import ProductCard from "@/components/features/products/ProductCard";
+import { Check } from "lucide-react";
 
-type Props = {};
+type Props = {
+  onOpenChange?: (isOpen: boolean) => void;
+};
 
-const AddItemsToOrderForm: React.FC<Props> = () => {
+const AddItemsToOrderForm: React.FC<Props> = ({ onOpenChange }) => {
+  const { id: orderId } = useParams<{ id: string }>();
   const { data: products } = useProducts();
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedProducts, setSelectedProducts] = useState<{ [id: string]: number }>({});
 
   const filteredProducts = products?.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -24,48 +29,63 @@ const AddItemsToOrderForm: React.FC<Props> = () => {
   const form = useForm<UpdateOrderType>({
     resolver: zodResolver(UpdateOrderSchema),
     defaultValues: {
-      id: "",
+      id: orderId,
       totalAmount: 0,
       totalQuantity: 0,
       orderItems: [],
     },
   });
 
-  const incrementQuantity = (productId: string) => {
-    setSelectedProducts((prev) => ({
-      ...prev,
-      [productId]: (prev[productId] || 0) + 1,
-    }));
-  };
+  const { fields, append, update, remove } = useFieldArray({
+    control: form.control,
+    name: "orderItems",
+  });
 
-  const decrementQuantity = (productId: string) => {
-    setSelectedProducts((prev) => ({
-      ...prev,
-      [productId]: Math.max((prev[productId] || 0) - 1, 0),
-    }));
+  useEffect(() => {
+    const totalQuantity = fields.reduce((sum, item) => sum + item.quantity, 0);
+    const totalAmount = fields.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
+
+    form.setValue("totalQuantity", totalQuantity);
+    form.setValue("totalAmount", totalAmount);
+  }, [fields, form]);
+
+  const handleQuantityChange = (
+    product: Row<"products">,
+    newQuantity: number
+  ) => {
+    const existingItemIndex = fields.findIndex(
+      (item) => item.productId === product.id
+    );
+    if (existingItemIndex > -1) {
+      if (newQuantity === 0) {
+        remove(existingItemIndex);
+      } else {
+        const updatedItem = {
+          ...fields[existingItemIndex],
+          quantity: newQuantity,
+        };
+        update(existingItemIndex, updatedItem);
+      }
+    } else if (newQuantity > 0) {
+      append({
+        productId: product.id,
+        quantity: newQuantity,
+        price: product.price,
+      });
+    }
   };
 
   const onSubmit = (data: UpdateOrderType) => {
-    const orderItems = Object.keys(selectedProducts)
-      .filter((productId) => selectedProducts[productId] > 0)
-      .map((productId) => {
-        const product = products?.find((p) => p.id === productId);
-        return {
-          productId: productId,
-          quantity: selectedProducts[productId],
-          price: product?.price || 0,
-        };
-      });
+    console.log("Submitted data:", data);
+    // Handle form submit here (e.g., send to API)
+  };
 
-    const totalQuantity = orderItems.reduce((sum, item) => sum + item.quantity, 0);
-    const totalAmount = orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
-    form.setValue("orderItems", orderItems);
-    form.setValue("totalQuantity", totalQuantity);
-    form.setValue("totalAmount", totalAmount);
-
-    // Handle form submit here
-    console.log(data);
+  const onCancel = () => {
+    form.reset();
+    onOpenChange?.(false);
   };
 
   return (
@@ -82,50 +102,47 @@ const AddItemsToOrderForm: React.FC<Props> = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <div className="min-h-[20rem] h-[400px] mt-5 overflow-auto ">
-          <div className="flex flex-col gap-3 pr-2">
-            {filteredProducts?.map((product) => (
-              <div
-                key={product.id}
-                className="border rounded-lg p-4 flex gap-5 "
-              >
-                <Image
-                  src={product?.imageUrl || ""}
-                  alt="product-image"
-                  className="border border-gray-300 rounded-lg p-5  "
-                  width={80}
-                  height={80}
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <div className=" mt-5">
+            <div className="flex flex-col gap-4 pr-2 overflow-auto">
+              {filteredProducts?.map((product) => (
+                <ProductCard
+                  product={product}
+                  key={product.id}
+                  disableSelect
+                  disableDelete
+                  quantity={
+                    fields.find((p) => p.productId === product.id)?.quantity ||
+                    0
+                  }
+                  onQuantityChange={(newQuantity) =>
+                    handleQuantityChange(product, newQuantity)
+                  }
                 />
-                <div>
-                  <div>
-                    <p className="font-bold capitalize">{product.name}</p>
-                    <p className="text-sm">{formatCurrency(product.price)}</p>
-                  </div>
-                  <div className="flex gap-2 items-center">
-                    <div
-                      className="rounded-full p-2 bg-gray-200 cursor-pointer"
-                      onClick={() => incrementQuantity(product.id)}
-                    >
-                      <Plus size={16} />
-                    </div>
-                    <div>{selectedProducts[product.id] || 0}</div>
-                    <div
-                      className="rounded-full p-2 bg-gray-200 cursor-pointer"
-                      onClick={() => decrementQuantity(product.id)}
-                    >
-                      <Minus size={16} />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-        <Button type="submit" className="mt-4">
-          Submit Order
-        </Button>
-      </form>
+          <div className="flex gap-4">
+            <Button
+              type="button"
+              variant={"outline"}
+              className="mt-4 w-full"
+              size={"lg"}
+              onClick={onCancel}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" className="mt-4 w-full" size={"lg"}>
+              Apply Changes <Check className="ml-2 h-5 w-5" />
+            </Button>
+          </div>
+          <div className="mt-4">
+            <p>Total Quantity: {form.watch("totalQuantity")}</p>
+            <p>Total Amount: {formatCurrency(form.watch("totalAmount"))}</p>
+          </div>
+        </form>
+      </Form>
     </div>
   );
 };

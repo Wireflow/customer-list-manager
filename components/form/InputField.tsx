@@ -16,7 +16,14 @@ type Props = InputProps & {
   description?: string;
 };
 
-const InputField = ({ control, name, label, description, ...props }: Props) => {
+const InputField = ({
+  control,
+  name,
+  label,
+  description,
+  onChange,
+  ...props
+}: Props) => {
   const { field } = useController({
     name,
     control,
@@ -43,7 +50,7 @@ const InputField = ({ control, name, label, description, ...props }: Props) => {
             <Input
               {...props}
               value={field.value ?? ""}
-              onChange={handleChange}
+              onChange={onChange ? onChange : handleChange}
               onBlur={field.onBlur}
               name={field.name}
               ref={field.ref}

@@ -13,19 +13,23 @@ import { PLACEHOLDER_IMG_URL } from "@/data/constants";
 import { Row } from "@/types/supabase/table";
 import { cn } from "@/utils/cn";
 import { formatCurrency } from "@/utils/utils";
-import { Trash } from "lucide-react";
+import { Trash, Plus, Minus } from "lucide-react";
 import Image from "next/image";
 import React from "react";
+import { Button } from "@/components/ui/button";
 
 type Props = {
   product: Row<"products">;
   disableSelect?: boolean;
   disableDelete?: boolean;
+  disableQuantity?: boolean;
   onClick?: () => void;
   onChecked?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   onDelete?: () => void;
+  onQuantityChange?: (newQuantity: number) => void;
   isDeleting?: boolean;
   checked?: boolean;
+  quantity?: number;
 };
 
 const ProductCard = ({
@@ -33,11 +37,28 @@ const ProductCard = ({
   onClick,
   disableDelete = false,
   disableSelect = false,
+  disableQuantity = false,
   isDeleting = false,
   onChecked,
   onDelete,
+  onQuantityChange,
   checked = false,
+  quantity = 0,
 }: Props) => {
+  const handleIncrement = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onQuantityChange) {
+      onQuantityChange(quantity + 1);
+    }
+  };
+
+  const handleDecrement = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onQuantityChange && quantity > 0) {
+      onQuantityChange(quantity - 1);
+    }
+  };
+
   return (
     <Card
       onClick={onClick}
@@ -80,26 +101,45 @@ const ProductCard = ({
           </div>
         </div>
 
-        {!disableDelete && onDelete ? (
-          <DangerDialog
-            title="Remove item?"
-            description="This will remove item from this list"
-            trigger={
-              <SubmitButton
-                variant={"outline"}
-                pendingText="Deleting..."
-                pending={isDeleting}
-                className="w-fit"
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
+        <div className="flex items-center gap-2">
+          {!disableQuantity && onQuantityChange && (
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleDecrement}
+                disabled={quantity === 0}
               >
-                <Trash size={20} />
-              </SubmitButton>
-            }
-            onConfirm={onDelete}
-          />
-        ) : null}
+                <Minus size={16} />
+              </Button>
+              <span className="w-8 text-center">{quantity}</span>
+              <Button variant="outline" size="icon" onClick={handleIncrement}>
+                <Plus size={16} />
+              </Button>
+            </div>
+          )}
+
+          {!disableDelete && onDelete ? (
+            <DangerDialog
+              title="Remove item?"
+              description="This will remove item from this list"
+              trigger={
+                <SubmitButton
+                  variant={"outline"}
+                  pendingText="Deleting..."
+                  pending={isDeleting}
+                  className="w-fit"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                >
+                  <Trash size={20} />
+                </SubmitButton>
+              }
+              onConfirm={onDelete}
+            />
+          ) : null}
+        </div>
       </CardContent>
     </Card>
   );

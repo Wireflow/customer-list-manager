@@ -1,32 +1,54 @@
 "use client";
 
+import CheckboxField from "@/components/form/CheckboxField";
 import InputField from "@/components/form/InputField";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { useConsentMutation } from "@/hooks/mutations/consent/useConsentMutation";
+import { useSession } from "@/hooks/queries/auth/useSession";
+import { formatPhoneInputValue } from "@/lib/utils";
 import { ConsentSchema, ConsentType } from "@/types/validation/consent";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import { Check } from "lucide-react";
+import { useParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 
 type Props = {};
 
 const ConsentForm = (props: Props) => {
-  const mutation = useConsentMutation();
+  const { id: branchId } = useParams<{ id: string }>();
+
+  const { mutate, isPending: isMutating } = useConsentMutation();
 
   const form = useForm<ConsentType>({
     resolver: zodResolver(ConsentSchema),
     defaultValues: {
       phoneNumber: "",
-      consent: false,
-      branchId: "",
-      userId: "",
+      opted: false,
+      optedAt: new Date().toISOString(),
+      branchId,
       name: "",
     },
   });
 
   const onSubmit = (data: ConsentType) => {
-    console.log(data);
+    if (!data.opted) {
+      form.setError("opted", {
+        message: "You must agree to receive text messages.",
+      });
+    }
+
+    const cleanedPhone = data.phoneNumber.replace(/[\s()]/g, "");
+
+    mutate({
+      ...data,
+      phoneNumber: cleanedPhone,
+    });
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formattedValue = formatPhoneInputValue(e.target.value);
+    form.setValue("phoneNumber", formattedValue);
   };
 
   return (
@@ -35,15 +57,39 @@ const ConsentForm = (props: Props) => {
         <InputField
           name="phoneNumber"
           label="Phone Number"
+          onChange={handlePhoneChange}
+          type="tel"
+          placeholder="(123) 456 - 7890"
           control={form.control}
         />
-        <InputField name="consent" label="Consent" control={form.control} />
-        <InputField name="branchId" label="Branch ID" control={form.control} />
-        <InputField name="userId" label="User ID" control={form.control} />
-        <InputField name="name" label="Name" control={form.control} />
 
-        <Button type="submit" className="mt-4">
-          Submit
+        <InputField
+          name="name"
+          label="Business Name / Nickname (optional)"
+          placeholder="ex. John Doe / JD"
+          control={form.control}
+        />
+
+        <div className="mt-6">
+          <CheckboxField
+            name="opted"
+            label="Opt-in to receiving text messages"
+            form={form}
+          />
+        </div>
+
+        <Button
+          type="submit"
+          className="mt-4 w-full"
+          size={"lg"}
+          disabled={
+            isMutating ||
+            !form.formState.isValid ||
+            !form.formState.dirtyFields.opted
+          }
+          loading={isMutating}
+        >
+          Opt in to text messages <Check className="ml-2 h-5 w-5" />
         </Button>
       </form>
     </Form>

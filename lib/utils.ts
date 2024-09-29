@@ -16,6 +16,20 @@ export function formatPhoneNumber(number?: number | string): string {
   return String(number);
 }
 
+export const formatPhoneInputValue = (value: string) => {
+  // Remove all non-digit characters
+  const digits = value.replace(/\D/g, "").slice(0, 10);
+
+  // Format the phone number
+  if (digits.length <= 3) {
+    return `${digits}`;
+  } else if (digits.length <= 6) {
+    return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+  } else {
+    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)} ${digits.slice(6)}`;
+  }
+};
+
 export const formatDateToString = (
   date?: Date | null,
   options?: Intl.DateTimeFormatOptions
