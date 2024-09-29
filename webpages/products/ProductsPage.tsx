@@ -18,7 +18,7 @@ const ProductsPage = (props: ProductsPageProps) => {
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex gap-6 flex-col-reverse sm:flex-row items-center justify-end  w-full">
+      <div className="flex gap-4 flex-col-reverse sm:flex-row items-center justify-end  w-full">
         <ProductForm />
         <ListFilter
           onChangeText={setSearchQuery}

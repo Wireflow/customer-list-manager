@@ -1,3 +1,4 @@
+import { Database } from "@/types/supabase/database";
 import { createClient } from "@/utils/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 
@@ -8,7 +9,9 @@ export const useOrders = () => {
   });
 };
 
-export const fetchOrders = async () => {
+export const fetchOrders = async (): Promise<
+  OrderWithAccount[] | undefined
+> => {
   const supabase = createClient();
   const session = await supabase.auth.getSession();
 
@@ -20,13 +23,17 @@ export const fetchOrders = async () => {
 
   const { data: orders, error } = await supabase
     .from("orders")
-    .select("*")
-    .eq("branchId", branchId);
-
+    .select("*, account:accountId(*)!inner")
+    .eq("branchId", branchId)
+    .returns<OrderWithAccount[]>();
 
   if (error) {
     throw error;
   }
 
   return orders;
+};
+
+export type OrderWithAccount = Database["public"]["Tables"]["orders"]["Row"] & {
+  account: Database["public"]["Tables"]["accounts"]["Row"];
 };

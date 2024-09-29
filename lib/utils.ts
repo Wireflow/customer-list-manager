@@ -4,3 +4,33 @@ import { twMerge } from "tailwind-merge";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
+export function formatPhoneNumber(number?: number | string): string {
+  const cleaned = String(number).replace(/\D/g, "");
+
+  const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+  if (match) {
+    return `+1 (${match[1]}) ${match[2]} - ${match[3]}`;
+  }
+
+  return String(number);
+}
+
+export const formatDateToString = (
+  date?: Date | null,
+  options?: Intl.DateTimeFormatOptions
+) => {
+  if (!date) return "";
+
+  const defaultOptions: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  };
+
+  const mergedOptions = { ...defaultOptions, ...options };
+
+  return new Date(date).toLocaleString("en-US", mergedOptions);
+};

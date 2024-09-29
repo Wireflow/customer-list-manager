@@ -1,13 +1,12 @@
 "use client";
 
-import NoData from "@/components/ui/no-data";
-import { useListById } from "@/hooks/queries/lists/useListById";
-import { useEffect, useMemo, useState } from "react";
-import ListFilter from "../../components/features/lists/ListFilter";
-import ListItems from "../../components/features/lists/ListItems";
 import ListDetailsActions from "@/components/features/lists/ListDetailsActions";
 import { Label } from "@/components/ui/label";
+import NoData from "@/components/ui/no-data";
+import { useListById } from "@/hooks/queries/lists/useListById";
 import { useFilterItems } from "@/hooks/useFilterItems";
+import ListFilter from "../../components/features/lists/ListFilter";
+import ListItems from "../../components/features/lists/ListItems";
 
 type ListDetailsPageProps = {
   id: string;
@@ -16,13 +15,9 @@ type ListDetailsPageProps = {
 const ListDetailsPage = ({ id }: ListDetailsPageProps) => {
   const { data: list, isLoading, error } = useListById(id);
 
-  const products = useMemo(() => {
-    return list?.items.map((product) => product);
-  }, [list?.items]);
-
   const { setSearchQuery, filteredItems } = useFilterItems({
     items: list?.items ?? [],
-    field: "product.name", // product name
+    field: "product.name",
   });
 
   if (isLoading) {

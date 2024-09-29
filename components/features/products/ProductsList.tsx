@@ -1,11 +1,11 @@
 "use client";
 
 import { deleteProduct } from "@/actions/products";
+import { useProductStore } from "@/store/useProductStore";
 import { Row } from "@/types/supabase/table";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import ProductCard from "../products/ProductCard";
-import { useProductStore } from "@/store/useProductStore";
 
 type ProductsListProps = {
   products: Row<"products">[];
