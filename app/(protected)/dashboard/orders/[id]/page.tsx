@@ -1,4 +1,3 @@
-
 import OrderDetailsPage from "@/webpages/orders/OrderDetailsPage";
 
 type Props = {
@@ -7,7 +6,7 @@ type Props = {
   };
 };
 
-const page = ({ params: { id } }: Props) => {
+const OrderDetails = ({ params: { id } }: Props) => {
   return (
     <div>
       <OrderDetailsPage id={id} />
@@ -15,4 +14,4 @@ const page = ({ params: { id } }: Props) => {
   );
 };
 
-export default page;
+export default OrderDetails;
