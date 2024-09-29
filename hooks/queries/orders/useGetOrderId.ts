@@ -16,12 +16,18 @@ export const fetchOrder = async (orderId: string) => {
     throw new Error("Unauthorized");
   }
 
-
   const { data: order, error } = await supabase
     .from("orders")
-    .select("*")
+    .select(`
+      *,
+      orderItems:orderItems(
+        *,
+        product:products!inner(*)
+      )
+    `)
     .eq("id", orderId)
     .single();
+
   if (error) {
     throw error;
   }

@@ -1,7 +1,7 @@
 "use client";
 
 import PageHeader from "@/components/layout/PageHeader";
-import { DynamicTable, TableField } from "@/components/sharedUi/DynamicTable";
+import { DynamicTable, TableField } from "@/components/shared-ui/DynamicTable";
 import { ordersSampleData } from "@/components/test-data/OrdersSampleData";
 import { Button } from "@/components/ui/button";
 import { useAccounts } from "@/hooks/queries/account/useGetAccount";
@@ -25,27 +25,24 @@ const Orders = (props: Props) => {
   console.log("accounts", accounts);
 
   const router = useRouter();
-  
+
   const fields: TableField<Row<"orders">>[] = [
     {
       key: "accountId",
-      label: "Account Number",
+      label: "Account#",
       transform: (value: string) =>
         accounts?.find((account) => account.id === value)?.phoneNumber ?? "",
     },
     {
       key: "OrderNumber",
-      label: "Order #",
+      label: "Order#",
+      className: "text-right",
     },
     {
       key: "totalQuantity",
-      label: "Items Amount",
+      label: "Items",
       transform: (value: number) => `${value} items`,
-    },
-    {
-      key: "totalAmount",
-      label: "Total Amount",
-      transform: (value: number) => `$${value}`,
+      className: "text-right",
     },
     {
       key: "id",
@@ -55,6 +52,7 @@ const Orders = (props: Props) => {
           View
         </Button>
       ),
+      className: "text-right",
     },
   ];
 

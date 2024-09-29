@@ -160,8 +160,10 @@ export type Database = {
           id: string
           imageUrl: string | null
           name: string
+          orderId: string
           price: number
           productId: string
+          quantity: number
           unit: string | null
         }
         Insert: {
@@ -170,8 +172,10 @@ export type Database = {
           id?: string
           imageUrl?: string | null
           name: string
+          orderId: string
           price: number
           productId: string
+          quantity: number
           unit?: string | null
         }
         Update: {
@@ -180,11 +184,20 @@ export type Database = {
           id?: string
           imageUrl?: string | null
           name?: string
+          orderId?: string
           price?: number
           productId?: string
+          quantity?: number
           unit?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "orderItems_orderId_fkey"
+            columns: ["orderId"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "orderItems_productId_fkey"
             columns: ["productId"]

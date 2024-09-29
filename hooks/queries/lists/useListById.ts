@@ -20,7 +20,7 @@ export const fetchListById = async (listId: string) => {
     .select(
       `
       *,
-      items:listItems(
+      items:listItems( 
         *,
         product:products!inner(*)
       )

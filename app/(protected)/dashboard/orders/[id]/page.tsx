@@ -1,11 +1,5 @@
-"use client";
 
-import PageHeader from "@/components/layout/PageHeader";
-import { useAccountById } from "@/hooks/queries/account/useGetAccountById";
-import { useOrderById } from "@/hooks/queries/orders/useGetOrderId";
-import { formatPhoneNumber } from "@/utils/utils";
-import { useParams } from "next/navigation";
-import React from "react";
+import OrderDetailsPage from "@/webpages/orders/OrderDetailsPage";
 
 type Props = {
   params: {
@@ -16,8 +10,7 @@ type Props = {
 const page = ({ params: { id } }: Props) => {
   return (
     <div>
-      <PageHeader title="Order Details" />
-
+      <OrderDetailsPage id={id} />
     </div>
   );
 };
