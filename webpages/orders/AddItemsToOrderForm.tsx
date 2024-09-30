@@ -1,17 +1,21 @@
-import React, { useState, useEffect } from "react";
+import { updateOrder } from "@/actions/orders";
+import ProductCard from "@/components/features/products/ProductCard";
 import PageHeader from "@/components/layout/PageHeader";
+import SummaryRow from "@/components/shared-ui/SummaryRow";
+import { Button } from "@/components/ui/button";
+import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useProducts } from "@/hooks/queries/products/useProducts";
-import { formatCurrency } from "@/utils/utils";
-import { Button } from "@/components/ui/button";
-import { useFieldArray, useForm } from "react-hook-form";
-import { UpdateOrderType, UpdateOrderSchema } from "@/types/validation/order";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Form } from "@/components/ui/form";
-import { useParams } from "next/navigation";
 import { Row } from "@/types/supabase/table";
-import ProductCard from "@/components/features/products/ProductCard";
+import { UpdateOrderSchema, UpdateOrderType } from "@/types/validation/order";
+import { formatCurrency } from "@/utils/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Check } from "lucide-react";
+import { useParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { useFieldArray, useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 type Props = {
   onOpenChange?: (isOpen: boolean) => void;
@@ -33,6 +37,28 @@ const AddItemsToOrderForm: React.FC<Props> = ({ onOpenChange }) => {
       totalAmount: 0,
       totalQuantity: 0,
       orderItems: [],
+    },
+  });
+
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationKey: ["update-order"],
+    mutationFn: updateOrder,
+    onSuccess: (data) => {
+      if (!data.success) {
+        toast.error("Failed to update order");
+        return;
+      }
+
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+      queryClient.invalidateQueries({ queryKey: ["order", orderId] });
+      onOpenChange?.(false);
+
+      toast.success("Order updated!");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to update order");
     },
   });
 
@@ -74,13 +100,17 @@ const AddItemsToOrderForm: React.FC<Props> = ({ onOpenChange }) => {
         productId: product.id,
         quantity: newQuantity,
         price: product.price,
+        imageUrl: product.imageUrl ?? "",
+        name: product.name,
+        unit: product.unit ?? "",
+        description: product.description ?? "",
+        orderId: orderId,
       });
     }
   };
 
   const onSubmit = (data: UpdateOrderType) => {
-    console.log("Submitted data:", data);
-    // Handle form submit here (e.g., send to API)
+    mutation.mutate(data);
   };
 
   const onCancel = () => {
@@ -92,6 +122,7 @@ const AddItemsToOrderForm: React.FC<Props> = ({ onOpenChange }) => {
     <div className="flex flex-col h-full overflow-hidden">
       <div className="flex-shrink-0">
         <PageHeader
+          disableMargin
           title="Add items to order"
           description="Select items to add to your order"
         />
@@ -105,7 +136,7 @@ const AddItemsToOrderForm: React.FC<Props> = ({ onOpenChange }) => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className=" mt-5">
-            <div className="flex flex-col gap-4 pr-2 overflow-auto no-scrollbar">
+            <div className="flex flex-col gap-4 pr-2 overflow-auto no-scrollbar h-[350px]">
               {filteredProducts?.map((product) => (
                 <ProductCard
                   product={product}
@@ -123,6 +154,13 @@ const AddItemsToOrderForm: React.FC<Props> = ({ onOpenChange }) => {
               ))}
             </div>
           </div>
+          <div className="flex gap-6 mt-4 justify-end">
+            <SummaryRow label="Quantity" value={form.watch("totalQuantity")} />
+            <SummaryRow
+              label="Total Amount"
+              value={formatCurrency(form.watch("totalAmount"))}
+            />
+          </div>
           <div className="flex gap-4">
             <Button
               type="button"
@@ -134,12 +172,9 @@ const AddItemsToOrderForm: React.FC<Props> = ({ onOpenChange }) => {
               Cancel
             </Button>
             <Button type="submit" className="mt-4 w-full" size={"lg"}>
-              Apply Changes <Check className="ml-2 h-5 w-5" />
+              Apply Changes ({formatCurrency(form.watch("totalAmount"))})
+              <Check className="ml-2 h-5 w-5" />
             </Button>
-          </div>
-          <div className="mt-4">
-            <p>Total Quantity: {form.watch("totalQuantity")}</p>
-            <p>Total Amount: {formatCurrency(form.watch("totalAmount"))}</p>
           </div>
         </form>
       </Form>

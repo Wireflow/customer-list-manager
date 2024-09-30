@@ -9,6 +9,11 @@ export const UpdateOrderSchema = z.object({
       productId: z.string(),
       quantity: z.number().positive(),
       price: z.number().positive(),
+      name: z.string(),
+      imageUrl: z.string().optional(),
+      unit: z.string().optional(),
+      description: z.string().optional(),
+      orderId: z.string(),
     })
   ),
 });

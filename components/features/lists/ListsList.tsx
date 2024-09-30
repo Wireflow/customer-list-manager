@@ -1,52 +1,31 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import List, { RenderItemFunction } from "@/components/ui/list";
 import { ListWithItems } from "@/types/schema/lists";
-import { useRouter } from "next/navigation";
+import ListCard from "./ListCard";
 
 type Props = {
   lists: ListWithItems[];
+  loading: boolean;
+  error: any;
 };
 
-const ListsList = ({ lists }: Props) => {
-  const router = useRouter();
+const ListsList = ({ lists, loading, error }: Props) => {
+  const renderListItem: RenderItemFunction<ListWithItems> = (list, index) => (
+    <ListCard list={list} key={list.id} />
+  );
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-      {lists.map((list) => (
-        <Card
-          key={list.id}
-          onClick={() => router.push(`/dashboard/lists/${list.id}`)}
-          className="w-full md:w-auto  hover:cursor-pointer hover:shadow-lg transition-all duration-500 hover:bg-secondary/15"
-        >
-          <CardHeader>
-            <CardTitle className="flex gap-2 items-center">
-              {list.name}
-              {list.favorited && <Badge variant={"outline"}>Favorite</Badge>}
-            </CardTitle>
-            <CardDescription>{list.items.length} Items</CardDescription>
-          </CardHeader>
-          <CardFooter className="flex gap-4 justify-end">
-            <Button variant={"outline"}>Edit</Button>
-            <Button
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
-            >
-              Send to...
-            </Button>
-          </CardFooter>
-        </Card>
-      ))}
-    </div>
+    <List<ListWithItems>
+      data={lists}
+      renderItem={renderListItem}
+      isLoading={loading}
+      error={error}
+      loadingMessage="Loading your lists..."
+      errorMessage="Unable to fetch lists. Please try again later."
+      emptyMessage="No lists found. Create your first list to get started!"
+      containerClassName="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
+    />
   );
 };
 

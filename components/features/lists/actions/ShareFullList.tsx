@@ -26,12 +26,8 @@ const ShareFullList = (props: Props) => {
   const { mutate, isPending } = useMutation({
     mutationKey: ["share-full-list"],
     mutationFn: createSharedList,
-    onSuccess: (data) => {
-      console.log(data);
-    },
-    onError: (err) => {
-      console.log(err);
-    },
+    onSuccess: (data) => {},
+    onError: (err) => {},
   });
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {

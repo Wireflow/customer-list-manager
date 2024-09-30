@@ -67,7 +67,12 @@ const DangerDialog = ({
           {confirmTrigger ? (
             confirmTrigger
           ) : (
-            <Button size={"lg"} onClick={onSubmit} type="submit">
+            <Button
+              size={"lg"}
+              onClick={onSubmit}
+              type="submit"
+              variant={"destructive"}
+            >
               Yes, I'm sure
             </Button>
           )}

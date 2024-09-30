@@ -27,16 +27,26 @@ const InputField = ({
   const { field } = useController({
     name,
     control,
-    rules: { value: props.type === "number" },
+    rules: { value: props.type === "number" || props.type === "date" },
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+    let value = e.target.value;
     if (props.type === "number") {
-      field.onChange(value === "" ? null : parseFloat(value));
+      const regex = /^[0-9\b]+$/;
+
+      if (e.target.value === "" || regex.test(e.target.value)) {
+        value = e.target.value;
+      }
+
+      // Convert to number or null for the form
+      field.onChange(value === "" ? null : Number(value));
     } else {
       field.onChange(value);
     }
+
+    // Call the provided onChange handler if it exists
+    onChange?.(e);
   };
 
   return (
@@ -50,10 +60,11 @@ const InputField = ({
             <Input
               {...props}
               value={field.value ?? ""}
-              onChange={onChange ? onChange : handleChange}
+              onChange={handleChange}
               onBlur={field.onBlur}
               name={field.name}
               ref={field.ref}
+              inputMode={props.type === "number" ? "decimal" : undefined}
             />
           </FormControl>
           <FormDescription>{description}</FormDescription>

@@ -2,14 +2,17 @@
 import PageHeader from "@/components/layout/PageHeader";
 import Dialog from "@/components/shared-ui/Dialog";
 import { Button } from "@/components/ui/button";
-import { useAccountById } from "@/hooks/queries/account/useGetAccountById";
+import DangerDialog from "@/components/ui/danger-dialog";
 import { useOrderById } from "@/hooks/queries/orders/useGetOrderId";
 import { formatPhoneNumber } from "@/utils/utils";
 import { useState } from "react";
 import AddItemsToOrderForm from "./AddItemsToOrderForm";
 import OrderDetailsHeader from "./OrderDetailsHeader";
 import OrderItemsTable from "./OrderItemsTable";
-import DangerDialog from "@/components/ui/danger-dialog";
+import Disable from "@/components/shared-ui/DisablePage";
+import VoidOrder from "@/components/features/orders/actions/VoidOrder";
+import PrintInvoice from "@/components/features/orders/actions/PrintInvoice";
+import CompleteOrder from "@/components/features/orders/actions/CompleteOrder";
 
 type Props = {
   id: string;
@@ -17,7 +20,6 @@ type Props = {
 
 const OrderDetailsPage = ({ id }: Props) => {
   const { data: order } = useOrderById(id as string);
-  const { data: account } = useAccountById(order?.accountId as string);
   const [open, setOpen] = useState(false);
 
   if (!order) return <div>No order found!</div>;
@@ -25,24 +27,21 @@ const OrderDetailsPage = ({ id }: Props) => {
   return (
     <div>
       <PageHeader
-        title={`Order #${order?.OrderNumber}`}
-        description={`Account #${formatPhoneNumber(account?.phoneNumber)}`}
+        title={`Order #${order?.orderNumber}`}
+        description={`Account #${formatPhoneNumber(order?.account?.phoneNumber)}`}
         rightContent={
-          <div className="flex gap-4">
-            <Button>Print Invoice</Button>
+          <div className="flex md:flex-row flex-col items-center justify-center gap-4">
+            <PrintInvoice orderId={order?.id} />
+            <CompleteOrder orderId={order?.id} status={order?.status} />
             <Dialog
-              className="max-h-[45rem] max-w-2xl overflow-hidden"
-              trigger={<Button variant={"outline"}>Add items to order</Button>}
+              disabled={order?.status !== "pending"}
+              className=" max-w-2xl overflow-hidden"
+              trigger={<Button variant={"outline"}>Add Items</Button>}
               open={open}
               onOpenChange={setOpen}
               content={<AddItemsToOrderForm onOpenChange={setOpen} />}
             />
-            <DangerDialog
-              trigger={<Button variant={"destructive"}>Void</Button>}
-              title="Void Order"
-              description="Are you sure you want to void this order?"
-              onConfirm={() => console.log("Void order")}
-            />
+            <VoidOrder orderId={order?.id} status={order?.status} />
           </div>
         }
       />

@@ -222,7 +222,9 @@ export type Database = {
           branchId: string
           createdAt: string
           id: string
-          OrderNumber: number
+          orderNumber: number
+          paymentId: number | null
+          status: Database["public"]["Enums"]["order_status"]
           totalAmount: number
           totalQuantity: number
         }
@@ -231,7 +233,9 @@ export type Database = {
           branchId: string
           createdAt?: string
           id?: string
-          OrderNumber?: number
+          orderNumber?: number
+          paymentId?: number | null
+          status?: Database["public"]["Enums"]["order_status"]
           totalAmount: number
           totalQuantity: number
         }
@@ -240,7 +244,9 @@ export type Database = {
           branchId?: string
           createdAt?: string
           id?: string
-          OrderNumber?: number
+          orderNumber?: number
+          paymentId?: number | null
+          status?: Database["public"]["Enums"]["order_status"]
           totalAmount?: number
           totalQuantity?: number
         }
@@ -257,6 +263,54 @@ export type Database = {
             columns: ["branchId"]
             isOneToOne: false
             referencedRelation: "branch"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_paymentId_fkey"
+            columns: ["paymentId"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          amount: number
+          checkAmount: number | null
+          checkNumber: string | null
+          createdAt: string
+          customMethod: string | null
+          id: number
+          method: Database["public"]["Enums"]["payment_method"]
+          orderId: string
+        }
+        Insert: {
+          amount: number
+          checkAmount?: number | null
+          checkNumber?: string | null
+          createdAt?: string
+          customMethod?: string | null
+          id?: number
+          method: Database["public"]["Enums"]["payment_method"]
+          orderId: string
+        }
+        Update: {
+          amount?: number
+          checkAmount?: number | null
+          checkNumber?: string | null
+          createdAt?: string
+          customMethod?: string | null
+          id?: number
+          method?: Database["public"]["Enums"]["payment_method"]
+          orderId?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_orderId_fkey"
+            columns: ["orderId"]
+            isOneToOne: false
+            referencedRelation: "orders"
             referencedColumns: ["id"]
           },
         ]
@@ -375,6 +429,15 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      order_status: "completed" | "voided" | "refunded" | "pending"
+      payment_method:
+        | "check"
+        | "card"
+        | "cash"
+        | "hold"
+        | "zelle"
+        | "wire"
+        | "custom"
       shared_list_type: "custom" | "full"
     }
     CompositeTypes: {

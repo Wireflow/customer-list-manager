@@ -1,29 +1,81 @@
+"use server";
 
+import { Enum } from "@/types/supabase/enum";
 import { UpdateOrderType } from "@/types/validation/order";
-import { CreateProductType } from "@/types/validation/product";
-import { createClient } from "@/utils/supabase/client";
-import { useMutation } from "@tanstack/react-query";
+import { createClient } from "@/utils/supabase/server";
 
 const supabase = createClient();
 
 export const updateOrder = async (orderData: UpdateOrderType) => {
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (!session) {
+  if (!user) {
     return { success: false, error: "Unauthorized" };
   }
 
+  // Fetch the current order and its items
+  const { data: currentOrder, error: fetchError } = await supabase
+    .from("orders")
+    .select(
+      `
+      totalAmount, 
+      totalQuantity,
+      orderItems (id, productId, quantity)
+    `
+    )
+    .eq("id", orderData.id)
+    .single();
+
+  if (fetchError) {
+    return { success: false, error: fetchError.message };
+  }
+
+  let additionalAmount = 0;
+  let additionalQuantity = 0;
+
+  if (orderData.orderItems.length > 0) {
+    for (const newItem of orderData.orderItems) {
+      const existingItem = currentOrder.orderItems.find(
+        (item) => item.productId === newItem.productId
+      );
+
+      if (existingItem) {
+        // Update existing item
+        const { error: updateError } = await supabase
+          .from("orderItems")
+          .update({ quantity: existingItem.quantity + newItem.quantity })
+          .eq("id", existingItem.id);
+
+        if (updateError) {
+          return { success: false, error: updateError.message };
+        }
+      } else {
+        // Insert new item
+        const { error: insertError } = await supabase
+          .from("orderItems")
+          .insert({ ...newItem });
+
+        if (insertError) {
+          return { success: false, error: insertError.message };
+        }
+      }
+
+      additionalAmount += newItem.price * newItem.quantity;
+      additionalQuantity += newItem.quantity;
+    }
+  }
+
+  // Update the order, incrementing the totals
   const { error, data } = await supabase
     .from("orders")
     .update({
-      ...orderData,
-      branchId: session.user.user_metadata.branchId,
+      totalAmount: (currentOrder.totalAmount || 0) + additionalAmount,
+      totalQuantity: (currentOrder.totalQuantity || 0) + additionalQuantity,
+      branchId: user.user_metadata.branchId,
     })
-    .eq("id", orderData?.id)
-    .select()
-    .single();
+    .eq("id", orderData.id);
 
   if (error) {
     return { success: false, error: error.message };
@@ -32,4 +84,30 @@ export const updateOrder = async (orderData: UpdateOrderType) => {
   return { success: true, data };
 };
 
+export const updateOrderStatus = async (
+  orderId: string,
+  status: Enum<"order_status">
+) => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
+  if (!user) {
+    return { success: false, error: "Unauthorized" };
+  }
+
+  const { error, data } = await supabase
+    .from("orders")
+    .update({
+      status,
+    })
+    .eq("id", orderId)
+    .eq("branchId", user.user_metadata.branchId)
+    .select("*");
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  return { success: true, data };
+};

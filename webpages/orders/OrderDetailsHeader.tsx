@@ -1,40 +1,37 @@
-import { useAccountById } from "@/hooks/queries/account/useGetAccountById";
-import { Row } from "@/types/supabase/table";
-import { formatPhoneNumber } from "@/utils/utils";
-import React from "react";
+import SummaryRow from "@/components/shared-ui/SummaryRow";
+import { OrderWithDetails } from "@/hooks/queries/orders/useGetOrders";
+import { getOrderTotals } from "@/utils/orderUtils";
+import { formatCurrency, formatPhoneNumber } from "@/utils/utils";
 
 type Props = {
-  order: Row<"orders">;
+  order: OrderWithDetails;
 };
 
 const OrderDetailsHeader = ({ order }: Props) => {
+  const totals = getOrderTotals(order);
 
-  const { data: account } = useAccountById(order?.accountId as string);
   return (
     <div className="border border-gray-200 rounded-lg p-4 h-full w-full">
       <h2 className="text-lg font-semibold mb-4">Order Summary</h2>
       <div className="flex gap-10 mb-6">
-        <div className="flex-1 flex flex-col gap-4">
-          <div>
-            <p className="font-medium text-gray-500">Order Number:</p>
-            <p className="font-bold">#{order?.OrderNumber}</p>
-          </div>
-          <div>
-            <p className="font-medium text-gray-500">Items Amount:</p>
-            <p className="font-bold">{order?.totalQuantity}</p>
-          </div>
-        </div>
-        <div className="flex-1 flex flex-col gap-4">
-          <div>
-            <p className="font-medium text-gray-500">Total Amount:</p>
-            <p className="font-bold">${order?.totalAmount?.toFixed(2)}</p>
-          </div>
-          <div>
-            <p className="font-medium text-gray-500">Account Number:</p>
-            <p className="font-bold">
-              {formatPhoneNumber(account?.phoneNumber)}
-            </p>
-          </div>
+        <div className="grid grid-cols-2 md:grid-cols-2  lg:grid-cols-3 gap-6 w-full">
+          <SummaryRow
+            label="Status"
+            value={<span className="capitalize">{order?.status}</span>}
+          />
+          <SummaryRow label="Order Number" value={`#${order?.orderNumber}`} />
+          <SummaryRow
+            label="Total Quantity"
+            value={`${totals?.totalQuantity} items`}
+          />
+          <SummaryRow
+            label="Account Number"
+            value={formatPhoneNumber(order?.account?.phoneNumber)}
+          />
+          <SummaryRow
+            label="Total Amount"
+            value={formatCurrency(totals?.totalAmount)}
+          />
         </div>
       </div>
     </div>

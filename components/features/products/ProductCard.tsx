@@ -63,7 +63,7 @@ const ProductCard = ({
     <Card
       onClick={onClick}
       className={cn("shadow-none", {
-        "cursor-pointer hover:shadow-[0px_0px_20px_1px_rgba(0,0,0,0.1)] transition-all duration-500":
+        "cursor-pointer hover:shadow-[0px_0px_20px_1px_rgba(0,0,0,0.1)] transition-all duration-500 overflow-hidden":
           !!onClick,
       })}
     >
@@ -106,6 +106,7 @@ const ProductCard = ({
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
+                type="button"
                 size="icon"
                 onClick={handleDecrement}
                 disabled={quantity === 0}
@@ -113,7 +114,12 @@ const ProductCard = ({
                 <Minus size={16} />
               </Button>
               <span className="w-8 text-center">{quantity}</span>
-              <Button variant="outline" size="icon" onClick={handleIncrement}>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleIncrement}
+                type="button"
+              >
                 <Plus size={16} />
               </Button>
             </div>

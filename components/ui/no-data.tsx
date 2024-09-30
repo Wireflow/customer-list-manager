@@ -1,7 +1,7 @@
 import React from "react";
-import { AlertCircle, Ban, FileQuestion } from "lucide-react";
+import { AlertCircle, Ban, FileQuestion, Loader2 } from "lucide-react";
 
-type Variant = "no-records" | "error" | "failed";
+type Variant = "no-records" | "error" | "failed" | "loading";
 
 type NoDataProps = {
   variant?: Variant;
@@ -24,6 +24,11 @@ const variantConfig = {
     color: "text-yellow-600",
     defaultMessage: "Operation failed. Please check your input and try again.",
   },
+  loading: {
+    icon: Loader2,
+    color: "text-gray-600",
+    defaultMessage: "Loading...",
+  },
 };
 
 const NoData: React.FC<NoDataProps> = ({ variant = "no-records", message }) => {
@@ -31,7 +36,9 @@ const NoData: React.FC<NoDataProps> = ({ variant = "no-records", message }) => {
 
   return (
     <div className="flex flex-col items-center justify-center h-[calc(100vh-200px)]">
-      <Icon className={`w-12 h-12 mb-4 ${color}`} />
+      <Icon
+        className={`w-12 h-12 mb-4 ${color} ${variant === "loading" ? "animate-spin" : ""}`}
+      />
       <p className="text-lg font-semibold text-center">
         {message || defaultMessage}
       </p>

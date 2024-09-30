@@ -94,7 +94,7 @@ const DesktopSidebar = () => {
             const isActive = route.route == path;
 
             return (
-              <Link href={route.route} className="w-full">
+              <Link href={route.route} className="w-full" key={route.route}>
                 <Button
                   className="w-full text-start items-start justify-start"
                   variant={isActive ? "secondary" : "ghost"}

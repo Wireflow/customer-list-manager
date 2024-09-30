@@ -1,4 +1,4 @@
-import { Database } from "@/types/supabase/database";
+import { Row } from "@/types/supabase/table";
 import { createClient } from "@/utils/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 
@@ -10,22 +10,34 @@ export const useOrders = () => {
 };
 
 export const fetchOrders = async (): Promise<
-  OrderWithAccount[] | undefined
+  OrderWithDetails[] | undefined
 > => {
   const supabase = createClient();
-  const session = await supabase.auth.getSession();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
   if (!session) {
     throw new Error("Unauthorized");
   }
 
-  const branchId = session.data.session?.user.user_metadata.branchId;
+  const branchId = session.user.user_metadata.branchId;
 
   const { data: orders, error } = await supabase
     .from("orders")
-    .select("*, account:accountId(*)!inner")
+    .select(
+      `
+      *,
+      account:accountId(*),
+      orderItems(
+        *,
+        product:productId(*)
+      ),
+      payment:paymentId(*)
+    `
+    )
     .eq("branchId", branchId)
-    .returns<OrderWithAccount[]>();
+    .returns<OrderWithDetails[]>();
 
   if (error) {
     throw error;
@@ -34,6 +46,15 @@ export const fetchOrders = async (): Promise<
   return orders;
 };
 
-export type OrderWithAccount = Database["public"]["Tables"]["orders"]["Row"] & {
-  account: Database["public"]["Tables"]["accounts"]["Row"];
+export type OrderWithAccount = Row<"orders"> & {
+  account: Row<"accounts">;
+};
+
+export type OrderItemWithProduct = Row<"orderItems"> & {
+  product: Row<"products">;
+};
+
+export type OrderWithDetails = OrderWithAccount & {
+  orderItems: OrderItemWithProduct[];
+  payment: Row<"payments">;
 };
