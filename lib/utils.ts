@@ -10,7 +10,7 @@ export function formatPhoneNumber(number?: number | string): string {
 
   const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
   if (match) {
-    return `+1 (${match[1]}) ${match[2]} - ${match[3]}`;
+    return `(${match[1]}) ${match[2]} - ${match[3]}`;
   }
 
   return String(number);
@@ -26,7 +26,7 @@ export const formatPhoneInputValue = (value: string) => {
   } else if (digits.length <= 6) {
     return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
   } else {
-    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)} ${digits.slice(6)}`;
+    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
   }
 };
 

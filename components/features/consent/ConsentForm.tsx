@@ -4,8 +4,8 @@ import CheckboxField from "@/components/form/CheckboxField";
 import InputField from "@/components/form/InputField";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
 import { useConsentMutation } from "@/hooks/mutations/consent/useConsentMutation";
-import { useSession } from "@/hooks/queries/auth/useSession";
 import { formatPhoneInputValue } from "@/lib/utils";
 import { ConsentSchema, ConsentType } from "@/types/validation/consent";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -76,6 +76,13 @@ const ConsentForm = (props: Props) => {
             label="Opt-in to receiving text messages"
             form={form}
           />
+        </div>
+        <div className="mt-2">
+          <Label>SMS Sharing Dislosure:</Label>
+          <p className="text-sm text-gray-500">
+            No mobile information will be shared with third parties/affiliates
+            for marketing/promotional purposes.
+          </p>
         </div>
 
         <Button

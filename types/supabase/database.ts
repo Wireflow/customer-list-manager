@@ -51,16 +51,19 @@ export type Database = {
         Row: {
           createdAt: string
           id: string
+          listValidTime: number
           name: string
         }
         Insert: {
           createdAt?: string
           id?: string
+          listValidTime?: number
           name: string
         }
         Update: {
           createdAt?: string
           id?: string
+          listValidTime?: number
           name?: string
         }
         Relationships: []

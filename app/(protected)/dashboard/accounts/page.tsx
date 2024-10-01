@@ -1,4 +1,5 @@
 import PageHeader from "@/components/layout/PageHeader";
+import AccountsPage from "@/webpages/accounts/AccountsPage";
 import React from "react";
 
 type Props = {};
@@ -10,6 +11,7 @@ const Accounts = (props: Props) => {
         title="Accounts"
         description="Add and view all your associated accounts!"
       />
+      <AccountsPage />
     </div>
   );
 };

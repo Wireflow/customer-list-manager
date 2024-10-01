@@ -1,5 +1,8 @@
 import { sendMessage } from "@/lib/ez-texting";
+import { millisecondsToHours } from "@/utils/dateUtils";
 import { createClient } from "@/utils/supabase/client";
+import { getAccountByPhoneNumber } from "./accounts";
+import { getBranchById } from "./branches";
 
 export type FullListParams = {
   phoneNumber: string;
@@ -7,73 +10,68 @@ export type FullListParams = {
   originUrl: string;
 };
 
+const supabase = createClient();
+
 export const createSharedList = async (sharedList: FullListParams) => {
-  const supabase = createClient();
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  if (!session) {
-    return { success: false, error: "Unauthorized" };
-  }
-
-  // Check if account exists
-  let { data: accountData, error: accountError } = await supabase
-    .from("accounts")
-    .select("phoneNumber, id")
-    .eq("phoneNumber", sharedList.phoneNumber)
-    .single();
-
-  // If account doesn't exist, create it
-  if (!accountData) {
-    const { data: newAccount, error: createError } = await supabase
-      .from("accounts")
-      .insert({
-        phoneNumber: sharedList.phoneNumber,
-        branchId: session.user.user_metadata.branchId,
-      })
-      .select()
-      .single();
-
-    if (createError) {
-      return { success: false, error: createError.message };
+    if (!user) {
+      throw new Error("Unauthorized");
     }
 
-    accountData = newAccount;
-  } else if (accountError) {
-    return { success: false, error: accountError.message };
+    const {
+      data: branch,
+      success: branchSuccess,
+      error: branchError,
+    } = await getBranchById(user.user_metadata.branchId);
+
+    if (!branchSuccess) {
+      throw new Error(branchError);
+    }
+
+    const account = await getAccountByPhoneNumber(sharedList.phoneNumber);
+
+    if (!account?.success) {
+      throw new Error(account.error);
+    }
+
+    const expirationTime = new Date();
+    const validFor = millisecondsToHours(branch?.listValidTime ?? 7200000); // Default to 2 hours
+    expirationTime.setHours(expirationTime.getHours() + validFor);
+
+    const { error, data } = await supabase
+      .from("sharedLists")
+      .insert({
+        branchId: user.user_metadata.branchId,
+        type: "full",
+        accountId: account?.data?.id ?? "",
+        expirationTime: expirationTime.toISOString(),
+        instructions: sharedList?.instructions,
+      })
+      .select("id")
+      .single();
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    if (account.data?.phoneNumber) {
+      const response = await sendMessage({
+        to: account?.data?.phoneNumber,
+        body: `View full list here: ${origin}/shared/${data.id}`,
+      });
+
+      if (!response?.success) {
+        throw new Error(response?.error);
+      }
+    }
+
+    return { success: true, data };
+  } catch (error) {
+    console.log(error);
+    return { success: false, error: error };
   }
-
-  const expirationTime = new Date();
-  expirationTime.setHours(expirationTime.getHours() + 24);
-
-  const { error, data } = await supabase
-    .from("sharedLists")
-    .insert({
-      branchId: session.user.user_metadata.branchId,
-      type: "full",
-      accountId: accountData?.id ?? "",
-      expirationTime: expirationTime.toISOString(),
-      instructions: sharedList?.instructions,
-    })
-    .select("id")
-    .single();
-
-  if (error) {
-    return { success: false, error: error.message };
-  }
-
-  await sendMessage({
-    to: accountData.phoneNumber,
-    body: `This is a list just for you: ${origin}/shared/${data.id}`,
-  });
-
-  // Send SMS
-  // const response = await sendSMS("Full list", accountData?.phoneNumber || "");
-
-  // if (!response.success) {
-  //   return { success: false, error: response.error };
-  // }
-
-  return { success: true, data };
 };

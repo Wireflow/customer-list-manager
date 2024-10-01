@@ -1,5 +1,5 @@
 import { createClient } from "@/utils/supabase/client";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 export const useAccountById = (accountId: string) => {
   return useQuery({
