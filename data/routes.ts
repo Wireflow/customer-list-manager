@@ -5,6 +5,10 @@ type Route = {
 
 export const dashboardRoutes: Route[] = [
   {
+    route: "/dashboard/home",
+    label: "Home",
+  },
+  {
     route: "/dashboard/lists",
     label: "Lists",
   },
@@ -16,9 +20,12 @@ export const dashboardRoutes: Route[] = [
     route: "/dashboard/orders",
     label: "Orders",
   },
-
   {
     route: "/dashboard/accounts",
     label: "Accounts",
+  },
+  {
+    route: "/dashboard/settings",
+    label: "Settings",
   },
 ];

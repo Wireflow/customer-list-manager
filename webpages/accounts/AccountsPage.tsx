@@ -1,8 +1,8 @@
 "use client";
 
 import AccountsList from "@/components/features/accounts/AccountsList";
+import AccountsCount from "@/components/features/accounts/analytics/AccountsCount";
 import { useAccounts } from "@/hooks/queries/account/useGetAccount";
-import React from "react";
 
 type Props = {};
 
@@ -11,7 +11,12 @@ const AccountsPage = (props: Props) => {
 
   return (
     <div>
-      <AccountsList accounts={accounts ?? []} />
+      <div className="max-w-[500px]">
+        <AccountsCount numberOfAccounts={accounts?.length ?? 0} />
+      </div>
+      <div className="mt-4">
+        <AccountsList accounts={accounts ?? []} />
+      </div>
     </div>
   );
 };

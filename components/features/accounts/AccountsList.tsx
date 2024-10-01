@@ -17,7 +17,7 @@ const AccountsList = ({ accounts }: AccountsListProps) => {
   const fields: TableField<Row<"accounts">>[] = [
     {
       key: (row) => formatPhoneNumber(row.phoneNumber),
-      label: "Order",
+      label: "Phone #",
     },
     {
       key: (row) =>

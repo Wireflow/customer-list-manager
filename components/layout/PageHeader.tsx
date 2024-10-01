@@ -7,6 +7,7 @@ type PageHeaderProps = {
   description?: string;
   rightContent?: React.ReactNode;
   disableMargin?: boolean;
+  textColor?: string;
 };
 
 const PageHeader: React.FC<PageHeaderProps> = ({
@@ -14,13 +15,18 @@ const PageHeader: React.FC<PageHeaderProps> = ({
   description,
   rightContent,
   disableMargin = false,
+  textColor,
 }) => {
   return (
     <div className="flex flex-col justify-between items-start lg:flex-row mb-8 gap-5 ">
       <div className={cn({ "mt-20 md:mt-0": !disableMargin })}>
-        <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
+        <h1 className={cn("text-3xl font-bold text-gray-900", textColor)}>
+          {title}
+        </h1>
         {description && (
-          <p className="mt-2 text-sm text-gray-700">{description}</p>
+          <p className={cn("mt-2 text-sm text-gray-700", textColor)}>
+            {description}
+          </p>
         )}
       </div>
       <div className="w-full lg:w-auto">

@@ -1,18 +1,17 @@
 "use client";
+
+import CompleteOrder from "@/components/features/orders/actions/CompleteOrder";
+import PrintInvoice from "@/components/features/orders/actions/PrintInvoice";
+import VoidOrder from "@/components/features/orders/actions/VoidOrder";
 import PageHeader from "@/components/layout/PageHeader";
 import Dialog from "@/components/shared-ui/Dialog";
 import { Button } from "@/components/ui/button";
-import DangerDialog from "@/components/ui/danger-dialog";
 import { useOrderById } from "@/hooks/queries/orders/useGetOrderId";
 import { formatPhoneNumber } from "@/utils/utils";
 import { useState } from "react";
-import AddItemsToOrderForm from "./AddItemsToOrderForm";
-import OrderDetailsHeader from "./OrderDetailsHeader";
-import OrderItemsTable from "./OrderItemsTable";
-import Disable from "@/components/shared-ui/DisablePage";
-import VoidOrder from "@/components/features/orders/actions/VoidOrder";
-import PrintInvoice from "@/components/features/orders/actions/PrintInvoice";
-import CompleteOrder from "@/components/features/orders/actions/CompleteOrder";
+import AddItemsToOrderForm from "../../components/features/orders/forms/AddItemsToOrderForm";
+import OrderItemsTable from "../../components/features/orders/order-items/OrderItemsList";
+import OrderDetailsHeader from "../../components/features/orders/OrderDetailsHeader";
 
 type Props = {
   id: string;
@@ -28,7 +27,7 @@ const OrderDetailsPage = ({ id }: Props) => {
     <div>
       <PageHeader
         title={`Order #${order?.orderNumber}`}
-        description={`Account #${formatPhoneNumber(order?.account?.phoneNumber)}`}
+        description={`Account # ${formatPhoneNumber(order?.account?.phoneNumber)}`}
         rightContent={
           <div className="flex md:flex-row flex-col items-center justify-center gap-4">
             <PrintInvoice orderId={order?.id} />

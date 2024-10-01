@@ -18,7 +18,6 @@ import Image from "next/image";
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { on } from "events";
-import { getImageUrl } from "@/utils/imageUtils";
 
 type Props = {
   product: Row<"products">;
@@ -36,7 +35,7 @@ type Props = {
   quantity?: number;
 };
 
-const ProductCard = ({
+const SharedProductCard = ({
   product,
   onClick,
   disableDelete = false,
@@ -73,9 +72,9 @@ const ProductCard = ({
           !!onClick,
       })}
     >
-      <CardContent className="p-2 px-6 flex flex-row items-center justify-between h-[75px]">
-        <div className="flex gap-2 items-center">
-          <div className="flex gap-4 items-center">
+      <CardContent className="py-4 px-6 flex flex-col gap-4 h-full justify-between">
+        <div className="flex flex-col items-center gap-2">
+          <div className="flex gap-4  items-center">
             {!disableSelect ? (
               <Checkbox
                 checked={checked}
@@ -85,29 +84,29 @@ const ProductCard = ({
             ) : null}
             <div className="relative flex-shrink-0 overflow-hidden">
               <Image
-                src={getImageUrl(product?.imageUrl)}
+                src={product?.imageUrl || PLACEHOLDER_IMG_URL}
                 alt="product image"
-                width={75}
-                height={75}
+                width={200}
+                height={200}
                 style={{ objectFit: "contain" }}
               />
             </div>
           </div>
-
-          <div className="flex flex-col ml-2">
-            <CardTitle className="text-lg capitalize">
-              {product?.name}{" "}
-              {product?.unit && (
-                <span className="text-gray-500 font-normal">
-                  ({product?.unit})
-                </span>
-              )}
-            </CardTitle>
-            <CardDescription>{formatCurrency(product?.price)}</CardDescription>
-          </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col ml-2">
+          <CardTitle className="text-lg capitalize">
+            {product?.name}{" "}
+            {product?.unit && (
+              <span className="text-gray-500 font-normal">
+                ({product?.unit})
+              </span>
+            )}
+          </CardTitle>
+          <CardDescription>{formatCurrency(product?.price)}</CardDescription>
+        </div>
+
+        <div className="flex items-center justify-between w-full gap-2">
           {!disableQuantity && onQuantityChange && (
             <div className="flex items-center gap-2">
               <Button
@@ -131,32 +130,15 @@ const ProductCard = ({
             </div>
           )}
 
-          {!disableDelete && onDelete ? (
-            <DangerDialog
-              title="Remove item?"
-              description="This will remove item from this list"
-              trigger={
-                <Button
-                  variant={"outline"}
-                  loading={isDeleting}
-                  disabled={isDeleting}
-                  className="w-fit"
-                  type="button"
-                >
-                  <Trash size={20} />
-                </Button>
-              }
-              onConfirm={() => onDelete()}
-            />
-          ) : null}
-
-          {!disableAdd && onAdd ? (
+          {onAdd ? (
             <Button
               type="button"
-              className="w-fit"
+              className="w-full"
+              size={"lg"}
               onClick={() => onAdd(product)}
+              disabled={disableAdd}
             >
-              <Plus size={20} />
+              {disableAdd ? "Already in Cart" : "Add to Cart"}
             </Button>
           ) : null}
         </div>
@@ -165,4 +147,4 @@ const ProductCard = ({
   );
 };
 
-export default ProductCard;
+export default SharedProductCard;

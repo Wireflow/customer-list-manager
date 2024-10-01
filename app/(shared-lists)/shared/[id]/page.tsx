@@ -1,4 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
+import CustomListPage from "@/webpages/shared-list/CustomListPage";
+import FullListPage from "@/webpages/shared-list/FullListPage";
 import { redirect } from "next/navigation";
 import React from "react";
 
@@ -35,7 +37,7 @@ const SharedList = async ({ params: { id } }: Props) => {
       .select("*")
       .eq("branchId", sharedList.branchId);
 
-    return <div>{JSON.stringify(fullList, null, 2)}</div>;
+    return <CustomListPage products={fullList ?? []} />;
   }
 
   if (sharedList.type === "custom" && sharedList.listId) {
@@ -44,7 +46,11 @@ const SharedList = async ({ params: { id } }: Props) => {
       .select("*, product:products!inner(*)")
       .eq("listId", sharedList?.listId);
 
-    return <div>{JSON.stringify(customList, null, 2)}</div>;
+    const formattedListItems = customList?.map((item) => ({
+      ...item.product,
+    }));
+
+    return <CustomListPage products={formattedListItems ?? []} />;
   }
 
   return <div>Not Found</div>;

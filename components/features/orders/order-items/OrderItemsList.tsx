@@ -1,15 +1,13 @@
 "use client";
 import DynamicTable, { TableField } from "@/components/shared-ui/DynamicTable";
-import { Button } from "@/components/ui/button";
 import { Row } from "@/types/supabase/table";
 import Image from "next/image";
-import React from "react";
 
 type Props = {
   orderItems: Row<"orderItems">[];
 };
 
-const OrderItemsTable = ({ orderItems }: Props) => {
+const OrderItemsList = ({ orderItems }: Props) => {
   const fields: TableField<Row<"orderItems">>[] = [
     {
       key: "imageUrl",
@@ -48,4 +46,4 @@ const OrderItemsTable = ({ orderItems }: Props) => {
   );
 };
 
-export default OrderItemsTable;
+export default OrderItemsList;

@@ -6,8 +6,10 @@ type Props = {
 
 const SharedListsLayout = ({ children }: Props) => {
   return (
-    <div className="p-6">
-      <main>{children}</main>
+    <div className="flex flex-col h-screen">
+      <div className="flex-grow overflow-auto p-6">
+        <main>{children}</main>
+      </div>
     </div>
   );
 };
