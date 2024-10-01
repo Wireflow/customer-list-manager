@@ -72,6 +72,6 @@ export const createSharedList = async (sharedList: FullListParams) => {
     return { success: true, data };
   } catch (error) {
     console.log(error);
-    return { success: false, error: error };
+    return { success: false, error: "Failed to send shared list" };
   }
 };

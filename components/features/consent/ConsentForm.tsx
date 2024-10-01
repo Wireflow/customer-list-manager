@@ -10,15 +10,26 @@ import { formatPhoneInputValue } from "@/lib/utils";
 import { ConsentSchema, ConsentType } from "@/types/validation/consent";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check } from "lucide-react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 type Props = {};
 
 const ConsentForm = (props: Props) => {
   const { id: branchId } = useParams<{ id: string }>();
+  const router = useRouter();
 
-  const { mutate, isPending: isMutating } = useConsentMutation();
+  const { mutate, isPending: isMutating } = useConsentMutation({
+    onSuccess: (data) => {
+      if (!data?.success) {
+        toast.error(data?.error ?? "Failed to submit consent");
+        return;
+      }
+      toast.success("Successfully opted in to text messages");
+      router.replace("/opted");
+    },
+  });
 
   const form = useForm<ConsentType>({
     resolver: zodResolver(ConsentSchema),
