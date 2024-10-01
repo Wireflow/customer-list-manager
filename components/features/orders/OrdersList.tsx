@@ -17,15 +17,15 @@ type OrdersListProps = {
   orders: OrderWithDetails[];
 };
 
+export const badgeVariants: Record<Enum<"order_status">, string> = {
+  pending: "outline",
+  completed: "success",
+  voided: "destructive",
+  refunded: "warning",
+};
+
 const OrdersList = ({ orders }: OrdersListProps) => {
   const router = useRouter();
-
-  const badgeVariants: Record<Enum<"order_status">, string> = {
-    pending: "outline",
-    completed: "success",
-    voided: "destructive",
-    refunded: "warning",
-  };
 
   const fields: TableField<OrderWithDetails>[] = [
     {

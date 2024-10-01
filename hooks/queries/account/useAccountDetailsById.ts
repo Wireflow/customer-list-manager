@@ -1,15 +1,15 @@
-"use client"
+"use client";
 import { createClient } from "@/utils/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 
-export const useAccountById = (accountId: string) => {
+export const useAccountDetailsById = (accountId: string) => {
   return useQuery({
-    queryKey: ["account", accountId],
-    queryFn: () => fetchAccountById(accountId),
+    queryKey: ["account", "details", accountId],
+    queryFn: () => fetchAccountDetailsById(accountId),
   });
 };
 
-const fetchAccountById = async (accountId: string) => {
+const fetchAccountDetailsById = async (accountId: string) => {
   const supabase = createClient();
   const session = await supabase.auth.getSession();
 
@@ -19,7 +19,7 @@ const fetchAccountById = async (accountId: string) => {
 
   const { data: account, error } = await supabase
     .from("accounts")
-    .select("*")
+    .select(`*, orders(*)`)
     .eq("id", accountId)
     .single();
   if (error) {
