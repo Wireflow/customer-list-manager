@@ -40,6 +40,8 @@ const ProductForm = (props: Props) => {
   const form = useForm<CreateProductType>({
     resolver: zodResolver(CreateProductSchema),
     defaultValues: {
+      quantityInStock: undefined,
+      costPrice: undefined,
       name: "",
       price: undefined,
       description: "",
@@ -54,23 +56,21 @@ const ProductForm = (props: Props) => {
         price: product.price ?? undefined,
         description: product.description ?? "",
         unit: product.unit ?? "",
+        costPrice: product.costPrice ?? undefined,
+        quantityInStock: product.quantityInStock ?? undefined,
       });
     } else {
-      resetForm();
+      form.reset({
+        name: "",
+        price: undefined,
+        description: "",
+        unit: "",
+        costPrice: undefined,
+        quantityInStock: undefined,
+      });
+      setSelectedImage(null);
     }
   }, [product, form]);
-
-  const resetForm = () => {
-    form.reset({
-      name: "",
-      //@ts-ignore
-      price: null,
-      description: "",
-      unit: "",
-    });
-    setSelectedImage(null);
-    setProduct(undefined);
-  };
 
   const { mutate, isPending } = useMutation({
     mutationKey: ["product-action"],
@@ -161,6 +161,16 @@ const ProductForm = (props: Props) => {
                   description="Display name of the product"
                 />
                 <InputField
+                  name="costPrice"
+                  control={form.control}
+                  label="Cost Price ($)"
+                  type="number"
+                  step="0.01"
+                  className="no-spinners"
+                  placeholder="ex. 25.99"
+                  description="Cost price of the product"
+                />
+                <InputField
                   name="price"
                   control={form.control}
                   label="Price ($)"
@@ -176,6 +186,16 @@ const ProductForm = (props: Props) => {
                   label="Unit"
                   placeholder="ex. 24 PK, 10oz, 1 lb"
                   description="Units the product is sold at"
+                />
+                <InputField
+                  name="quantityInStock"
+                  control={form.control}
+                  label="Quantity in Stock"
+                  type="number"
+                  step="0.01"
+                  className="no-spinners"
+                  placeholder="ex. 100"
+                  description="Quantity in stock of the product"
                 />
                 <InputField
                   name="description"

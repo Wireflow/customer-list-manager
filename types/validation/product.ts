@@ -5,6 +5,8 @@ export const CreateProductSchema = z.object({
   price: z.number().positive(),
   description: z.string().optional(),
   unit: z.string().optional(),
+  costPrice: z.number().positive().optional(),
+  quantityInStock: z.number().positive().optional(),
 });
 
 export type CreateProductType = z.infer<typeof CreateProductSchema>;
