@@ -2,9 +2,19 @@ import { useEffect, useState } from "react";
 
 type RecordType = Record<string, any>;
 
+type NestField<T> = T extends object
+  ? {
+      [K in keyof T]: K extends string
+        ? T[K] extends object
+          ? `${K}.${NestField<T[K]>}`
+          : K
+        : never;
+    }[keyof T]
+  : never;
+
 type Params<T> = {
   items: T[];
-  field: string;
+  field: NestField<T>;
 };
 
 const getNestedValue = (obj: RecordType, path: string): any => {
@@ -24,10 +34,10 @@ export const useFilterItems = <T extends RecordType>(params: Params<T>) => {
       } else {
         const filtered = items.filter((item) => {
           const value = getNestedValue(item, field);
-          return (
-            typeof value === "string" &&
-            value.toLowerCase().includes(searchQuery.toLowerCase())
-          );
+          return value
+            .toString()
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase());
         });
         setFilteredItems(filtered);
       }

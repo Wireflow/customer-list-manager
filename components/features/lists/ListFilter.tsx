@@ -4,10 +4,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import useDebounce from "@/hooks/useDebounce";
 import { cn } from "@/utils/cn";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 type Props = {
-  onChangeText: (text: string) => void;
+  onChangeText: (deouncedText: string) => void;
   label?: string;
   description?: string;
   className?: string;

@@ -1,8 +1,8 @@
 "use client";
 
-import ListFilter from "@/components/features/lists/ListFilter";
 import ProductForm from "@/components/features/products/actions/ProductForm";
 import ProductsList from "@/components/features/products/ProductsList";
+import SearchInput from "@/components/shared-ui/SearchInput";
 import InfoCard from "@/components/shared-ui/InfoCard";
 import { useProducts } from "@/hooks/queries/products/useProducts";
 import { useFilterItems } from "@/hooks/useFilterItems";
@@ -13,7 +13,7 @@ type ProductsPageProps = {};
 const ProductsPage = (props: ProductsPageProps) => {
   const { data: products } = useProducts();
 
-  const { setSearchQuery, filteredItems } = useFilterItems({
+  const { setSearchQuery, filteredItems, searchQuery } = useFilterItems({
     items: products ?? [],
     field: "name",
   });
@@ -29,11 +29,15 @@ const ProductsPage = (props: ProductsPageProps) => {
         <InfoCard title="Total Stock Value" value={formatCurrency(stockTotal) } />
       </div>
       <div className="flex gap-4 flex-col-reverse sm:flex-row items-center  w-full">
-        <ListFilter
-          onChangeText={setSearchQuery}
-          label="Search"
-          description="Search product by name..."
-        />
+        <div className="md:max-w-[500px]">
+          <SearchInput
+            value={searchQuery}
+            onChange={setSearchQuery}
+            label="Search"
+            description="Search product by name..."
+            placeholder="Product name..."
+          />
+        </div>
         <ProductForm />
       </div>
       <ProductsList products={filteredItems || []} />
