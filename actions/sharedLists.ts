@@ -61,7 +61,7 @@ export const createSharedList = async (sharedList: FullListParams) => {
     if (account.data?.phoneNumber) {
       const response = await sendMessage({
         to: account?.data?.phoneNumber,
-        body: `View full list here: ${origin}/shared/${data.id}`,
+        body: `View full list here: ${origin}/shared/${data.id}?phone=${sharedList.phoneNumber}`,
       });
 
       if (!response?.success) {

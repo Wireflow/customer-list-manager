@@ -2,7 +2,6 @@
 
 import ListsActions from "@/components/features/lists/ListsActions";
 import ListsList from "@/components/features/lists/ListsList";
-import NoData from "@/components/ui/no-data";
 import { useLists } from "@/hooks/queries/lists/useLists";
 
 type ListsPageProps = {};

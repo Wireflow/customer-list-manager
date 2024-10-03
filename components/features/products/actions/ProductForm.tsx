@@ -25,7 +25,6 @@ import { convertToBase64 } from "@/utils/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { PlusCircle } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -36,7 +35,6 @@ const ProductForm = (props: Props) => {
   const { open, setOpen, setProduct, product } = useProductStore();
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
-  const router = useRouter();
   const queryClient = useQueryClient();
 
   const form = useForm<CreateProductType>({
@@ -58,15 +56,21 @@ const ProductForm = (props: Props) => {
         unit: product.unit ?? "",
       });
     } else {
-      form.reset({
-        name: "",
-        price: undefined,
-        description: "",
-        unit: "",
-      });
-      setSelectedImage(null);
+      resetForm();
     }
   }, [product, form]);
+
+  const resetForm = () => {
+    form.reset({
+      name: "",
+      //@ts-ignore
+      price: null,
+      description: "",
+      unit: "",
+    });
+    setSelectedImage(null);
+    setProduct(undefined);
+  };
 
   const { mutate, isPending } = useMutation({
     mutationKey: ["product-action"],
@@ -100,8 +104,7 @@ const ProductForm = (props: Props) => {
       toast.success(product ? "Product updated!" : "Product created!");
       queryClient.invalidateQueries({ queryKey: ["products"] });
       setOpen(false);
-      setSelectedImage(null);
-      form.reset();
+      resetForm();
     },
     onError: (err: Error) => {
       toast.error(
@@ -118,9 +121,7 @@ const ProductForm = (props: Props) => {
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
     if (!newOpen) {
-      setProduct(undefined);
-      form.reset();
-      setSelectedImage(null);
+      resetForm();
     }
   };
 

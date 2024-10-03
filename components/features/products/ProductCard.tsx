@@ -132,22 +132,24 @@ const ProductCard = ({
           )}
 
           {!disableDelete && onDelete ? (
-            <DangerDialog
-              title="Remove item?"
-              description="This will remove item from this list"
-              trigger={
-                <Button
-                  variant={"outline"}
-                  loading={isDeleting}
-                  disabled={isDeleting}
-                  className="w-fit"
-                  type="button"
-                >
-                  <Trash size={20} />
-                </Button>
-              }
-              onConfirm={() => onDelete()}
-            />
+            <div onClick={(e) => e.stopPropagation()}>
+              <DangerDialog
+                title="Remove item?"
+                description="This will remove item from this list"
+                trigger={
+                  <Button
+                    variant={"outline"}
+                    loading={isDeleting}
+                    disabled={isDeleting}
+                    className="w-fit"
+                    type="button"
+                  >
+                    <Trash size={20} />
+                  </Button>
+                }
+                onConfirm={() => onDelete()}
+              />
+            </div>
           ) : null}
 
           {!disableAdd && onAdd ? (

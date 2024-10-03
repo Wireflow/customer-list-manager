@@ -31,9 +31,9 @@ const SearchInput = ({
   }, [debounced, onChange]);
 
   return (
-    <div className={cn("grid gap-2 w-full", props.className)}>
+    <div className={cn("space-y-1 w-full ", props.className)}>
       {label && <Label>{label}</Label>}
-      <div className="relative w-full">
+      <div className="relative w-full ">
         <Search
           className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"
           size={18}
@@ -43,10 +43,11 @@ const SearchInput = ({
           onChange={(e) => setQuery(e.target.value)}
           placeholder={placeholder ?? "Search..."}
           className={cn("pl-10 pr-4 w-full", inputClassName)}
+          style={{ width: "100%" }}
           {...props}
         />
       </div>
-      {description && <p className="text-gray-600 text-xs ">{description}</p>}
+      {description && <p className="text-gray-600 text-xs">{description}</p>}
     </div>
   );
 };

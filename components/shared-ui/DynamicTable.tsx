@@ -20,9 +20,9 @@ type NestedKeyOf<T> = T extends object
 
 export interface TableField<T> {
   key: NestedKeyOf<T> | ((item: T) => React.ReactNode);
-  label: string;
+  label: string | ((item: T) => React.ReactNode);
   transform?: (value: any, item: T) => React.ReactNode;
-  className?: string; // Changed to be a string for the entire column
+  className?: string;
   disabled?: boolean;
 }
 
@@ -69,6 +69,14 @@ export function DynamicTable<T extends Record<string, any>>({
     return value ?? "N/A";
   };
 
+  const renderLabel = (field: TableField<T>, index: number) => {
+    if (typeof field.label === "function") {
+      // We pass an empty object as a placeholder since we don't have a specific item for the header
+      return field.label({} as T);
+    }
+    return field.label;
+  };
+
   return (
     <Table>
       <TableHeader>
@@ -79,14 +87,14 @@ export function DynamicTable<T extends Record<string, any>>({
                 <TableHead
                   key={
                     typeof field.key === "function"
-                      ? `${field.label}-${index}`
+                      ? `${index}-${typeof field.label === "function" ? index : field.label}`
                       : (field.key as string)
                   }
                   className={field.className}
                 >
-                  {field.label}
+                  {renderLabel(field, index)}
                 </TableHead>
-              ),
+              )
           )}
         </TableRow>
       </TableHeader>
@@ -108,14 +116,14 @@ export function DynamicTable<T extends Record<string, any>>({
                     <TableCell
                       key={
                         typeof field.key === "function"
-                          ? `${field.label}-${rowIndex}-${cellIndex}`
+                          ? `${rowIndex}-${cellIndex}`
                           : (field.key as string)
                       }
                       className={`py-3 ${field.className || ""} `}
                     >
                       {renderCellValue(item, field)}
                     </TableCell>
-                  ),
+                  )
               )}
             </TableRow>
           ))

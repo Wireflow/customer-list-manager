@@ -11,7 +11,7 @@ type NoDataProps = {
 const variantConfig = {
   "no-records": {
     icon: FileQuestion,
-    color: "text-blue-600",
+    color: "text-black-600",
     defaultMessage: "No records found. Start by creating a new entry.",
   },
   error: {
@@ -35,7 +35,7 @@ const NoData: React.FC<NoDataProps> = ({ variant = "no-records", message }) => {
   const { icon: Icon, color, defaultMessage } = variantConfig[variant];
 
   return (
-    <div className="flex flex-col items-center justify-center h-[calc(100vh-200px)]">
+    <div className="flex flex-col items-center justify-center h-[calc(100vh-220px)]">
       <Icon
         className={`w-12 h-12 mb-4 ${color} ${variant === "loading" ? "animate-spin" : ""}`}
       />

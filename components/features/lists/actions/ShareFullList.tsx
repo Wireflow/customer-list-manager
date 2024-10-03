@@ -36,6 +36,8 @@ const ShareFullList: React.FC = () => {
         return;
       }
       if (data?.success) {
+        toast.error(data?.error ?? "Successfully sent shared list");
+
         setOpen(false);
       }
     },
@@ -48,6 +50,7 @@ const ShareFullList: React.FC = () => {
         return;
       }
       if (data?.success) {
+        toast.error(data?.error ?? "Successfully created account");
         setOpen(false);
       }
     },

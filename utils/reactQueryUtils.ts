@@ -1,11 +1,11 @@
-import React from "react";
+"use client";
+
 import {
-  useMutation,
-  useQueryClient,
-  UseMutationOptions,
   QueryKey,
+  useMutation,
+  UseMutationOptions,
+  useQueryClient,
 } from "@tanstack/react-query";
-import { toast } from "sonner";
 
 type MutationFunction<TParams, TResult> = (params: TParams) => Promise<TResult>;
 

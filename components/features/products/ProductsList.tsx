@@ -6,6 +6,8 @@ import { Row } from "@/types/supabase/table";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import ProductCard from "../products/ProductCard";
+import List from "@/components/ui/list";
+import { useDeleteProduct } from "@/hooks/mutations/products";
 
 type ProductsListProps = {
   products: Row<"products">[];
@@ -15,9 +17,7 @@ const ProductsList = ({ products }: ProductsListProps) => {
   const { setOpen, setProduct } = useProductStore();
   const queryClient = useQueryClient();
 
-  const { mutate, isPending } = useMutation({
-    mutationKey: ["delete-product"],
-    mutationFn: deleteProduct,
+  const { mutate, isPending } = useDeleteProduct({
     onSuccess: (data) => {
       if (!data.success) {
         toast.error("Failed to delete product");
@@ -27,37 +27,40 @@ const ProductsList = ({ products }: ProductsListProps) => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
       toast.success("Product deleted!");
     },
-    onError: (error) => {
-      toast.error(error.message || "Failed to delete product");
-    },
   });
+
+  const renderItem = (item: Row<"products">) => {
+    return (
+      <ProductCard
+        product={item}
+        key={item.id}
+        disableSelect={true}
+        onClick={() => {
+          setProduct(item);
+          setOpen(true);
+        }}
+        onDelete={() => mutate(item.id)}
+        isDeleting={isPending}
+      />
+    );
+  };
 
   return (
     <div className="mt-8">
-      <p className="font-semibold mb-2">Products ({products?.length || 0})</p>
-      <div className="grid gap-4">
-        {products && products.length > 0 ? (
-          products?.map((item) => (
-            <ProductCard
-              product={item}
-              key={item.id}
-              disableSelect={true}
-              onClick={() => {
-                setProduct(item);
-                setOpen(true);
-              }}
-              onDelete={() => mutate(item.id)}
-              isDeleting={isPending}
-            />
-          ))
-        ) : (
-          <div className="flex flex-col gap-1 items-start mt-2 h-full">
-            <p>You don't have any products</p>
-          </div>
-        )}
-      </div>
+      <ProductsCount count={products?.length || 0} />
+      <List
+        data={products ?? []}
+        emptyMessage="No products found"
+        renderItem={renderItem}
+        error={false}
+        containerClassName="grid gap-4"
+      />
     </div>
   );
 };
 
 export default ProductsList;
+
+const ProductsCount = ({ count }: { count: number }) => (
+  <p className="font-semibold mb-2">Products ({count})</p>
+);
