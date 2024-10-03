@@ -28,7 +28,6 @@ export const dashboardRoutes: Route[] = [
     route: "/dashboard/financials",
     label: "Financials",
   },
-  ,
   {
     route: "/dashboard/settings",
     label: "Settings",
