@@ -34,7 +34,7 @@ const ProductsList = ({ products }: ProductsListProps) => {
 
   return (
     <div className="mt-8">
-      <p className="font-semibold mb-2">Products ({products?.length || 0})</p>
+      <p className="font-semibold mb-2">Products</p>
       <div className="grid gap-4">
         {products && products.length > 0 ? (
           products?.map((item) => (
