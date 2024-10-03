@@ -6,7 +6,6 @@ import CreateGroupForm from "@/components/features/accounts/forms/CreateGroupFor
 import Pagination from "@/components/shared-ui/Pagination";
 import RefreshButton from "@/components/shared-ui/RefreshButton";
 import SearchInput from "@/components/shared-ui/SearchInput";
-import { Button } from "@/components/ui/button";
 import NoData from "@/components/ui/no-data";
 import { useAccountsCountByFilter } from "@/hooks/queries/account/useAccountsCountByFilter";
 import { usePaginatedAccounts } from "@/hooks/queries/account/usePaginatedAccounts";
@@ -16,7 +15,6 @@ import { useState } from "react";
 type Props = {};
 
 const AccountsPage = (props: Props) => {
-  const [openOverlay, setOpenOverlay] = useState(false);
   const [selectedAccounts, setSelectedAccounts] = useState<Row<"accounts">[]>(
     []
   );

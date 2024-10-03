@@ -40,10 +40,10 @@ const ProductForm = (props: Props) => {
   const form = useForm<CreateProductType>({
     resolver: zodResolver(CreateProductSchema),
     defaultValues: {
-      quantityInStock: undefined,
-      costPrice: undefined,
+      quantityInStock: 0,
+      costPrice: 0,
       name: "",
-      price: undefined,
+      price: 0,
       description: "",
       unit: "",
     },
@@ -53,24 +53,37 @@ const ProductForm = (props: Props) => {
     if (product) {
       form.reset({
         name: product.name ?? "",
-        price: product.price ?? undefined,
+        price: product.price ?? 0,
         description: product.description ?? "",
         unit: product.unit ?? "",
-        costPrice: product.costPrice ?? undefined,
-        quantityInStock: product.quantityInStock ?? undefined,
+        costPrice: product.costPrice ?? 0,
+        quantityInStock: product.quantityInStock ?? 0,
       });
     } else {
       form.reset({
         name: "",
-        price: undefined,
+        price: 0,
         description: "",
         unit: "",
-        costPrice: undefined,
-        quantityInStock: undefined,
+        costPrice: 0,
+        quantityInStock: 0,
       });
       setSelectedImage(null);
     }
   }, [product, form]);
+
+  const resetForm = () => {
+    form.reset({
+      name: "",
+      price: 0,
+      description: "",
+      unit: "",
+      costPrice: 0,
+      quantityInStock: 0,
+    });
+    setSelectedImage(null);
+    setProduct(undefined);
+  };
 
   const { mutate, isPending } = useMutation({
     mutationKey: ["product-action"],
