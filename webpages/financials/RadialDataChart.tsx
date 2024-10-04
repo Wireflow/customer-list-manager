@@ -37,7 +37,7 @@ const chartConfig = {
 
 export function RadialDataChart() {
   return (
-    <Card className="flex flex-col h-full">
+    <Card className="flex flex-col w-full">
       <CardHeader className="items-center pb-0">
         <CardTitle>Radial Chart - Text</CardTitle>
         <CardDescription>January - June 2024</CardDescription>
@@ -96,14 +96,6 @@ export function RadialDataChart() {
           </RadialBarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col gap-2 text-sm">
-        <div className="flex items-center gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
-        </div>
-      </CardFooter>
     </Card>
   );
 }

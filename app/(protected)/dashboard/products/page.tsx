@@ -8,8 +8,8 @@ const Products = (props: Props) => {
   return (
     <div>
       <PageHeader
-        title="Products"
-        description="Manage your products in one place, add, delete and update!"
+        title="Inventory"
+        description="Manage your inventory in one place, add, delete and update!"
       />
       <ProductsPage />
     </div>

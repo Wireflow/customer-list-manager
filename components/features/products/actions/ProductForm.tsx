@@ -3,6 +3,8 @@
 import { createProduct, updateProduct } from "@/actions/products";
 import ImageUpload from "@/components/form/ImageUpload";
 import InputField from "@/components/form/InputField";
+import SelectField from "@/components/form/SelectField";
+import { SelectOptions } from "@/components/shared-ui/Select";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -15,6 +17,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
+import { useCategories } from "@/hooks/queries/categories/useCategories";
 import { useProductStore } from "@/store/useProductStore";
 import {
   CreateProductSchema,
@@ -29,11 +32,15 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-type Props = {};
+type Props = {
+  mode?: "edit" | "new";
+  trigger?: React.ReactNode;
+};
 
-const ProductForm = (props: Props) => {
+const ProductForm = ({ mode = "new", trigger }: Props) => {
   const { open, setOpen, setProduct, product } = useProductStore();
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const { data: categories } = useCategories();
 
   const queryClient = useQueryClient();
 
@@ -46,6 +53,7 @@ const ProductForm = (props: Props) => {
       price: 0,
       description: "",
       unit: "",
+      categoryId: "",
     },
   });
 
@@ -58,6 +66,7 @@ const ProductForm = (props: Props) => {
         unit: product.unit ?? "",
         costPrice: product.costPrice ?? 0,
         quantityInStock: product.quantityInStock ?? 0,
+        categoryId: product.categoryId ?? "",
       });
     } else {
       form.reset({
@@ -67,6 +76,7 @@ const ProductForm = (props: Props) => {
         unit: "",
         costPrice: 0,
         quantityInStock: 0,
+        categoryId: "",
       });
       setSelectedImage(null);
     }
@@ -138,12 +148,21 @@ const ProductForm = (props: Props) => {
     }
   };
 
+  const formatedCategories = (categories?.map((category) => ({
+    label: category.name,
+    value: category.id,
+  })) ?? []) as SelectOptions[];
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button size="lg" className="w-full sm:w-auto">
-          <PlusCircle className="mr-2 h-4 w-4 -ml-2" /> New Product
-        </Button>
+        {mode === "edit" ? (
+          trigger
+        ) : (
+          <Button size="lg" className="w-full md:w-auto">
+            <PlusCircle className="mr-2 h-4 w-4 -ml-2" /> New Product
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="max-w-[700px] max-h-[700px]">
         <Form {...form}>
@@ -172,6 +191,15 @@ const ProductForm = (props: Props) => {
                   control={form.control}
                   label="Name"
                   description="Display name of the product"
+                />
+
+                <SelectField
+                  name="categoryId"
+                  placeholder="Select category"
+                  control={form.control}
+                  options={formatedCategories}
+                  label="Category"
+                  description="Category of the product"
                 />
                 <InputField
                   name="costPrice"
