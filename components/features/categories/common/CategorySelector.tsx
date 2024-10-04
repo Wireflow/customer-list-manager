@@ -1,9 +1,5 @@
-
 import Select, { SelectOptions } from "@/components/shared-ui/Select";
-import { Button } from "@/components/ui/button";
 import { useCategories } from "@/hooks/queries/categories/useCategories";
-import { Row } from "@/types/supabase/table";
-import React from "react";
 import CategoryForm from "../forms/CategoryForm";
 
 type Props = {
@@ -24,7 +20,7 @@ const CategorySelector = ({ onSelect, selectedCategory }: Props) => {
       className="h-[45px]"
       defaultValue="ALL"
       options={allCategories}
-      onValueChange={(value) => onSelect(value)}
+      onValueChange={(value) => onSelect(value ?? "ALL")}
       value={selectedCategory ?? "ALL"}
       placeholder="Select category"
       emptyMessage="No categories found"
