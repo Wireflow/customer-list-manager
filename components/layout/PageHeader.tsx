@@ -18,8 +18,8 @@ const PageHeader: React.FC<PageHeaderProps> = ({
   textColor,
 }) => {
   return (
-    <div className="flex flex-col justify-between items-start lg:flex-row mb-8 gap-5 ">
-      <div className={cn({ "mt-20 md:mt-0": !disableMargin })}>
+    <div className="flex flex-col justify-between items-start lg:flex-row pb-8 gap-5 ">
+      <div className={cn({ "pt-20 md:pt-0": !disableMargin })}>
         <h1 className={cn("text-3xl font-bold text-gray-900", textColor)}>
           {title}
         </h1>

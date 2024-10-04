@@ -1,9 +1,8 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import PageHeader from "../layout/PageHeader";
-import { title } from "process";
 import { cn } from "@/lib/utils";
 
 type Direction = "top-left" | "top-right" | "bottom-left" | "bottom-right";
@@ -55,10 +54,41 @@ const AnimatedOverlayPanel: React.FC<AnimatedOverlayPanelProps> = ({
   description,
   containerClassName,
 }) => {
+  useEffect(() => {
+    if (open) {
+      // Push a new state to the history when opening the overlay
+      window.history.pushState({ overlay: true }, "");
+
+      // Add a popstate event listener
+      const handlePopState = (event: PopStateEvent) => {
+        if (event.state && event.state.overlay) {
+          // If the popped state has the overlay flag, do nothing
+          // This prevents closing the overlay when going forward
+        } else {
+          // If it's a genuine back action, close the overlay
+          onOpenChange(false);
+        }
+      };
+
+      window.addEventListener("popstate", handlePopState);
+
+      // Clean up the event listener when the component unmounts or when the overlay closes
+      return () => {
+        window.removeEventListener("popstate", handlePopState);
+      };
+    }
+  }, [open, onOpenChange]);
+
   const variants = {
     initial: { clipPath: directions[direction].initial },
     animate: { clipPath: directions[direction].animate },
     exit: { clipPath: directions[direction].initial },
+  };
+
+  const handleClose = () => {
+    onOpenChange(false);
+    // When closing the overlay, go back in history
+    window.history.back();
   };
 
   return (
@@ -87,7 +117,7 @@ const AnimatedOverlayPanel: React.FC<AnimatedOverlayPanelProps> = ({
                   />
                 )}
                 <div className="flex justify-end -mr-4">
-                  <Button onClick={() => onOpenChange(false)} variant="ghost">
+                  <Button onClick={handleClose} variant="ghost">
                     <X size={24} />
                   </Button>
                 </div>

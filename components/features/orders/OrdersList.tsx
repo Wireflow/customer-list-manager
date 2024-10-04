@@ -5,11 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { OrderWithDetails } from "@/hooks/queries/orders/useGetOrders";
 import { Enum } from "@/types/supabase/enum";
-import {
-  getOrderTotal,
-  getOrderTotalQuantity,
-  getOrderTotals,
-} from "@/utils/orderUtils";
+import { getOrderTotal, getOrderTotalQuantity } from "@/utils/orderUtils";
 import { formatCurrency, formatPhoneNumber } from "@/utils/utils";
 import { useRouter } from "next/navigation";
 

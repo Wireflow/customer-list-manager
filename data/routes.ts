@@ -21,6 +21,10 @@ export const dashboardRoutes: Route[] = [
     label: "Orders",
   },
   {
+    route: "/dashboard/groups",
+    label: "Groups",
+  },
+  {
     route: "/dashboard/accounts",
     label: "Accounts",
   },

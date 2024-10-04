@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export const useListById = (listId: string) => {
   return useQuery({
-    queryKey: ["list", listId],
+    queryKey: ["lists", listId],
     queryFn: () => fetchListById(listId),
   });
 };

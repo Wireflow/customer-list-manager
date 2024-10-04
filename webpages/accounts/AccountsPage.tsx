@@ -2,7 +2,7 @@
 
 import AccountsList from "@/components/features/accounts/AccountsList";
 import AccountsCount from "@/components/features/accounts/analytics/AccountsCount";
-import CreateGroupForm from "@/components/features/accounts/forms/CreateGroupForm";
+import AddToGroupForm from "@/components/features/groups/forms/AddToGroupForm";
 import Pagination from "@/components/shared-ui/Pagination";
 import RefreshButton from "@/components/shared-ui/RefreshButton";
 import SearchInput from "@/components/shared-ui/SearchInput";
@@ -10,14 +10,14 @@ import NoData from "@/components/ui/no-data";
 import { useAccountsCountByFilter } from "@/hooks/queries/account/useAccountsCountByFilter";
 import { usePaginatedAccounts } from "@/hooks/queries/account/usePaginatedAccounts";
 import { Row } from "@/types/supabase/table";
-import { useState } from "react";
+import React from "react";
 
 type Props = {};
 
 const AccountsPage = (props: Props) => {
-  const [selectedAccounts, setSelectedAccounts] = useState<Row<"accounts">[]>(
-    []
-  );
+  const [selectedAccounts, setSelectedAccounts] = React.useState<
+    Row<"accounts">[]
+  >([]);
 
   const {
     data: accountsCount,
@@ -59,9 +59,9 @@ const AccountsPage = (props: Props) => {
           />
         </div>
         <div className="flex flex-row md:flex-row gap-4 items-center md:w-auto w-full">
-          <CreateGroupForm
-            selectedAccounts={selectedAccounts}
-            setSelectedAccounts={setSelectedAccounts}
+          <AddToGroupForm
+            accounts={selectedAccounts}
+            setAccounts={setSelectedAccounts}
           />
           <RefreshButton refetch={refetch} isFetching={isFetching} />
         </div>

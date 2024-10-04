@@ -8,6 +8,7 @@ import {
   Dialog as ShadcnDialog,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import React from "react";
 
 type Props = {
   trigger?: React.ReactNode;
@@ -21,9 +22,7 @@ type Props = {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   modal?: boolean;
-  closeIcon?: boolean;
-  notifications?: boolean;
-  contentClassName?: string; // Add this new prop
+  contentClassName?: string;
   onClose?: () => void;
 };
 
@@ -35,13 +34,11 @@ const Dialog = ({
   open,
   onOpenChange,
   className,
-  contentClassName, // Add this new prop
+  contentClassName,
   disableClose = false,
   footer,
   disabled = false,
   modal = true,
-  closeIcon = true,
-  notifications,
   onClose,
 }: Props) => {
   return (
@@ -57,10 +54,10 @@ const Dialog = ({
             e.preventDefault();
           }
         }}
-        className={cn("", className)}
+        className={cn("overflow-visible", className)}
         onCloseAutoFocus={onClose}
       >
-        <div className={cn("flex h-full flex-col", contentClassName)}>
+        <div className={cn("flex flex-col", contentClassName)}>
           {title || description ? (
             <DialogHeader className="flex">
               {title && (
@@ -75,7 +72,7 @@ const Dialog = ({
               )}
             </DialogHeader>
           ) : null}
-          <div className="flex-grow overflow-hidden">{content}</div>
+          <div className="relative">{content}</div>
           {footer && <DialogFooter>{footer}</DialogFooter>}
         </div>
       </DialogContent>

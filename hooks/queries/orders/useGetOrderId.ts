@@ -4,7 +4,7 @@ import { OrderWithDetails } from "./useGetOrders";
 
 export const useOrderById = (orderId: string) => {
   return useQuery({
-    queryKey: ["order", orderId],
+    queryKey: ["orders", orderId],
     queryFn: () => fetchOrder(orderId),
   });
 };

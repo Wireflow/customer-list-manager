@@ -8,7 +8,6 @@ type Props = {};
 const FinancialsPage = (props: Props) => {
   return (
     <div className="flex flex-col gap-5">
-      {" "}
       <div className="flex flex-col lg:flex-row gap-5 items-center">
         <InfoCard title="Total Stock Value" value="100" />
         <InfoCard title="Net profit" value="100" />

@@ -1,33 +1,19 @@
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+
+import Dialog from "@/components/shared-ui/Dialog";
 import { useCreateAccount } from "@/hooks/mutations/accounts/useCreateAccount";
 import { useShareList } from "@/hooks/mutations/shared-lists/useShareList";
-import { useAccounts } from "@/hooks/queries/account/useGetAccount";
 import { useSession } from "@/hooks/queries/auth/useSession";
-import { Plus, Share, User } from "lucide-react";
+import { Share } from "lucide-react";
 import React, { useState } from "react";
+import { toast } from "sonner";
 import CreateAccountForm from "../../accounts/forms/CreateAccountForm";
 import ShareFullListForm from "../forms/ShareFullListForm";
-import { toast } from "sonner";
 
 const ShareFullList: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [isNew, setIsNew] = useState(false);
   const { session } = useSession();
-  const { data: accounts } = useAccounts();
-
-  const accountOptions =
-    accounts?.map((account) => ({
-      label: account.name ?? "No name specified",
-      value: account.phoneNumber,
-    })) ?? [];
 
   const shareMutation = useShareList({
     onSuccess: (data) => {
@@ -73,6 +59,7 @@ const ShareFullList: React.FC = () => {
       phoneNumber: cleanedPhone,
       originUrl: window.location.origin,
       instructions,
+      type: "full",
     });
   };
 
@@ -80,43 +67,45 @@ const ShareFullList: React.FC = () => {
     setOpen(false);
   };
 
+  const handleSwitch = () => {
+    setIsNew(!isNew);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+    <Dialog
+      open={open}
+      onOpenChange={setOpen}
+      trigger={
         <Button variant="outline" size="lg" className="w-full sm:w-auto">
           <Share className="mr-2 h-4 w-4 -ml-2" /> Share Full List
         </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>
-            {isNew ? "Create New Account" : "Share Full List"}
-          </DialogTitle>
-          <DialogDescription>
-            {isNew
-              ? "Enter a phone number to create a new account"
-              : "Select a phone number to share the full list"}
-          </DialogDescription>
-        </DialogHeader>
-
-        {isNew ? (
-          <CreateAccountForm
-            onSubmit={handleCreateAccount}
-            onCancel={handleCancel}
-            isPending={createAccountMutation.isPending}
-            onSwitch={() => setIsNew(!isNew)}
-          />
-        ) : (
-          <ShareFullListForm
-            accountOptions={accountOptions}
-            onSubmit={handleShareList}
-            onCancel={handleCancel}
-            isPending={shareMutation.isPending}
-            onSwitch={() => setIsNew(!isNew)}
-          />
-        )}
-      </DialogContent>
-    </Dialog>
+      }
+      title={isNew ? "Create New Account" : "Share Full List"}
+      description={
+        isNew
+          ? "Enter a phone number to create a new account"
+          : "Select a phone number to share the custom list"
+      }
+      content={
+        <div className="mt-4">
+          {isNew ? (
+            <CreateAccountForm
+              onSubmit={handleCreateAccount}
+              onCancel={handleCancel}
+              onSwitch={handleSwitch}
+              isPending={createAccountMutation.isPending}
+            />
+          ) : (
+            <ShareFullListForm
+              onSubmit={handleShareList}
+              onCancel={handleCancel}
+              onSwitch={handleSwitch}
+              isPending={shareMutation.isPending}
+            />
+          )}
+        </div>
+      }
+    />
   );
 };
 

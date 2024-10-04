@@ -21,6 +21,8 @@ export const fetchLists = async () => {
   const { data: lists, error } = await supabase
     .from("lists")
     .select(`*, items:listItems(*)`)
+    .order("favorited", { ascending: false })
+    .order("createdAt", { ascending: false })
     .eq("branchId", branchId);
 
   if (error) {

@@ -8,6 +8,8 @@ export type FullListParams = {
   phoneNumber: string;
   instructions?: string;
   originUrl: string;
+  listId?: string;
+  type: "full" | "custom";
 };
 
 const supabase = createClient();
@@ -50,6 +52,7 @@ export const createSharedList = async (sharedList: FullListParams) => {
         accountId: account?.data?.id ?? "",
         expirationTime: expirationTime.toISOString(),
         instructions: sharedList?.instructions,
+        listId: sharedList?.listId,
       })
       .select("id")
       .single();

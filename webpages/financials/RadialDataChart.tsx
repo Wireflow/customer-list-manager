@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-import { TrendingUp } from "lucide-react"
+import { TrendingUp } from "lucide-react";
 import {
   Label,
   PolarGrid,
   PolarRadiusAxis,
   RadialBar,
   RadialBarChart,
-} from "recharts"
+} from "recharts";
 
 import {
   Card,
@@ -16,14 +16,14 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { ChartConfig, ChartContainer } from "@/components/ui/chart"
+} from "@/components/ui/card";
+import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 
-export const description = "A radial chart with text"
+export const description = "A radial chart with text";
 
 const chartData = [
   { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-]
+];
 
 const chartConfig = {
   visitors: {
@@ -33,7 +33,7 @@ const chartConfig = {
     label: "Safari",
     color: "hsl(var(--chart-2))",
   },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
 export function RadialDataChart() {
   return (
@@ -88,7 +88,7 @@ export function RadialDataChart() {
                           Visitors
                         </tspan>
                       </text>
-                    )
+                    );
                   }
                 }}
               />
@@ -105,5 +105,5 @@ export function RadialDataChart() {
         </div>
       </CardFooter>
     </Card>
-  )
+  );
 }

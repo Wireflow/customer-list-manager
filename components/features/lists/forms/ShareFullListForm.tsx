@@ -1,14 +1,16 @@
+import { AutoComplete } from "@/components/shared-ui/AutoCompleteSearch";
 import { SearchableSelect } from "@/components/shared-ui/SearchableSelect";
 import { SelectOptions } from "@/components/shared-ui/Select";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useAccounts } from "@/hooks/queries/account/useGetAccount";
+import { formatPhoneNumber } from "@/utils/utils";
 import { Plus, Send, X } from "lucide-react";
 import React, { useState } from "react";
 
 type ShareFullListFormProps = {
-  accountOptions: SelectOptions[];
   onSubmit: (phone: string, instructions: string) => void;
   onCancel: () => void;
   isPending: boolean;
@@ -16,7 +18,6 @@ type ShareFullListFormProps = {
 };
 
 const ShareFullListForm: React.FC<ShareFullListFormProps> = ({
-  accountOptions,
   onSubmit,
   onCancel,
   isPending,
@@ -24,6 +25,16 @@ const ShareFullListForm: React.FC<ShareFullListFormProps> = ({
 }) => {
   const [phone, setPhone] = useState("");
   const [instructions, setInstructions] = useState("");
+
+  const { data: accounts } = useAccounts();
+
+  const accountOptions =
+    accounts?.map((account) => ({
+      label: `${formatPhoneNumber(account.phoneNumber)} ${account.name ? `(${account.name})` : ""}`,
+      value: account.phoneNumber,
+    })) ?? [];
+
+  console.log(accountOptions);
 
   const handlePhoneChange = (value: string) => {
     setPhone(value);
@@ -33,12 +44,11 @@ const ShareFullListForm: React.FC<ShareFullListFormProps> = ({
     <>
       <div className="grid gap-2">
         <Label>Phone Number</Label>
-        <SearchableSelect
+        <AutoComplete
           options={accountOptions}
-          value={phone}
-          onChange={handlePhoneChange}
+          value={{ label: formatPhoneNumber(phone), value: phone }}
+          onValueChange={(value) => handlePhoneChange(value.value)}
           placeholder="Select or enter a phone number"
-          searchPlaceholder="Search by name or number"
           emptyMessage="No matching contact found"
         />
         <div className="grid gap-2 mt-2">

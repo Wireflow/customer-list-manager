@@ -5,7 +5,7 @@ import { Row } from "@/types/supabase/table";
 
 export const useOrdersCountByFilter = (filters: OrderFilters) => {
   return useQuery({
-    queryKey: ["orders-count", filters],
+    queryKey: ["orders", "count", filters],
     queryFn: () => fetchOrdersCountByFilter(filters),
   });
 };

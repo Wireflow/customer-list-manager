@@ -4,13 +4,13 @@ import { OrderWithDetails } from "./useGetOrders";
 
 export const useOrdersByAccountId = (accountId: string) => {
   return useQuery({
-    queryKey: ["order", accountId],
+    queryKey: ["orders", accountId],
     queryFn: () => fetchOrders(accountId),
   });
 };
 
 export const fetchOrders = async (
-    accountId: string
+  accountId: string
 ): Promise<OrderWithDetails[]> => {
   const supabase = createClient();
   const {
@@ -35,7 +35,7 @@ export const fetchOrders = async (
     `
     )
     .eq("accountId", accountId)
-    .returns<OrderWithDetails[]>()
+    .returns<OrderWithDetails[]>();
 
   if (error) {
     throw error;
@@ -45,5 +45,5 @@ export const fetchOrders = async (
     throw new Error("Order not found");
   }
 
-  return orders
+  return orders;
 };

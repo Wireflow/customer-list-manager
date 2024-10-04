@@ -79,6 +79,7 @@ export default function Login() {
           type="submit"
           pendingText="Signing In..."
           size={"lg"}
+          loading={isPending}
         >
           Sign in
         </SubmitButton>

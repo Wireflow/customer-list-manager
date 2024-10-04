@@ -15,7 +15,7 @@ export type SelectOptions = {
 
 export type QuickSelectProps = {
   options: SelectOptions[];
-  onValueChange: (option: string) => void;
+  onValueChange: (option?: string) => void;
   defaultValue?: string;
   className?: string;
   disabled?: boolean;
