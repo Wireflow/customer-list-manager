@@ -1,5 +1,8 @@
 import { sendMessage } from "@/lib/ez-texting";
-import { millisecondsToHours } from "@/utils/dateUtils";
+import {
+  millisecondsToHours,
+  millisecondsToHoursAndMinutes,
+} from "@/utils/dateUtils";
 import { createClient } from "@/utils/supabase/client";
 import { getAccountByPhoneNumber } from "./accounts";
 import { getBranchById } from "./branches";
@@ -41,8 +44,11 @@ export const createSharedList = async (sharedList: FullListParams) => {
     }
 
     const expirationTime = new Date();
-    const validFor = millisecondsToHours(branch?.listValidTime ?? 7200000); // Default to 2 hours
-    expirationTime.setHours(expirationTime.getHours() + validFor);
+    const { hours, minutes } = millisecondsToHoursAndMinutes(
+      branch?.listValidTime ?? 7200000
+    ); // Default to 2 hours
+    expirationTime.setHours(expirationTime.getHours() + hours);
+    expirationTime.setMinutes(expirationTime.getMinutes() + minutes);
 
     const { error, data } = await supabase
       .from("sharedLists")
