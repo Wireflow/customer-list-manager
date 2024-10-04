@@ -1,7 +1,7 @@
 "use client";
 
 import InputField from "@/components/form/InputField";
-import TextareaField from "@/components/form/TextAreaField";
+import TextareaField from "@/components/form/TextareaField";
 import Dialog from "@/components/shared-ui/Dialog";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
