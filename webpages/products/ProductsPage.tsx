@@ -8,8 +8,6 @@ import RefreshButton from "@/components/shared-ui/RefreshButton";
 import SearchInput from "@/components/shared-ui/SearchInput";
 import NoData from "@/components/ui/no-data";
 import { usePaginatedProducts } from "@/hooks/queries/products/usePaginatedProducts";
-import { Row } from "@/types/supabase/table";
-import { useState } from "react";
 
 type ProductsPageProps = {};
 
@@ -27,15 +25,15 @@ const ProductsPage = (props: ProductsPageProps) => {
     setSearchQuery,
     category,
     setCategory,
-  } = usePaginatedProducts({ pageSize: 10 });
-
-
-
+  } = usePaginatedProducts({
+    pageSize: 10,
+  });
 
   if (isLoading)
-    return <NoData variant="loading" message="Loading orders..." />;
+    return <NoData variant="loading" message="Loading products..." />;
+
   if (isError)
-    return <NoData variant="error" message="Failed to load orders..." />;
+    return <NoData variant="error" message="Failed to load products..." />;
 
   return (
     <div className="flex flex-col">
@@ -47,7 +45,10 @@ const ProductsPage = (props: ProductsPageProps) => {
             label="Search"
             placeholder="Product name..."
           />
-          <CategorySelector selectedCategory={category} onSelect={setCategory} />
+          <CategorySelector
+            selectedCategory={category}
+            onSelect={setCategory}
+          />
         </div>
         <div className="flex gap-4 w-full justify-end">
           <ProductForm />
@@ -56,11 +57,13 @@ const ProductsPage = (props: ProductsPageProps) => {
       </div>
       <div>
         <ProductsList products={products || []} />
-        <Pagination
-          currentPage={page}
-          totalPages={totalPages}
-          onPageChange={setPage}
-        />
+        <div className="mt-4">
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+          />
+        </div>
       </div>
     </div>
   );

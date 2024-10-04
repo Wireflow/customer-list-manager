@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 
 interface UsePaginatedProductsProps {
   pageSize?: number;
+  pageNumber?: number;
   searchQuery?: string;
   categoryId?: string;
 }
@@ -29,8 +30,9 @@ export const usePaginatedProducts = ({
   pageSize = 10,
   searchQuery: initialSearchQuery = "",
   categoryId = "ALL",
+  pageNumber,
 }: UsePaginatedProductsProps = {}): UsePaginatedProductsResult => {
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(pageNumber || 1);
   const [totalCount, setTotalCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
   const [categoryIdState, setCategoryState] = useState(categoryId);
