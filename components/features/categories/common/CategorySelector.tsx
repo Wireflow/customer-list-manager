@@ -9,12 +9,14 @@ type Props = {
 
 const CategorySelector = ({ onSelect, selectedCategory }: Props) => {
   const { data: categories } = useCategories();
+
   const formatedCategories = (categories?.map((category) => ({
     label: category.name,
     value: category.id,
   })) ?? []) as SelectOptions[];
 
-  const allCategories = [...formatedCategories, { label: "All", value: "ALL" }];
+  const allCategories = [{ label: "All", value: "ALL" }, ...formatedCategories];
+
   return (
     <Select
       className="h-[45px]"

@@ -15,7 +15,10 @@ import {
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
 import { useCategoryStore } from "@/store/useCategoryStore";
-import { CreateCategorySchema, CreateCategoryType } from "@/types/validation/catgories";
+import {
+  CreateCategorySchema,
+  CreateCategoryType,
+} from "@/types/validation/catgories";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -109,7 +112,7 @@ const CategoryForm = (props: Props) => {
           <PlusCircle className="mr-2 h-4 w-4 -ml-2" /> Create new category
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-[700px] max-h-[700px]">
+      <DialogContent className="max-w-[500px] max-h-[700px]">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <DialogHeader>
@@ -141,7 +144,8 @@ const CategoryForm = (props: Props) => {
               </DialogClose>
               <Button
                 type="submit"
-                disabled={isPending}
+                disabled={isPending || !form.getValues("name")}
+                loading={isPending}
               >
                 {isPending
                   ? category

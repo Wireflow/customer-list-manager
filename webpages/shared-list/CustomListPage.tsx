@@ -18,7 +18,7 @@ const CustomListPage = ({ products }: Props) => {
   });
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full relative">
       <PageHeader
         title="List"
         description="View list and place order"
@@ -29,7 +29,7 @@ const CustomListPage = ({ products }: Props) => {
         label="Search"
         description="Search product by name..."
       />
-      <div className="flex-grow overflow-auto">
+      <div className="flex-grow ">
         <SharedProductsList products={filteredItems ?? []} />
       </div>
       <FloatingCartButton />

@@ -136,9 +136,13 @@ const SharedProductCard = ({
               className="w-full"
               size={"lg"}
               onClick={() => onAdd(product)}
-              disabled={disableAdd}
+              disabled={disableAdd || product.quantityInStock === 0}
             >
-              {disableAdd ? "Already in Cart" : "Add to Cart"}
+              {disableAdd
+                ? "Already in Cart"
+                : product.quantityInStock === 0
+                  ? "Out of Stock"
+                  : "Add to Cart"}
             </Button>
           ) : null}
         </div>

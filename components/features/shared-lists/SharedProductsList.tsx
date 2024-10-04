@@ -41,10 +41,6 @@ const SharedProductsList = ({ products }: SharedProductsListProps) => {
     }
   };
 
-  useEffect(() => {
-    console.log(cart);
-  }, [cart]);
-
   return (
     <div className="mt-8">
       <p className="font-semibold mb-2">Products ({products?.length || 0})</p>

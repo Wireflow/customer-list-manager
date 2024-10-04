@@ -47,10 +47,6 @@ export const createAccount = async (data: ConsentType) => {
   const session = await supabase.auth.getSession();
   const branchId = session.data.session?.user.user_metadata.branchId;
 
-  if (!session.data.session) {
-    return { success: false, error: "Unauthorized" };
-  }
-
   try {
     const { data: accountData, error: accountError } = await supabase
       .from("accounts")

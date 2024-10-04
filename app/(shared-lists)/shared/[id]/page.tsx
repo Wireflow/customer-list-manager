@@ -1,8 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import CustomListPage from "@/webpages/shared-list/CustomListPage";
-import FullListPage from "@/webpages/shared-list/FullListPage";
 import { redirect } from "next/navigation";
-import React from "react";
 
 type Props = {
   params: {
@@ -26,7 +24,6 @@ const SharedList = async ({ params: { id } }: Props) => {
   const currentDate = new Date().getTime();
   const expirationDate = new Date(sharedList.expirationTime).getTime();
 
-  // Check if current date is after the expiration date
   if (currentDate > expirationDate) {
     return <div>This link expired</div>;
   }
@@ -50,10 +47,12 @@ const SharedList = async ({ params: { id } }: Props) => {
       ...item.product,
     }));
 
+    console.log(customList);
+
     return <CustomListPage products={formattedListItems ?? []} />;
   }
 
-  return <div>Not Found</div>;
+  return redirect("/not-found");
 };
 
 export default SharedList;

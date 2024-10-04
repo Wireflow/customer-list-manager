@@ -9,7 +9,7 @@ const DashboardLayout = ({ children }: Props) => {
   return (
     <div className="flex flex-col md:flex-row  h-screen overflow-hidden">
       <Sidebar />
-      <main className="flex-1 overflow-y-auto p-6">{children}</main>
+      <main className="flex-1 overflow-y-auto p-6 pb-24">{children}</main>
     </div>
   );
 };

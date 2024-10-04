@@ -49,34 +49,34 @@ const ProductForm = ({ mode = "new", trigger }: Props) => {
     defaultValues: {
       quantityInStock: 0,
       costPrice: 0,
-      name: "",
+      name: undefined,
       price: 0,
-      description: "",
-      unit: "",
-      categoryId: "",
+      description: undefined,
+      unit: undefined,
+      categoryId: undefined,
     },
   });
 
   useEffect(() => {
     if (product) {
       form.reset({
-        name: product.name ?? "",
+        name: product.name ?? undefined,
         price: product.price ?? 0,
-        description: product.description ?? "",
-        unit: product.unit ?? "",
+        description: product.description ?? undefined,
+        unit: product.unit ?? undefined,
         costPrice: product.costPrice ?? 0,
         quantityInStock: product.quantityInStock ?? 0,
-        categoryId: product.categoryId ?? "",
+        categoryId: product.categoryId ?? undefined,
       });
     } else {
       form.reset({
-        name: "",
+        name: undefined,
         price: 0,
-        description: "",
-        unit: "",
+        description: undefined,
+        unit: undefined,
         costPrice: 0,
         quantityInStock: 0,
-        categoryId: "",
+        categoryId: undefined,
       });
       setSelectedImage(null);
     }
@@ -164,7 +164,7 @@ const ProductForm = ({ mode = "new", trigger }: Props) => {
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-w-[700px] max-h-[700px]">
+      <DialogContent className="max-w-[800px] max-h-[700px]">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <DialogHeader>
@@ -186,64 +186,72 @@ const ProductForm = ({ mode = "new", trigger }: Props) => {
                 />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <InputField
-                  name="name"
-                  control={form.control}
-                  label="Name"
-                  description="Display name of the product"
-                />
+                <div className="grid md:grid-cols-2 w-full gap-4 col-span-2">
+                  <InputField
+                    name="name"
+                    control={form.control}
+                    label="Name"
+                    placeholder="Product name here"
+                    description="Display name of the product"
+                  />
 
-                <SelectField
-                  name="categoryId"
-                  placeholder="Select category"
-                  control={form.control}
-                  options={formatedCategories}
-                  label="Category"
-                  description="Category of the product"
-                />
-                <InputField
-                  name="costPrice"
-                  control={form.control}
-                  label="Cost Price ($)"
-                  type="number"
-                  step="0.01"
-                  className="no-spinners"
-                  placeholder="ex. 25.99"
-                  description="Cost price of the product"
-                />
-                <InputField
-                  name="price"
-                  control={form.control}
-                  label="Price ($)"
-                  type="number"
-                  step="0.01"
-                  className="no-spinners"
-                  placeholder="ex. 29.99"
-                  description="Display price lists will have"
-                />
-                <InputField
-                  name="unit"
-                  control={form.control}
-                  label="Unit"
-                  placeholder="ex. 24 PK, 10oz, 1 lb"
-                  description="Units the product is sold at"
-                />
-                <InputField
-                  name="quantityInStock"
-                  control={form.control}
-                  label="Quantity in Stock"
-                  type="number"
-                  step="0.01"
-                  className="no-spinners"
-                  placeholder="ex. 100"
-                  description="Quantity in stock of the product"
-                />
-                <InputField
-                  name="description"
-                  control={form.control}
-                  label="Description (optional)"
-                  description="Description of the product"
-                />
+                  <SelectField
+                    name="categoryId"
+                    placeholder="Select category"
+                    control={form.control}
+                    options={formatedCategories}
+                    label="Category"
+                    description="Category of the product"
+                  />
+                </div>
+                <div className="grid md:grid-cols-3 gap-4 col-span-2">
+                  <InputField
+                    name="costPrice"
+                    control={form.control}
+                    label="Cost Price ($)"
+                    type="number"
+                    step="0.01"
+                    className="no-spinners"
+                    placeholder="ex. 25.99"
+                    description="Cost price of the product"
+                  />
+                  <InputField
+                    name="price"
+                    control={form.control}
+                    label="Selling Price ($)"
+                    type="number"
+                    step="0.01"
+                    className="no-spinners"
+                    placeholder="ex. 29.99"
+                    description="Display price lists will have"
+                  />
+                  <InputField
+                    name="quantityInStock"
+                    control={form.control}
+                    label="Quantity in Stock"
+                    type="number"
+                    step="0.01"
+                    className="no-spinners"
+                    placeholder="ex. 100"
+                    description="Quantity in stock of the product"
+                  />
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4 col-span-2">
+                  <InputField
+                    name="unit"
+                    control={form.control}
+                    label="Unit"
+                    placeholder="ex. 24 PK, 10oz, 1 lb"
+                    description="Units the product is sold at"
+                  />
+                  <InputField
+                    name="description"
+                    control={form.control}
+                    label="Description (optional)"
+                    description="Description of the product"
+                  />
+                </div>
               </div>
             </div>
 
@@ -255,7 +263,13 @@ const ProductForm = ({ mode = "new", trigger }: Props) => {
               </DialogClose>
               <Button
                 type="submit"
-                disabled={isPending || !form.formState.isValid}
+                disabled={
+                  isPending ||
+                  (mode === "new" && !form.formState.isValid) ||
+                  (mode === "edit" &&
+                    !form.formState.isValid &&
+                    !form.formState.isDirty)
+                }
               >
                 {isPending
                   ? product

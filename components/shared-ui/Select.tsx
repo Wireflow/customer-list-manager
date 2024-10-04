@@ -45,7 +45,9 @@ const Select = ({
       value={value}
       disabled={disabled}
     >
-      <SelectTrigger className={cn("bg-white capitalize", className)}>
+      <SelectTrigger
+        className={cn("bg-white capitalize h-11 text-base", className)}
+      >
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent
@@ -58,7 +60,7 @@ const Select = ({
           options.map((option) => (
             <SelectItem
               key={option.value}
-              className="px-4 capitalize focus:bg-black focus:text-white"
+              className="px-4 py-3 capitalize focus:bg-black focus:text-white"
               value={option.value}
             >
               {option.label.toLowerCase()}

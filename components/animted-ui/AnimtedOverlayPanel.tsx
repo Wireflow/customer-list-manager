@@ -41,6 +41,8 @@ interface AnimatedOverlayPanelProps {
   direction?: Direction;
   backgroundClassName?: string;
   containerClassName?: string;
+  disableX?: boolean;
+  headerTextColor?: string;
 }
 
 const AnimatedOverlayPanel: React.FC<AnimatedOverlayPanelProps> = ({
@@ -53,6 +55,8 @@ const AnimatedOverlayPanel: React.FC<AnimatedOverlayPanelProps> = ({
   title,
   description,
   containerClassName,
+  disableX = false,
+  headerTextColor,
 }) => {
   useEffect(() => {
     if (open) {
@@ -114,13 +118,16 @@ const AnimatedOverlayPanel: React.FC<AnimatedOverlayPanelProps> = ({
                     disableMargin
                     title={title}
                     description={description}
+                    textColor={headerTextColor}
                   />
                 )}
-                <div className="flex justify-end -mr-4">
-                  <Button onClick={handleClose} variant="ghost">
-                    <X size={24} />
-                  </Button>
-                </div>
+                {!disableX && (
+                  <div className="flex justify-end -mr-4">
+                    <Button onClick={handleClose} variant="ghost">
+                      <X size={24} />
+                    </Button>
+                  </div>
+                )}
               </div>
               {content}
             </div>

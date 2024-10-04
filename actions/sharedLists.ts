@@ -54,7 +54,7 @@ export const createSharedList = async (sharedList: FullListParams) => {
       .from("sharedLists")
       .insert({
         branchId: user.user_metadata.branchId,
-        type: "full",
+        type: sharedList?.type,
         accountId: account?.data?.id ?? "",
         expirationTime: expirationTime.toISOString(),
         instructions: sharedList?.instructions,
