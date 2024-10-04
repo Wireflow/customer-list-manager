@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 interface UsePaginatedProductsProps {
   pageSize?: number;
   searchQuery?: string;
+  categoryId?: string;
 }
 
 interface UsePaginatedProductsResult {
@@ -20,20 +21,25 @@ interface UsePaginatedProductsResult {
   refetch: () => Promise<void>;
   setSearchQuery: (query: string) => void;
   searchQuery: string;
+  category: string;
+  setCategory: (category: string) => void;
 }
 
 export const usePaginatedProducts = ({
   pageSize = 10,
   searchQuery: initialSearchQuery = "",
+  categoryId = "ALL",
 }: UsePaginatedProductsProps = {}): UsePaginatedProductsResult => {
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
+  const [categoryIdState, setCategoryState] = useState(categoryId);
 
   const fetchPaginatedProducts = async (
     page: number,
     pageSize: number,
-    searchQuery: string
+    searchQuery: string,
+    categoryId: string
   ): Promise<{ products: Row<"products">[]; count: number }> => {
     const supabase = createClient();
     const {
@@ -53,6 +59,10 @@ export const usePaginatedProducts = ({
       .from("products")
       .select("*", { count: "exact" })
       .eq("branchId", branchId);
+
+    if (categoryId !== "ALL") {
+      query = query.eq("categoryId", categoryIdState);
+    }
 
     // Add search functionality
     if (searchQuery) {
@@ -77,8 +87,9 @@ export const usePaginatedProducts = ({
   };
 
   const { data, isLoading, isError, error, isFetching, refetch } = useQuery({
-    queryKey: ["products", page, pageSize, searchQuery],
-    queryFn: () => fetchPaginatedProducts(page, pageSize, searchQuery),
+    queryKey: ["products", page, pageSize, searchQuery, categoryIdState],
+    queryFn: () =>
+      fetchPaginatedProducts(page, pageSize, searchQuery, categoryIdState),
     placeholderData: keepPreviousData,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
@@ -104,5 +115,7 @@ export const usePaginatedProducts = ({
     refetch: refetchProducts,
     setSearchQuery,
     searchQuery,
+    setCategory: setCategoryState,
+    category: categoryIdState,
   };
 };

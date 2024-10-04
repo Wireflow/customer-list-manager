@@ -14,7 +14,7 @@ export const dashboardRoutes: Route[] = [
   },
   {
     route: "/dashboard/products",
-    label: "Products",
+    label: "Inventory",
   },
   {
     route: "/dashboard/orders",
