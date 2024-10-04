@@ -1,10 +1,5 @@
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export default async function Index() {
-  return (
-    <Link href={"/sign-in"}>
-      <Button>Sign In</Button>
-    </Link>
-  );
+  return redirect("/sign-in");
 }
