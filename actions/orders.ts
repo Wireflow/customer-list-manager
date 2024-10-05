@@ -1,7 +1,7 @@
 "use server";
 
 import { Enum } from "@/types/supabase/enum";
-import { UpdateOrderType } from "@/types/validation/order";
+import { OrderType, UpdateOrderType } from "@/types/validation/order";
 import { createClient } from "@/utils/supabase/server";
 
 const supabase = createClient();
@@ -104,6 +104,21 @@ export const updateOrderStatus = async (
     .eq("id", orderId)
     .eq("branchId", user.user_metadata.branchId)
     .select("*");
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  return { success: true, data };
+};
+
+export const createOrder = async (orderData: OrderType) => {
+  const { data, error } = await supabase.rpc("create_order", {
+    order_data: {
+      ...orderData,
+      shared_list_id: orderData.sharedListId,
+    },
+  });
 
   if (error) {
     return { success: false, error: error.message };

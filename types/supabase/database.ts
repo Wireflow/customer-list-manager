@@ -449,6 +449,7 @@ export type Database = {
           branchId: string
           createdAt: string
           expirationTime: string
+          forceExpire: boolean
           id: string
           instructions: string | null
           listId: string | null
@@ -459,6 +460,7 @@ export type Database = {
           branchId: string
           createdAt?: string
           expirationTime: string
+          forceExpire?: boolean
           id?: string
           instructions?: string | null
           listId?: string | null
@@ -469,6 +471,7 @@ export type Database = {
           branchId?: string
           createdAt?: string
           expirationTime?: string
+          forceExpire?: boolean
           id?: string
           instructions?: string | null
           listId?: string | null
@@ -503,7 +506,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_order: {
+        Args: {
+          order_data: Json
+        }
+        Returns: Json
+      }
+      force_shared_list_expire: {
+        Args: {
+          list_id: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       order_status: "completed" | "voided" | "refunded" | "pending"

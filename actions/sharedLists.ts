@@ -84,3 +84,15 @@ export const createSharedList = async (sharedList: FullListParams) => {
     return { success: false, error: "Failed to send shared list" };
   }
 };
+
+export const forceSharedListExpire = async (listId: string) => {
+  const { data, error } = await supabase.rpc("force_shared_list_expire", {
+    list_id: listId,
+  });
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  return { success: true, data };
+};

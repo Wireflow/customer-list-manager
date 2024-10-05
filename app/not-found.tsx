@@ -1,9 +1,10 @@
+import PageNotFound from "@/webpages/404/PageNotFound";
 import React from "react";
 
 type Props = {};
 
 const NotFound = (props: Props) => {
-  return <div>Page Not Found</div>;
+  return <PageNotFound />;
 };
 
 export default NotFound;

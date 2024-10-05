@@ -32,9 +32,13 @@ const OrdersList = ({ orders }: OrdersListProps) => {
       key: (row) => (
         <Badge
           className="capitalize"
-          variant={(badgeVariants[row.status] as any) ?? "outline"}
+          variant={
+            row?.payment?.method === "hold"
+              ? "warning"
+              : ((badgeVariants[row.status] as any) ?? "outline")
+          }
         >
-          {row.status}
+          {row?.payment?.method === "hold" ? "Hold" : row.status}
         </Badge>
       ),
       label: "Status",

@@ -5,9 +5,14 @@ import CategoryForm from "../forms/CategoryForm";
 type Props = {
   onSelect: (category: string) => void;
   selectedCategory: string;
+  disableAction?: boolean;
 };
 
-const CategorySelector = ({ onSelect, selectedCategory }: Props) => {
+const CategorySelector = ({
+  onSelect,
+  selectedCategory,
+  disableAction,
+}: Props) => {
   const { data: categories } = useCategories();
 
   const formatedCategories = (categories?.map((category) => ({
@@ -26,7 +31,7 @@ const CategorySelector = ({ onSelect, selectedCategory }: Props) => {
       value={selectedCategory ?? "ALL"}
       placeholder="Select category"
       emptyMessage="No categories found"
-      action={<CategoryForm />}
+      action={!disableAction && <CategoryForm />}
     />
   );
 };

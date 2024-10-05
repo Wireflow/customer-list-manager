@@ -11,6 +11,7 @@ import {
 import { ListWithItems } from "@/types/schema/lists";
 import { useRouter } from "next/navigation";
 import ShareCustomList from "./actions/ShareCustomList";
+import SelectShareType from "../shared-lists/forms/SelectShareType";
 
 type Props = {
   list: ListWithItems;
@@ -36,7 +37,7 @@ const ListCard = ({ list }: Props) => {
         <Button variant={"outline"} onClick={handleCardClick}>
           Edit
         </Button>
-        <ShareCustomList listId={list.id} />
+        <SelectShareType listId={list.id} />
       </CardFooter>
     </Card>
   );

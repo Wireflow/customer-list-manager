@@ -24,12 +24,12 @@ const SharedList = async ({ params: { id } }: Props) => {
   const currentDate = new Date().getTime();
   const expirationDate = new Date(sharedList.expirationTime).getTime();
 
-  if (currentDate > expirationDate) {
-    return <div>This link expired</div>;
+  if (currentDate > expirationDate || sharedList.forceExpire) {
+    return redirect("/not-found");
   }
 
   if (sharedList.type === "full") {
-    const { data: fullList, error } = await supabase
+    const { data: fullList } = await supabase
       .from("products")
       .select("*")
       .eq("branchId", sharedList.branchId);
@@ -38,7 +38,7 @@ const SharedList = async ({ params: { id } }: Props) => {
   }
 
   if (sharedList.type === "custom" && sharedList.listId) {
-    const { data: customList, error } = await supabase
+    const { data: customList } = await supabase
       .from("listItems")
       .select("*, product:products!inner(*)")
       .eq("listId", sharedList?.listId);
@@ -46,8 +46,6 @@ const SharedList = async ({ params: { id } }: Props) => {
     const formattedListItems = customList?.map((item) => ({
       ...item.product,
     }));
-
-    console.log(customList);
 
     return <CustomListPage products={formattedListItems ?? []} />;
   }

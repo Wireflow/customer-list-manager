@@ -14,7 +14,7 @@ type Props = {
 const FullListPage = ({ products }: Props) => {
   const { setSearchQuery, filteredItems } = useFilterItems({
     items: products ?? [],
-    field: "name",
+    fields: "name",
   });
 
   return (

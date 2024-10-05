@@ -1,20 +1,26 @@
-import React, { useEffect, useState } from "react";
 import PageHeader from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useSubmitOrder } from "@/hooks/mutations/orders/useSubmitOrder";
 import useCartStore from "@/store/useCartStore";
 import { formatCurrency, formatPhoneNumber } from "@/utils/utils";
-import { Send, Trash, ShoppingBag, ArrowLeft } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowLeft, Send, ShoppingBag, Trash } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import CartProductsList from "./CartProductsList";
-import { motion, AnimatePresence } from "framer-motion";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useForceExpireList } from "@/hooks/mutations/shared-lists/useForceExpireList";
 
 type Props = {
   toggleExpand: () => void;
 };
 
 const CartPage = ({ toggleExpand }: Props) => {
+  const { id } = useParams<{ id: string }>();
+  const router = useRouter();
+
   const cart = useCartStore((state) => state.cart);
   const getTotalQuantity = useCartStore((state) => state.getTotalQuantity);
   const getTotalPrice = useCartStore((state) => state.getTotalPrice);
@@ -38,9 +44,42 @@ const CartPage = ({ toggleExpand }: Props) => {
     }
   };
 
+  const forceExpire = useForceExpireList();
+
+  const { mutate, isPending } = useSubmitOrder({
+    onSuccess: (data) => {
+      if (!data.success) {
+        toast.error(data.error ?? "Failed to send order");
+        return;
+      }
+
+      toast.success("Order sent successfully!");
+      toggleExpand();
+      clearCart();
+
+      forceExpire.mutate(id);
+
+      router.replace("/shared/ordered?phone=" + phoneNumber);
+    },
+    onError: (error: any) => {
+      toast.error(error?.message ?? "Failed to send order");
+    },
+  });
+
   const handleSendOrder = () => {
-    // Implement order sending logic here
-    alert("Order sent successfully!");
+    mutate({
+      orderItems: cart.map((item) => ({
+        productId: item.productId ?? "",
+        quantity: item.quantity ?? 0,
+        price: item.price ?? 0,
+        name: item.name ?? "",
+        imageUrl: item.imageUrl ?? "",
+        unit: item.unit ?? "",
+        description: item.description ?? "",
+      })),
+      phoneNumber,
+      sharedListId: id,
+    });
   };
 
   return (
@@ -120,7 +159,8 @@ const CartPage = ({ toggleExpand }: Props) => {
               variant="default"
               className="w-full"
               onClick={handleSendOrder}
-              disabled={cart.length === 0}
+              disabled={cart.length === 0 || isPending}
+              loading={isPending}
             >
               <Send className="mr-2 h-4 w-4" /> Send Order
             </Button>

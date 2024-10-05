@@ -43,6 +43,7 @@ interface AnimatedOverlayPanelProps {
   containerClassName?: string;
   disableX?: boolean;
   headerTextColor?: string;
+  triggerClassName?: string;
 }
 
 const AnimatedOverlayPanel: React.FC<AnimatedOverlayPanelProps> = ({
@@ -57,6 +58,7 @@ const AnimatedOverlayPanel: React.FC<AnimatedOverlayPanelProps> = ({
   containerClassName,
   disableX = false,
   headerTextColor,
+  triggerClassName,
 }) => {
   useEffect(() => {
     if (open) {
@@ -138,7 +140,7 @@ const AnimatedOverlayPanel: React.FC<AnimatedOverlayPanelProps> = ({
       <motion.div
         animate={{ opacity: open ? 0 : 1, scale: open ? 0.8 : 1 }}
         transition={{ duration: 0.3 }}
-        className="flex-1 w-full"
+        className={cn("flex-1 w-full", triggerClassName)}
       >
         {trigger({ onClick: () => onOpenChange(true) })}
       </motion.div>
