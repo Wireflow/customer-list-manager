@@ -74,12 +74,12 @@ const AccountsPage = (props: Props) => {
             onSelectedAccountsChange={setSelectedAccounts}
           />
         </div>
-        <Pagination
-          currentPage={page}
-          totalPages={totalPages}
-          onPageChange={setPage}
-        />
-      </div>
+      </div>{" "}
+      <Pagination
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+      />
     </div>
   );
 };

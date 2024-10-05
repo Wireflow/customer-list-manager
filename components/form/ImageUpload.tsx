@@ -9,12 +9,14 @@ type Props = {
   onImageSelect: (file: File | null) => void;
   image: File | null;
   previewUrl?: string;
+  height?: number;
 };
 
 const ImageUpload = ({
   onImageSelect,
   image,
   previewUrl: defaultPreview,
+  height = 200,
 }: Props) => {
   const [selectedImage, setSelectedImage] = useState<File | null>(
     image || null
@@ -57,7 +59,7 @@ const ImageUpload = ({
   return (
     <>
       <div
-        className="relative w-full h-[200px] border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer overflow-hidden"
+        className={`relative w-full  h-[${height}px] border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer overflow-hidden`}
         onClick={() => fileInputRef.current?.click()}
       >
         {previewUrl ? (

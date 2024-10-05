@@ -17,9 +17,9 @@ const OrderItemsList = ({ orderItems }: Props) => {
           <Image
             src={value}
             alt="product-image"
-            className="border border-gray-300 rounded-lg p-5  "
-            width={80}
-            height={80}
+            className="border border-gray-300 rounded-lg  object-fill "
+            width={100}
+            height={100}
           />
         );
       },

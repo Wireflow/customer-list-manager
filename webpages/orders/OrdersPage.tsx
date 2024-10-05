@@ -41,7 +41,6 @@ const OrdersPage = (props: Props) => {
           <OrderStatusCard status="completed" count={completed ?? 0} />
         </div>
       </div>
-
       <div className="flex justify-between items-end gap-4">
         <div className="md:max-w-[400px] w-full">
           <SearchInput
@@ -55,12 +54,12 @@ const OrdersPage = (props: Props) => {
       </div>
       <div className="mt-4">
         <OrdersList orders={orders ?? []} />
-        <Pagination
-          currentPage={page}
-          totalPages={totalPages}
-          onPageChange={setPage}
-        />
-      </div>
+      </div>{" "}
+      <Pagination
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+      />
     </div>
   );
 };
