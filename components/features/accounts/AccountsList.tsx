@@ -7,17 +7,20 @@ import { formatDateToString } from "@/lib/utils";
 import { Row } from "@/types/supabase/table";
 import { formatPhoneNumber } from "@/utils/utils";
 import { useRouter } from "next/navigation";
+import React from "react";
 
 type AccountsListProps = {
   accounts: Row<"accounts">[];
   selectedAccounts?: Row<"accounts">[];
   onSelectedAccountsChange?: (accounts: Row<"accounts">[]) => void;
+  rowAction?: (account: Row<"accounts">) => React.ReactNode;
 };
 
 const AccountsList = ({
   accounts,
   selectedAccounts,
   onSelectedAccountsChange,
+  rowAction,
 }: AccountsListProps) => {
   const router = useRouter();
   const isSelectable = !!selectedAccounts && !!onSelectedAccountsChange;
@@ -84,14 +87,17 @@ const AccountsList = ({
       label: "Opted In",
     },
     {
-      key: (row) => (
-        <Button
-          onClick={() => router.push(`/dashboard/accounts/${row.id}`)}
-          size="sm"
-        >
-          View Account
-        </Button>
-      ),
+      key: (row) =>
+        rowAction ? (
+          rowAction(row)
+        ) : (
+          <Button
+            onClick={() => router.push(`/dashboard/accounts/${row.id}`)}
+            size="sm"
+          >
+            View Account
+          </Button>
+        ),
       label: "",
       className: "text-right",
     },

@@ -3,9 +3,18 @@
 import { createEZTextingClient } from "./create";
 
 // It's better to use environment variables for sensitive information
-const client = createEZTextingClient("wireflowllc@gmail.com", "Wireflow@2024");
+const client = createEZTextingClient(
+  process.env.EZ_TEXTING_USERNAME!,
+  process.env.EZ_TEXTING_PASSWORD!
+);
 
-export async function sendMessage({ to, body }: { to: string; body: string }) {
+export async function sendMessage({
+  to,
+  body,
+}: {
+  to: string | string[];
+  body: string;
+}) {
   try {
     const result = await client.sendSMS(to, body);
 

@@ -8,7 +8,7 @@ import { getAccountByPhoneNumber } from "./accounts";
 import { getBranchById } from "./branches";
 
 export type FullListParams = {
-  phoneNumber: string;
+  phoneNumber: string | string[];
   instructions?: string;
   originUrl: string;
   listId?: string;
@@ -17,71 +17,104 @@ export type FullListParams = {
 
 const supabase = createClient();
 
-export const createSharedList = async (sharedList: FullListParams) => {
+export const createSharedList = async (
+  sharedList: FullListParams
+): Promise<{ success: boolean; data?: any; error?: string }> => {
   try {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const { data: userData } = await supabase.auth.getUser();
+    const user = userData?.user;
 
-    if (!user) {
-      throw new Error("Unauthorized");
+    if (!user || !user.user_metadata?.branchId) {
+      throw new Error("Unauthorized or missing branch ID");
     }
 
-    const {
-      data: branch,
-      success: branchSuccess,
-      error: branchError,
-    } = await getBranchById(user.user_metadata.branchId);
+    const branchResult = await getBranchById(user.user_metadata.branchId);
 
-    if (!branchSuccess) {
-      throw new Error(branchError);
+    if (!branchResult.success || !branchResult.data) {
+      throw new Error(branchResult.error || "Failed to get branch data");
     }
 
-    const account = await getAccountByPhoneNumber(sharedList.phoneNumber);
-
-    if (!account?.success) {
-      throw new Error(account.error);
-    }
+    const phoneNumbers = Array.isArray(sharedList.phoneNumber)
+      ? sharedList.phoneNumber
+      : [sharedList.phoneNumber];
 
     const expirationTime = new Date();
     const { hours, minutes } = millisecondsToHoursAndMinutes(
-      branch?.listValidTime ?? 7200000
+      branchResult.data.listValidTime ?? 7200000
     ); // Default to 2 hours
     expirationTime.setHours(expirationTime.getHours() + hours);
     expirationTime.setMinutes(expirationTime.getMinutes() + minutes);
 
-    const { error, data } = await supabase
-      .from("sharedLists")
-      .insert({
-        branchId: user.user_metadata.branchId,
-        type: sharedList?.type,
-        accountId: account?.data?.id ?? "",
-        expirationTime: expirationTime.toISOString(),
-        instructions: sharedList?.instructions,
-        listId: sharedList?.listId,
-      })
-      .select("id")
-      .single();
+    const sharedListsData: Array<{ id: string; phoneNumber: string }> = [];
 
-    if (error) {
-      throw new Error(error.message);
+    for (const phoneNumber of phoneNumbers) {
+      const accountResult = await getAccountByPhoneNumber(phoneNumber);
+
+      if (!accountResult?.success || !accountResult.data?.id) {
+        console.warn(`Failed to get account for phone number: ${phoneNumber}`);
+        continue;
+      }
+
+      const { error, data } = await supabase
+        .from("sharedLists")
+        .insert({
+          branchId: user.user_metadata.branchId,
+          type: sharedList.type,
+          accountId: accountResult.data.id,
+          expirationTime: expirationTime.toISOString(),
+          instructions: sharedList.instructions,
+          listId: sharedList.listId,
+        })
+        .select("id")
+        .single();
+
+      if (error || !data) {
+        console.error(
+          `Failed to create shared list for ${phoneNumber}:`,
+          error
+        );
+        continue;
+      }
+
+      sharedListsData.push({ id: data.id, phoneNumber });
     }
 
-    if (account.data?.phoneNumber) {
+    if (sharedListsData.length === 0) {
+      throw new Error("Failed to create any shared lists");
+    }
+
+    const messagePromises = sharedListsData.map(async (item) => {
+      const messageBody = `View full list here: ${sharedList.originUrl}/shared/${item.id}?phone=${item.phoneNumber}`;
       const response = await sendMessage({
-        to: account?.data?.phoneNumber,
-        body: `View full list here: ${origin}/shared/${data.id}?phone=${sharedList.phoneNumber}`,
+        to: item.phoneNumber,
+        body: messageBody,
       });
 
       if (!response?.success) {
-        throw new Error(response?.error);
+        console.error(
+          `Failed to send message to ${item.phoneNumber}:`,
+          response?.error
+        );
       }
+
+      return response?.success;
+    });
+
+    const messageResults = await Promise.all(messagePromises);
+    const allMessagesSent = messageResults.every(Boolean);
+
+    if (!allMessagesSent) {
+      console.warn("Some messages failed to send");
     }
 
-    return { success: true, data };
+    return { success: true, data: sharedListsData };
   } catch (error) {
-    console.log(error);
-    return { success: false, error: "Failed to send shared list" };
+    console.error("Failed to send shared list:", error);
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "Failed to send shared list",
+    };
   }
 };
 

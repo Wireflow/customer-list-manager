@@ -5,14 +5,15 @@ import { RefreshCcw } from "lucide-react";
 type Props = {
   refetch: () => void;
   isFetching: boolean;
+  size?: any;
 };
 
-const RefreshButton = ({ refetch, isFetching }: Props) => {
+const RefreshButton = ({ refetch, isFetching, size }: Props) => {
   return (
     <Button
       onClick={refetch}
       disabled={isFetching}
-      size={"lg"}
+      size={size ?? "lg"}
       className="px-4 md:px-auto"
       variant={"outline"}
     >

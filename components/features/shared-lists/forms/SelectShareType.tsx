@@ -1,23 +1,31 @@
 import Dialog from "@/components/shared-ui/Dialog";
 import { Button } from "@/components/ui/button";
+import { Enum } from "@/types/supabase/enum";
 import { Send, User, Users } from "lucide-react";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 type Props = {
-  listId: string;
+  listId?: string;
+  trigger?: React.ReactNode;
 };
 
-const SelectShareType = ({ listId }: Props) => {
+const SelectShareType = ({ listId, trigger }: Props) => {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
+
+  const type = listId ? "custom" : "full";
 
   return (
     <Dialog
       open={open}
       onOpenChange={setOpen}
       trigger={
-        <Button className="w-fit">
-          <Send className="mr-2 h-4 w-4" /> Share List
-        </Button>
+        trigger ?? (
+          <Button className="w-fit">
+            <Send className="mr-2 h-4 w-4" /> Share List
+          </Button>
+        )
       }
       title="Share Your List"
       description="Choose how you'd like to share your list with others"
@@ -27,6 +35,11 @@ const SelectShareType = ({ listId }: Props) => {
             variant="outline"
             size="lg"
             className="w-full justify-start py-3 h-auto"
+            onClick={() =>
+              router.push(
+                `/dashboard/lists/share/single?${listId ? `listId=${listId}` : ""}&type=${type}`
+              )
+            }
           >
             <User className="mr-3 h-6 w-6" />
             <div className="text-left">
@@ -41,6 +54,11 @@ const SelectShareType = ({ listId }: Props) => {
             variant="outline"
             size="lg"
             className="w-full justify-start py-3 h-auto"
+            onClick={() =>
+              router.push(
+                `/dashboard/lists/share/group?${listId ? `listId=${listId}` : ""}&type=${type}`
+              )
+            }
           >
             <Users className="mr-3 h-6 w-6" />
             <div className="text-left">
