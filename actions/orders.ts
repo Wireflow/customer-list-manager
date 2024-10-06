@@ -1,8 +1,11 @@
 "use server";
 
+import { sendMessage } from "@/lib/ez-texting";
 import { Enum } from "@/types/supabase/enum";
 import { OrderType, UpdateOrderType } from "@/types/validation/order";
 import { createClient } from "@/utils/supabase/server";
+import { getBranchById } from "./branches";
+import { formatPhoneNumber } from "@/utils/utils";
 
 const supabase = createClient();
 
@@ -120,9 +123,36 @@ export const createOrder = async (orderData: OrderType) => {
     },
   });
 
-  if (error) {
-    return { success: false, error: error.message };
+  //@ts-ignore
+  if (error || !data?.success) {
+    //@ts-ignore
+    return { success: false, error: data?.error ?? error?.message };
   }
 
-  return { success: true, data };
+  const { data: sharedList, error: sharedListError } = await supabase
+    .from("sharedLists")
+    .select("branchId")
+    .eq("id", orderData.sharedListId)
+    .single();
+
+  if (sharedList?.branchId) {
+    const { data: accounts, error: accountsError } = await supabase
+      .from("notified_accounts")
+      .select("notify_phoneNumber")
+      .eq("branchId", sharedList.branchId);
+
+    if (accounts && accounts?.length > 0) {
+      const formattedAccounts = accounts.map(
+        (acc) => acc.notify_phoneNumber ?? ""
+      );
+
+      await sendMessage({
+        to: formattedAccounts,
+        body: `You have a new order from ${formatPhoneNumber(orderData.phoneNumber)}!`,
+      });
+    }
+  }
+
+  //@ts-ignore
+  return { success: true, data: data?.data };
 };

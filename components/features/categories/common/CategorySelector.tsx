@@ -6,14 +6,16 @@ type Props = {
   onSelect: (category: string) => void;
   selectedCategory: string;
   disableAction?: boolean;
+  branchId?: string;
 };
 
 const CategorySelector = ({
   onSelect,
   selectedCategory,
   disableAction,
+  branchId,
 }: Props) => {
-  const { data: categories } = useCategories();
+  const { data: categories } = useCategories(branchId);
 
   const formatedCategories = (categories?.map((category) => ({
     label: category.name,

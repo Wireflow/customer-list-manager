@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSubmitOrder } from "@/hooks/mutations/orders/useSubmitOrder";
+import { useForceExpireList } from "@/hooks/mutations/shared-lists/useForceExpireList";
 import useCartStore from "@/store/useCartStore";
 import { formatCurrency, formatPhoneNumber } from "@/utils/utils";
 import { motion } from "framer-motion";
@@ -11,7 +12,6 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import CartProductsList from "./CartProductsList";
-import { useForceExpireList } from "@/hooks/mutations/shared-lists/useForceExpireList";
 
 type Props = {
   toggleExpand: () => void;
@@ -48,23 +48,43 @@ const CartPage = ({ toggleExpand }: Props) => {
 
   const { mutate, isPending } = useSubmitOrder({
     onSuccess: (data) => {
-      if (!data.success) {
+      console.log(data);
+      if (!data?.success) {
         toast.error(data.error ?? "Failed to send order");
         return;
       }
 
-      toast.success("Order sent successfully!");
-      toggleExpand();
-      clearCart();
+      //@ts-ignore
+      if (data?.success) {
+        toast.success("Order sent successfully!");
+        toggleExpand();
+        clearCart();
 
-      forceExpire.mutate(id);
+        forceExpire.mutate(id);
 
-      router.replace("/shared/ordered?phone=" + phoneNumber);
+        router.replace("/shared/ordered?phone=" + phoneNumber);
+      }
     },
     onError: (error: any) => {
       toast.error(error?.message ?? "Failed to send order");
     },
   });
+
+  useEffect(() => {
+    console.log({
+      orderItems: cart.map((item) => ({
+        productId: item.productId ?? "",
+        quantity: item.quantity ?? 0,
+        price: item.price ?? 0,
+        name: item.name ?? "",
+        imageUrl: item.imageUrl ?? "",
+        unit: item.unit ?? "",
+        description: item.description ?? "",
+      })),
+      phoneNumber,
+      sharedListId: id,
+    });
+  }, [cart]);
 
   const handleSendOrder = () => {
     mutate({

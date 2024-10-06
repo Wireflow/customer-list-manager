@@ -12,9 +12,10 @@ import { useEffect, useState } from "react";
 
 type Props = {
   products: Row<"products">[];
+  branchId: string;
 };
 
-const CustomListPage = ({ products }: Props) => {
+const CustomListPage = ({ products, branchId }: Props) => {
   const [categoryId, setCategoryId] = useState("ALL");
   const [categoryFilteredItems, setCategoryFilteredItems] = useState<
     Row<"products">[]
@@ -35,7 +36,7 @@ const CustomListPage = ({ products }: Props) => {
 
   return (
     <>
-      <div className="flex flex-col h-full relative">
+      <div className="flex flex-col h-full relative pb-24">
         <PageHeader
           title="List"
           description="View list and place order"
@@ -55,6 +56,7 @@ const CustomListPage = ({ products }: Props) => {
               onSelect={(category) => setCategoryId(category)}
               selectedCategory={categoryId}
               disableAction
+              branchId={branchId}
             />
             <p className="text-gray-600 text-xs">
               Products in this category will be shown in the list

@@ -1,7 +1,7 @@
 "use server";
 
 import { optIn } from "@/lib/ez-texting";
-import { ConsentType } from "@/types/validation/consent";
+import { ConsentType, NotifiedAccountType } from "@/types/validation/consent";
 import { createClient } from "@/utils/supabase/server";
 
 const supabase = createClient();
@@ -44,8 +44,10 @@ export const updateAccount = async ({
 };
 
 export const createAccount = async (data: ConsentType) => {
-  const session = await supabase.auth.getSession();
-  const branchId = session.data.session?.user.user_metadata.branchId;
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const branchId = user?.user_metadata.branchId;
 
   try {
     const { data: accountData, error: accountError } = await supabase
@@ -154,4 +156,75 @@ export const getAccountByPhoneNumber = async (phoneNumber: string) => {
   }
 
   return { success: true, data: account };
+};
+
+export const createdNotifiedAccount = async (data: NotifiedAccountType) => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const branchId = user?.user_metadata.branchId;
+
+  try {
+    const { data: accountData, error: accountError } = await supabase
+      .from("accounts")
+      .select("phoneNumber, id, opted, notify_new_orders")
+      .eq("phoneNumber", data.phoneNumber)
+      .single();
+
+    if (accountData?.notify_new_orders) {
+      return { success: false, error: "Account already being notified" };
+    }
+
+    if (!accountData) {
+      const optedInResult = await optIn({ to: data.phoneNumber });
+
+      if (!optedInResult.success) {
+        throw new Error(optedInResult.error);
+      }
+    }
+
+    if (accountData) {
+      const response = await updateAccount({
+        id: accountData.id,
+        data: { notify_new_orders: true, notify_phoneNumber: data.phoneNumber },
+      });
+
+      if (!response?.success) {
+        return { success: false, error: response?.error };
+      }
+    }
+
+    if (accountError && accountError.code !== "PGRST116") {
+      throw new Error(accountError.message);
+    }
+
+    if (!accountData) {
+      const { error } = await supabase
+        .from("accounts")
+        .insert({
+          phoneNumber: data.phoneNumber,
+          branchId,
+          name: "Notified Account",
+          opted: true,
+          optedAt: new Date().toISOString(),
+          notify_new_orders: true,
+          notify_phoneNumber: data.phoneNumber,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        throw new Error(error.message);
+      }
+    }
+
+    return { success: true, data: accountData };
+  } catch (error) {
+    console.error("Error in createdNotifiedAccount:", error);
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
+    };
+  }
 };

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { createClient } from "@/utils/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 
@@ -22,6 +22,7 @@ const fetchAccountById = async (accountId: string) => {
     .select("*")
     .eq("id", accountId)
     .single();
+
   if (error) {
     throw error;
   }

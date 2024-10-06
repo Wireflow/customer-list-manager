@@ -15,9 +15,11 @@ import SelectShareType from "../shared-lists/forms/SelectShareType";
 
 type Props = {
   list: ListWithItems;
+  disableShare?: boolean;
+  disableEdit?: boolean;
 };
 
-const ListCard = ({ list }: Props) => {
+const ListCard = ({ list, disableEdit, disableShare }: Props) => {
   const router = useRouter();
 
   const handleCardClick = () => {
@@ -33,12 +35,16 @@ const ListCard = ({ list }: Props) => {
         </CardTitle>
         <CardDescription>{list.items.length} Items</CardDescription>
       </CardHeader>
-      <CardFooter className="flex gap-4 justify-end">
-        <Button variant={"outline"} onClick={handleCardClick}>
-          Edit
-        </Button>
-        <SelectShareType listId={list.id} />
-      </CardFooter>
+      {disableEdit && disableShare ? null : ( //
+        <CardFooter className="flex gap-4 justify-end">
+          {!disableEdit && (
+            <Button variant={"outline"} onClick={handleCardClick}>
+              Edit
+            </Button>
+          )}
+          {!disableShare && <SelectShareType listId={list.id} />}
+        </CardFooter>
+      )}
     </Card>
   );
 };

@@ -1,6 +1,7 @@
 "use client";
 
-import SubmitButton from "@/components/form/SubmitButton";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -9,16 +10,13 @@ import {
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import DangerDialog from "@/components/ui/danger-dialog";
-import { PLACEHOLDER_IMG_URL } from "@/data/constants";
 import { Row } from "@/types/supabase/table";
 import { cn } from "@/utils/cn";
+import { getImageUrl } from "@/utils/imageUtils";
 import { formatCurrency } from "@/utils/utils";
-import { Trash, Plus, Minus } from "lucide-react";
+import { Minus, Plus, Trash } from "lucide-react";
 import Image from "next/image";
 import React from "react";
-import { Button } from "@/components/ui/button";
-import { on } from "events";
-import { getImageUrl } from "@/utils/imageUtils";
 
 type Props = {
   product: Row<"products">;
@@ -73,7 +71,7 @@ const ProductCard = ({
           !!onClick,
       })}
     >
-      <CardContent className="p-2 px-6 flex flex-row items-center justify-between h-[75px]">
+      <CardContent className="p-2 px-6 flex flex-row items-center justify-between h-[75px] overflow-hidden">
         <div className="flex gap-2 items-center">
           <div className="flex gap-4 items-center">
             {!disableSelect ? (
@@ -83,53 +81,65 @@ const ProductCard = ({
                 className="w-[20px] h-[20px]"
               />
             ) : null}
-            <div className="relative flex-shrink-0 overflow-hidden">
+            <div className="relative flex-shrink-0 overflow-hidden md:w-auto md:h-auto h-16 w-16">
               <Image
                 src={getImageUrl(product?.imageUrl)}
                 alt="product image"
                 width={75}
                 height={75}
-                style={{ objectFit: "contain" }}
+                style={{ objectFit: "contain", overflow: "hidden" }}
               />
             </div>
           </div>
 
           <div className="flex flex-col ml-2">
-            <CardTitle className="text-lg capitalize">
+            <CardTitle className="md:text-lg text-sm capitalize items-center justify-center">
               {product?.name}{" "}
-              {product?.unit && (
-                <span className="text-gray-500 font-normal">
-                  ({product?.unit})
-                </span>
-              )}
             </CardTitle>
+            {product?.unit && (
+              <span className="text-gray-500 text-xs font-normal">
+                ({product?.unit})
+              </span>
+            )}
             <CardDescription>{formatCurrency(product?.price)}</CardDescription>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          {!disableQuantity && onQuantityChange && (
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                type="button"
-                size="icon"
-                onClick={handleDecrement}
-                disabled={quantity === 0}
-              >
-                <Minus size={16} />
-              </Button>
-              <span className="w-8 text-center">{quantity}</span>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={handleIncrement}
-                type="button"
-              >
-                <Plus size={16} />
-              </Button>
-            </div>
-          )}
+          <div className="flex flex-col gap-2 iteme-center justify-center">
+            <Badge
+              className="self-end w-fit "
+              variant={product.quantityInStock > 0 ? "success" : "destructive"}
+            >
+              {product?.quantityInStock > 0 ? "In Stock" : "Out of Stock"}
+            </Badge>
+            {!disableQuantity && onQuantityChange && (
+              <div className="flex">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  type="button"
+                  onClick={handleDecrement}
+                  disabled={quantity === 0}
+                  className="h-8 w-8 rounded-l-md"
+                >
+                  <Minus size={16} />
+                </Button>
+                <div className="h-8 w-12 flex items-center justify-center border-y border-input text-sm font-medium">
+                  {quantity}
+                </div>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  type="button"
+                  onClick={handleIncrement}
+                  className="h-8 w-8 rounded-r-md"
+                >
+                  <Plus size={16} />
+                </Button>
+              </div>
+            )}
+          </div>
 
           {!disableDelete && onDelete ? (
             <div onClick={(e) => e.stopPropagation()}>

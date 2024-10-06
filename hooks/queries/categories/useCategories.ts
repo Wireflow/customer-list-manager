@@ -1,27 +1,23 @@
 import { createClient } from "@/utils/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 
-export const useCategories = () => {
+export const useCategories = (branchId?: string) => {
   return useQuery({
     queryKey: ["categories"],
-    queryFn: fetchCategories,
+    queryFn: () => fetchCategories(branchId),
   });
 };
 
-export const fetchCategories = async () => {
+export const fetchCategories = async (branchId?: string) => {
   const supabase = createClient();
   const { data } = await supabase.auth.getUser();
 
-  if (!data.user) {
-    throw new Error("Unauthorized");
-  }
-
-  const branchId = data.user?.user_metadata.branchId;
+  const loggedInBranchId = data.user?.user_metadata.branchId;
 
   const { data: lists, error } = await supabase
     .from("categories")
     .select(`*, products: products(count)`)
-    .eq("branchId", branchId);
+    .eq("branchId", loggedInBranchId ?? branchId);
 
   if (error) {
     throw error;

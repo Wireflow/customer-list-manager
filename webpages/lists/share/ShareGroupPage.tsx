@@ -18,6 +18,7 @@ import { usePaginatedAccounts } from "@/hooks/queries/account/usePaginatedAccoun
 import { useGroupsDetails } from "@/hooks/queries/groups/useGroupsDetails";
 import { Row } from "@/types/supabase/table";
 import { Label } from "@/components/ui/label";
+import ListToShare from "./ListToShare";
 
 const ShareGroupPage = () => {
   const [selectedAccounts, setSelectedAccounts] = useState<Row<"accounts">[]>(
@@ -114,6 +115,7 @@ const ShareGroupPage = () => {
         title="Share Your List"
         description="Share your list with a group"
       />
+      <ListToShare listId={listId ?? ""} />
       <div>
         <div className="mt-4 flex flex-col lg:flex-row w-full justify-between items-end gap-4">
           <div className="w-full lg:max-w-[500px]">
@@ -170,11 +172,13 @@ const ShareGroupPage = () => {
             />
           </div>
         </div>
-        <Pagination
-          currentPage={page}
-          totalPages={totalPages}
-          onPageChange={setPage}
-        />
+        <div className="mt-4">
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+          />
+        </div>
       </div>
     </div>
   );
