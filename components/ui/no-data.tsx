@@ -1,11 +1,13 @@
 import React from "react";
 import { AlertCircle, Ban, FileQuestion, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type Variant = "no-records" | "error" | "failed" | "loading";
 
 type NoDataProps = {
   variant?: Variant;
   message?: string;
+  className?: string;
 };
 
 const variantConfig = {
@@ -31,11 +33,20 @@ const variantConfig = {
   },
 };
 
-const NoData: React.FC<NoDataProps> = ({ variant = "no-records", message }) => {
+const NoData: React.FC<NoDataProps> = ({
+  variant = "no-records",
+  message,
+  className,
+}) => {
   const { icon: Icon, color, defaultMessage } = variantConfig[variant];
 
   return (
-    <div className="flex flex-col items-center justify-center h-[calc(100vh-220px)]">
+    <div
+      className={cn(
+        "flex flex-col items-center justify-center h-[calc(100vh-220px)]",
+        className
+      )}
+    >
       <Icon
         className={`w-12 h-12 mb-4 ${color} ${variant === "loading" ? "animate-spin" : ""}`}
       />

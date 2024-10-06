@@ -8,6 +8,8 @@ type Props = {
   };
 };
 
+export const revalidate = 3000; // 3 seconds
+
 const SharedList = async ({ params: { id } }: Props) => {
   const supabase = createClient();
 
@@ -34,7 +36,12 @@ const SharedList = async ({ params: { id } }: Props) => {
       .select("*")
       .eq("branchId", sharedList.branchId);
 
-    return <CustomListPage products={fullList ?? []} />;
+    return (
+      <CustomListPage
+        products={fullList ?? []}
+        branchId={sharedList.branchId}
+      />
+    );
   }
 
   if (sharedList.type === "custom" && sharedList.listId) {
@@ -47,7 +54,12 @@ const SharedList = async ({ params: { id } }: Props) => {
       ...item.product,
     }));
 
-    return <CustomListPage products={formattedListItems ?? []} />;
+    return (
+      <CustomListPage
+        products={formattedListItems ?? []}
+        branchId={sharedList.branchId}
+      />
+    );
   }
 
   return redirect("/not-found");

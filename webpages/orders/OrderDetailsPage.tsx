@@ -12,6 +12,7 @@ import { useState } from "react";
 import AddItemsToOrderForm from "../../components/features/orders/forms/AddItemsToOrderForm";
 import OrderItemsTable from "../../components/features/orders/order-items/OrderItemsList";
 import OrderDetailsHeader from "../../components/features/orders/OrderDetailsHeader";
+import { useRouter } from "next/navigation";
 
 type Props = {
   id: string;
@@ -20,6 +21,8 @@ type Props = {
 const OrderDetailsPage = ({ id }: Props) => {
   const { data: order } = useOrderById(id as string);
   const [open, setOpen] = useState(false);
+
+  const router = useRouter();
 
   if (!order) return <div>No order found!</div>;
 
@@ -32,14 +35,15 @@ const OrderDetailsPage = ({ id }: Props) => {
           <div className="flex md:flex-row flex-col items-center justify-center gap-4">
             <PrintInvoice orderId={order?.id} />
             <CompleteOrder orderId={order?.id} status={order?.status} />
-            <Dialog
+            <Button
+              variant={"outline"}
               disabled={order?.status !== "pending"}
-              className=" max-w-2xl overflow-hidden"
-              trigger={<Button variant={"outline"}>Add Items</Button>}
-              open={open}
-              onOpenChange={setOpen}
-              content={<AddItemsToOrderForm onOpenChange={setOpen} />}
-            />
+              onClick={() =>
+                router.push(`/dashboard/orders/${order?.id}/add-items`)
+              }
+            >
+              Add Items
+            </Button>
             <VoidOrder orderId={order?.id} status={order?.status} />
           </div>
         }

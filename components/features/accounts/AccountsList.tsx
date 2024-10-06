@@ -75,6 +75,15 @@ const AccountsList = ({
           },
         ]
       : []),
+    ...(rowAction
+      ? [
+          {
+            key: (row: Row<"accounts">) => rowAction(row),
+            label: "",
+            className: "text-left md:max-w-[100px] max-w-[200px]",
+          },
+        ]
+      : []),
     {
       key: (row) => formatPhoneNumber(row.phoneNumber),
       label: "Account #",
@@ -87,17 +96,15 @@ const AccountsList = ({
       label: "Opted In",
     },
     {
-      key: (row) =>
-        rowAction ? (
-          rowAction(row)
-        ) : (
-          <Button
-            onClick={() => router.push(`/dashboard/accounts/${row.id}`)}
-            size="sm"
-          >
-            View Account
-          </Button>
-        ),
+      key: (row) => (
+        <Button
+          onClick={() => router.push(`/dashboard/accounts/${row.id}`)}
+          size="sm"
+        >
+          View Account
+        </Button>
+      ),
+
       label: "",
       className: "text-right",
     },

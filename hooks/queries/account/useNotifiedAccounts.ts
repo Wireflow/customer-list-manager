@@ -1,20 +1,18 @@
 import { createClient } from "@/utils/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 
-export const useAccounts = () => {
+export const useNotifiedAccounts = () => {
   return useQuery({
-    queryKey: ["accounts"],
-    queryFn: fetchAccounts,
+    queryKey: ["accounts", "notified"],
+    queryFn: fetchNotifiedAccounts,
   });
 };
 
-export const fetchAccounts = async () => {
+export const fetchNotifiedAccounts = async () => {
   const supabase = createClient();
-
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
   const branchId = user?.user_metadata.branchId;
 
   if (!user) {
@@ -25,6 +23,7 @@ export const fetchAccounts = async () => {
     .from("accounts")
     .select("*")
     .order("createdAt", { ascending: false })
+    .eq("notify_new_orders", true)
     .eq("branchId", branchId);
 
   if (error) {

@@ -1,7 +1,9 @@
+import { Button } from "@/components/ui/button";
+import { Share } from "lucide-react";
 import React from "react";
+import SelectShareType from "../shared-lists/forms/SelectShareType";
 import CopyOptinLink from "./actions/CopyOptinLink";
 import CreateList from "./actions/CreateList";
-import ShareFullList from "./actions/ShareFullList";
 
 type Props = {};
 
@@ -12,7 +14,13 @@ const ListsActions: React.FC<Props> = () => {
         <CopyOptinLink />
       </div>
       <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-        <ShareFullList />
+        <SelectShareType
+          trigger={
+            <Button variant="outline" size="lg" className="w-full sm:w-auto">
+              <Share className="mr-2 h-4 w-4 -ml-2" /> Share Full List
+            </Button>
+          }
+        />
         <CreateList />
       </div>
     </div>

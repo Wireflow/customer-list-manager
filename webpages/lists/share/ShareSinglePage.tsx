@@ -16,6 +16,7 @@ import { useShareList } from "@/hooks/mutations/shared-lists/useShareList";
 import { usePaginatedAccounts } from "@/hooks/queries/account/usePaginatedAccounts";
 import { Enum } from "@/types/supabase/enum";
 import { Row } from "@/types/supabase/table";
+import ListToShare from "./ListToShare";
 
 const ShareSinglePage = () => {
   const [sentAccounts, setSentAccounts] = useState<Set<string>>(new Set());
@@ -89,6 +90,7 @@ const ShareSinglePage = () => {
         title="Share Your List"
         description="Share your list with a single account"
       />
+      <ListToShare listId={listId ?? ""} />
       <div className="mt-4 flex flex-col md:flex-row w-full justify-between items-end gap-4">
         <div className="flex md:flex-row md:justify-between items-end gap-4 w-full md:max-w-[500px]">
           <SearchInput
@@ -101,7 +103,7 @@ const ShareSinglePage = () => {
         </div>
       </div>
       <div className="mt-4 overflow-auto">
-        <div className="min-w-[600px]">
+        <div className="min-w-[700px]">
           <AccountsList
             accounts={accounts ?? []}
             rowAction={(account) => {
@@ -135,11 +137,13 @@ const ShareSinglePage = () => {
           />
         </div>
       </div>
-      <Pagination
-        currentPage={page}
-        totalPages={totalPages}
-        onPageChange={setPage}
-      />
+      <div className="mt-4">
+        <Pagination
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
+      </div>
     </div>
   );
 };

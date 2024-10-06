@@ -59,7 +59,8 @@ const ImageUpload = ({
   return (
     <>
       <div
-        className={`relative w-full  h-[${height}px] border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer overflow-hidden`}
+        style={{ height }}
+        className={`relative w-full  border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer overflow-hidden`}
         onClick={() => fileInputRef.current?.click()}
       >
         {previewUrl ? (

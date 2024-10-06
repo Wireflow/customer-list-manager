@@ -15,6 +15,8 @@ export type Database = {
           createdAt: string
           id: string
           name: string | null
+          notify_new_orders: boolean
+          notify_phoneNumber: string | null
           opted: boolean
           optedAt: string | null
           phoneNumber: string
@@ -24,6 +26,8 @@ export type Database = {
           createdAt?: string
           id?: string
           name?: string | null
+          notify_new_orders?: boolean
+          notify_phoneNumber?: string | null
           opted?: boolean
           optedAt?: string | null
           phoneNumber: string
@@ -33,6 +37,8 @@ export type Database = {
           createdAt?: string
           id?: string
           name?: string | null
+          notify_new_orders?: boolean
+          notify_phoneNumber?: string | null
           opted?: boolean
           optedAt?: string | null
           phoneNumber?: string
@@ -122,6 +128,13 @@ export type Database = {
             columns: ["accountId"]
             isOneToOne: false
             referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_account_assignments_accountId_fkey"
+            columns: ["accountId"]
+            isOneToOne: false
+            referencedRelation: "notified_accounts"
             referencedColumns: ["id"]
           },
           {
@@ -295,6 +308,7 @@ export type Database = {
           id: string
           orderNumber: number
           paymentId: number | null
+          sharedListId: string | null
           status: Database["public"]["Enums"]["order_status"]
           totalAmount: number
           totalQuantity: number
@@ -306,6 +320,7 @@ export type Database = {
           id?: string
           orderNumber?: number
           paymentId?: number | null
+          sharedListId?: string | null
           status?: Database["public"]["Enums"]["order_status"]
           totalAmount: number
           totalQuantity: number
@@ -317,6 +332,7 @@ export type Database = {
           id?: string
           orderNumber?: number
           paymentId?: number | null
+          sharedListId?: string | null
           status?: Database["public"]["Enums"]["order_status"]
           totalAmount?: number
           totalQuantity?: number
@@ -327,6 +343,13 @@ export type Database = {
             columns: ["accountId"]
             isOneToOne: false
             referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_accountId_fkey"
+            columns: ["accountId"]
+            isOneToOne: false
+            referencedRelation: "notified_accounts"
             referencedColumns: ["id"]
           },
           {
@@ -341,6 +364,13 @@ export type Database = {
             columns: ["paymentId"]
             isOneToOne: false
             referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_sharedListId_fkey"
+            columns: ["sharedListId"]
+            isOneToOne: false
+            referencedRelation: "sharedLists"
             referencedColumns: ["id"]
           },
         ]
@@ -486,6 +516,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "sharedLists_accountId_fkey"
+            columns: ["accountId"]
+            isOneToOne: false
+            referencedRelation: "notified_accounts"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "sharedLists_branchId_fkey"
             columns: ["branchId"]
             isOneToOne: false
@@ -503,7 +540,38 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      notified_accounts: {
+        Row: {
+          branchId: string | null
+          createdAt: string | null
+          id: string | null
+          notify_new_orders: boolean | null
+          notify_phoneNumber: string | null
+        }
+        Insert: {
+          branchId?: string | null
+          createdAt?: string | null
+          id?: string | null
+          notify_new_orders?: boolean | null
+          notify_phoneNumber?: string | null
+        }
+        Update: {
+          branchId?: string | null
+          createdAt?: string | null
+          id?: string | null
+          notify_new_orders?: boolean | null
+          notify_phoneNumber?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "accounts_branchId_fkey"
+            columns: ["branchId"]
+            isOneToOne: false
+            referencedRelation: "branch"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       create_order: {

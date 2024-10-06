@@ -4,7 +4,6 @@ export const UpdateOrderSchema = z.object({
   id: z.string(),
   totalAmount: z.number().positive(),
   totalQuantity: z.number().positive(),
-  phoneNumber: z.string(),
   orderItems: z.array(
     z.object({
       productId: z.string(),
