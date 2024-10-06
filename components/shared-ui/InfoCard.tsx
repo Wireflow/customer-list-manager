@@ -35,11 +35,11 @@ const InfoCard: React.FC<InfoCardProps> = ({
         <CardDescription className={cn("font-bold", textColor, titleClassName)}>
           {title}
         </CardDescription>
-        <CardTitle className={cn("text-2xl", textColor, valueClassName)}>
+        <CardTitle className={cn("text-2xl w-40", textColor, valueClassName)}>
           {value}
         </CardTitle>
       </div>
-      {action}
+      <div className="h-full w-full">{action}</div>
     </Card>
   );
 };

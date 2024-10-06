@@ -8,6 +8,7 @@ export const useAccounts = () => {
   });
 };
 
+
 export const fetchAccounts = async () => {
   const supabase = createClient();
   const {

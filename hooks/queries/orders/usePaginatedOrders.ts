@@ -7,6 +7,7 @@ import { OrderWithDetails } from "./useGetOrders";
 interface UsePaginatedOrdersProps {
   pageSize?: number;
   searchQuery?: string;
+  status?: string
 }
 
 interface UsePaginatedOrdersResult {
@@ -21,11 +22,13 @@ interface UsePaginatedOrdersResult {
   refetch: () => Promise<void>;
   setSearchQuery: (query: string) => void;
   searchQuery: string;
+  
 }
 
 export const usePaginatedOrders = ({
   pageSize = 10,
   searchQuery: initialSearchQuery = "",
+  status
 }: UsePaginatedOrdersProps = {}): UsePaginatedOrdersResult => {
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
@@ -66,12 +69,17 @@ export const usePaginatedOrders = ({
       )
       .eq("branchId", branchId)
       .order("createdAt", { ascending: false });
+    
 
     // Add search functionality
     if (searchQuery) {
       query = query.ilike("orderNumber", `%${searchQuery}%`);
     }
 
+    if (status) {
+      query = query.eq("status", status);
+    }
+    
     const {
       data: orders,
       error,
@@ -91,7 +99,7 @@ export const usePaginatedOrders = ({
   };
 
   const { data, isLoading, isError, error, isFetching, refetch } = useQuery({
-    queryKey: ["orders", page, pageSize, searchQuery],
+    queryKey: ["orders", page, pageSize, searchQuery, status],
     queryFn: () => fetchPaginatedOrders(page, pageSize, searchQuery),
     placeholderData: keepPreviousData,
     staleTime: 5 * 60 * 1000, // 5 minutes
