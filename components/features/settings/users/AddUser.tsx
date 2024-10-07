@@ -2,6 +2,7 @@ import InputField from "@/components/form/InputField"; // Assume this is in the 
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { UserSchema, UserType } from "@/types/validation/users";
+import { createClient } from "@/utils/supabase/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
@@ -26,7 +27,7 @@ const AddUser = ({ branchId, onSubmit }: Props) => {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">Add User to Branch {branchId}</h2>
+      <h2 className="text-2xl font-bold">Add User</h2>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(handleFormSubmit)}

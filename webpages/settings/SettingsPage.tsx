@@ -1,8 +1,9 @@
 "use client";
 
-import AddUser from "@/components/features/settings/AddUser";
 import ChangeListValidTime from "@/components/features/settings/ChangeListValidTime";
 import NotifiedAccounts from "@/components/features/settings/NotifiedAccounts";
+import UsersList from "@/components/features/settings/users/UsersList";
+import UsersSettings from "@/components/features/settings/users/UsersSettings";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSession } from "@/hooks/queries/auth/useSession";
 import { TabsContent } from "@radix-ui/react-tabs";
@@ -10,7 +11,7 @@ import { TabsContent } from "@radix-ui/react-tabs";
 type Props = {};
 
 const SettingsPage = (props: Props) => {
-  const { session } = useSession();
+  // const { session } = useSession();
 
   return (
     <Tabs defaultValue="general">
@@ -28,10 +29,7 @@ const SettingsPage = (props: Props) => {
           <NotifiedAccounts />
         </TabsContent>
         <TabsContent value="users">
-          <AddUser
-            branchId={session?.user.user_metadata.branchId ?? ""}
-            onSubmit={() => {}}
-          />
+          <UsersSettings />
         </TabsContent>
         <TabsContent value="branches">
           <p>Branches</p>
