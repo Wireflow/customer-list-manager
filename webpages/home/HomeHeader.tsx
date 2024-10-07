@@ -11,6 +11,7 @@ import CreateAccountForm from "@/components/features/accounts/forms/CreateAccoun
 import { toast } from "sonner";
 import { useCreateAccount } from "@/hooks/mutations/accounts/useCreateAccount";
 import { useSession } from "@/hooks/queries/auth/useSession";
+import SelectShareType from "@/components/features/shared-lists/forms/SelectShareType";
 
 type Props = {};
 
@@ -33,14 +34,14 @@ const HomeHeader = (props: Props) => {
     },
   });
 
-  const handleCreateAccount = (phone: string) => {
+  const handleCreateAccount = (phone: string, name: string) => {
     const cleanedPhone = phone.replace(/[\s()-]/g, "");
     createAccountMutation.mutate({
       phoneNumber: cleanedPhone,
       opted: true,
       optedAt: new Date().toISOString(),
       branchId: session?.user.user_metadata.branchId ?? "",
-      name: "",
+      name: name,
     });
   };
   const handleCancel = () => {
@@ -71,9 +72,18 @@ const HomeHeader = (props: Props) => {
             </div>
           }
         />
-        <Button>Send List</Button>
+       <SelectShareType
+          trigger={
+            <Button variant="default" size="lg" className="w-full sm:w-auto">
+              <Share className="mr-2 h-4 w-4 -ml-2" /> Share Full List
+            </Button>
+          } />
       </div>
-      <InfoCard title="Pending Orders" value={orders ?? 0} />
+      <div className="flex flex-col md:flex-row gap-4 ">
+        <InfoCard title="Pending Orders" value={orders ?? 0} />
+        <InfoCard title="Recent Accounts" value={orders ?? 0} />
+        <InfoCard title="Shared Lists" value={orders ?? 0} />
+      </div>
     </div>
   );
 };

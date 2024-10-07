@@ -18,14 +18,14 @@ const OrderHomeList = (props: Props) => {
 
   return (
     <Card className="h-[500px] flex flex-col rounded-xl overflow-hidden ">
-      <CardHeader className="flex-shrink-0 flex flex-row justify-between items-center bg-neutral-600 text-white rounded-t-xl p-4">
+      <CardHeader className="flex-shrink-0 flex flex-row justify-between items-center border-b border-neutral-400  rounded-t-xl p-4">
         <CardTitle>Latest Orders</CardTitle>
         <Button
           onClick={handleNavigateToOrders}
           variant="ghost"
-          className="text-white"
+          className=""
         >
-          <p className="font-bold mr-2">View All Orders</p>
+          {/* <p className="font-bold mr-2">View All Orders</p> */}
           <ArrowUpRight />
         </Button>
       </CardHeader>

@@ -3,11 +3,15 @@
 import CategorySelector from "@/components/features/categories/common/CategorySelector";
 import ProductForm from "@/components/features/products/actions/ProductForm";
 import ProductsList from "@/components/features/products/ProductsList";
+import InfoCard from "@/components/shared-ui/InfoCard";
 import Pagination from "@/components/shared-ui/Pagination";
 import RefreshButton from "@/components/shared-ui/RefreshButton";
 import SearchInput from "@/components/shared-ui/SearchInput";
 import NoData from "@/components/ui/no-data";
 import { usePaginatedProducts } from "@/hooks/queries/products/usePaginatedProducts";
+import { useProducts } from "@/hooks/queries/products/useProducts";
+import { useProductsCountByFilter } from "@/hooks/queries/products/useProductsCount";
+import { formatCurrency } from "@/utils/utils";
 
 type ProductsPageProps = {};
 
@@ -28,15 +32,39 @@ const ProductsPage = (props: ProductsPageProps) => {
   } = usePaginatedProducts({
     pageSize: 10,
   });
-
+  const { data: inventoryProducts } = useProducts();
   if (isLoading)
     return <NoData variant="loading" message="Loading products..." />;
 
   if (isError)
     return <NoData variant="error" message="Failed to load products..." />;
 
+  const totalCost = inventoryProducts?.reduce(
+    (acc, product) =>
+      product.costPrice
+        ? acc + product.costPrice * product.quantityInStock
+        : acc,
+    0
+  );
+
+  const totalStockAmount = inventoryProducts?.reduce(
+    (acc, product) => acc + product.quantityInStock,
+    0
+  );
+
   return (
     <div className="flex flex-col">
+      <div className="flex flex-col lg:flex-row items-center justify-between w-full gap-4">
+        <InfoCard title="Inventory Items" value={`${inventoryProducts?.length ?? 0}`} />
+        <InfoCard
+          title="Total Inventory Value"
+          value={formatCurrency(totalCost)}
+        />
+        <InfoCard
+          title="Total Stock Count"
+          value={`${totalStockAmount ?? 0} Items`}
+        />
+      </div>
       <div className="flex gap-4 flex-col lg:flex-row items-center justify-between w-full">
         <div className="w-full lg:max-w-[500px] flex flex-col lg:flex-row items-end gap-4">
           <SearchInput
