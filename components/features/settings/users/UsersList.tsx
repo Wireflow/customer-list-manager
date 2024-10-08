@@ -1,5 +1,4 @@
 import DynamicTable, { TableField } from "@/components/shared-ui/DynamicTable";
-import { Button } from "@/components/ui/button";
 import { formatDateToString } from "@/lib/utils";
 import { User } from "@supabase/supabase-js";
 import DeleteUser from "./DeleteUser";
@@ -15,7 +14,7 @@ const UsersList = ({ users }: Props) => {
       label: "Email",
     },
     {
-      key: (row) => row.user_metadata?.role,
+      key: (row) => <p className="capitalize">{row.user_metadata?.role}</p>,
       label: "Role",
     },
     {
@@ -24,7 +23,7 @@ const UsersList = ({ users }: Props) => {
           ? formatDateToString(new Date(row.last_sign_in_at))
           : "N/A",
       label: "Last Sign In",
-      className: "min-w-[150px]",
+      className: "min-w-[200px] md:min-w-[0px]",
     },
     {
       key: (row) => <DeleteUser user={row} />,

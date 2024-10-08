@@ -1,6 +1,9 @@
+import { UserRole } from "@/types/validation/users";
+
 type Route = {
   route: string;
   label: string;
+  roles?: UserRole[];
 };
 
 export const dashboardRoutes: Route[] = [
@@ -31,9 +34,11 @@ export const dashboardRoutes: Route[] = [
   {
     route: "/dashboard/financials",
     label: "Financials",
+    roles: ["admin"],
   },
   {
     route: "/dashboard/settings",
     label: "Settings",
+    roles: ["admin"],
   },
 ];

@@ -1,3 +1,5 @@
+"use client";
+
 import { createUser } from "@/actions/users";
 import { useCreateMutation } from "@/utils/reactQueryUtils";
 

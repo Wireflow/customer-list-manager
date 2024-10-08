@@ -45,6 +45,7 @@ export const createUser = async (data: UserType) => {
     await supabase.auth.admin.createUser({
       email: data.email,
       password: data.password,
+      email_confirm: true,
       user_metadata: {
         branchId: user.user_metadata.branchId,
         role: data.role,

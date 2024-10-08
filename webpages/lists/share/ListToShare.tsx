@@ -18,7 +18,7 @@ type Props = {
 const ListToShare = ({ listId }: Props) => {
   const { session } = useSession();
 
-  const { data: list, isFetching } = useListById(listId ?? "");
+  const { data: list, isFetching } = useListById(listId ?? "", !!listId);
   const { data: productsCount } = useProductsCountByFilter({
     branchId: session?.user.user_metadata.branchId ?? "",
   });

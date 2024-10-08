@@ -1,17 +1,16 @@
+"use server";
+
 import { sendMessage } from "@/lib/ez-texting";
-import {
-  millisecondsToHours,
-  millisecondsToHoursAndMinutes,
-} from "@/utils/dateUtils";
-import { createClient } from "@/utils/supabase/client";
+import { millisecondsToHoursAndMinutes } from "@/utils/dateUtils";
 import { getAccountByPhoneNumber } from "./accounts";
 import { getBranchById } from "./branches";
+import { createClient } from "@/utils/supabase/server";
 
 export type FullListParams = {
   phoneNumber: string | string[];
   instructions?: string;
   originUrl: string;
-  listId?: string;
+  listId?: string | undefined;
   type: "full" | "custom";
 };
 
@@ -21,8 +20,11 @@ export const createSharedList = async (
   sharedList: FullListParams
 ): Promise<{ success: boolean; data?: any; error?: string }> => {
   try {
-    const { data: userData } = await supabase.auth.getUser();
-    const user = userData?.user;
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    console.log("signed in user", user);
 
     if (!user || !user.user_metadata?.branchId) {
       throw new Error("Unauthorized or missing branch ID");
@@ -62,8 +64,8 @@ export const createSharedList = async (
           type: sharedList.type,
           accountId: accountResult.data.id,
           expirationTime: expirationTime.toISOString(),
-          instructions: sharedList.instructions,
-          listId: sharedList.listId,
+          instructions: sharedList.instructions ?? "",
+          listId: sharedList.listId?.trim() ?? undefined,
         })
         .select("id")
         .single();

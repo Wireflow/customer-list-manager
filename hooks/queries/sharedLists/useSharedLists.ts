@@ -13,7 +13,6 @@ export type SharedListWithDetails = Row<"sharedLists"> & {
   list: Row<"lists">;
 };
 
-
 export const fetchSharedLists = async (limit: number) => {
   const supabase = createClient();
   const session = await supabase.auth.getSession();

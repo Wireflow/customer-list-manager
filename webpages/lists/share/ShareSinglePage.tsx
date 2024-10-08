@@ -56,23 +56,27 @@ const ShareSinglePage = () => {
 
   const onSendToAccount = useCallback(
     async (account: Row<"accounts">) => {
-      if (
-        account?.phoneNumber &&
-        listId &&
-        type &&
-        !sentAccounts.has(account.id)
-      ) {
+      if (account?.phoneNumber && type && !sentAccounts.has(account.id)) {
         setLoadingAccountId(account.id);
         try {
-          await mutateAsync({
+          const result = await mutateAsync({
             phoneNumber: account.phoneNumber,
             originUrl: window.location.origin,
             type,
-            listId,
+            listId: listId ?? undefined,
           });
-          setSentAccounts((prev) => new Set(prev).add(account.id));
+
+          if (result?.success) {
+            setSentAccounts((prev) => new Set(prev).add(account.id));
+            toast.success("Successfully sent shared list");
+          } else {
+            toast.error(result?.error ?? "Failed to send shared list");
+          }
         } catch (error) {
-          // Error is handled in the onError callback of useShareDynamicList
+          console.error("Error sending list:", error);
+          toast.error("An error occurred while sending the list");
+        } finally {
+          setLoadingAccountId(null);
         }
       }
     },
