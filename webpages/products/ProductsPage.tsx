@@ -3,6 +3,7 @@
 import CategorySelector from "@/components/features/categories/common/CategorySelector";
 import ProductForm from "@/components/features/products/actions/ProductForm";
 import ProductsList from "@/components/features/products/ProductsList";
+import WithRole from "@/components/features/roles/WithRole";
 import InfoCard from "@/components/shared-ui/InfoCard";
 import Pagination from "@/components/shared-ui/Pagination";
 import RefreshButton from "@/components/shared-ui/RefreshButton";
@@ -59,10 +60,12 @@ const ProductsPage = (props: ProductsPageProps) => {
           title="Inventory Items"
           value={`${inventoryProducts?.length ?? 0}`}
         />
-        <InfoCard
-          title="Total Inventory Value"
-          value={formatCurrency(totalCost)}
-        />
+        <WithRole role={"admin"}>
+          <InfoCard
+            title="Total Inventory Value"
+            value={formatCurrency(totalCost)}
+          />
+        </WithRole>
         <InfoCard
           title="Total Stock Count"
           value={`${totalStockAmount ?? 0} Items`}

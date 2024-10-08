@@ -1,23 +1,20 @@
 "use client";
 
-import { deleteProduct } from "@/actions/products";
-import { useProductStore } from "@/store/useProductStore";
-import { Row } from "@/types/supabase/table";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import ProductCard from "../products/ProductCard";
 import List from "@/components/ui/list";
 import { useDeleteProduct } from "@/hooks/mutations/products";
+import { Row } from "@/types/supabase/table";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import ProductCard from "../products/ProductCard";
 
 type ProductsListProps = {
   products: Row<"products">[];
 };
 
 const ProductsList = ({ products }: ProductsListProps) => {
-  const { setOpen, setProduct } = useProductStore();
   const queryClient = useQueryClient();
-  const router = useRouter()
+  const router = useRouter();
 
   const { mutate, isPending } = useDeleteProduct({
     onSuccess: (data) => {
@@ -38,9 +35,7 @@ const ProductsList = ({ products }: ProductsListProps) => {
         key={item.id}
         disableSelect={true}
         onClick={() => {
-          // setProduct(item);
-          // setOpen(true);
-          router.push(`/dashboard/products/${item.id}`)
+          router.push(`/dashboard/products/${item.id}`);
         }}
         onDelete={() => mutate(item.id)}
         isDeleting={isPending}

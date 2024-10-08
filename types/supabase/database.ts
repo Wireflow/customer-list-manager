@@ -586,6 +586,40 @@ export type Database = {
         }
         Returns: Json
       }
+      get_top_selling_products: {
+        Args: {
+          p_branch_id: string
+          p_limit?: number
+        }
+        Returns: {
+          id: string
+          name: string
+          description: string
+          imageUrl: string
+          price: number
+          costPrice: number
+          branchId: string
+          createdAt: string
+          quantityInStock: number
+          sales: number
+        }[]
+      }
+      get_total_profit: {
+        Args: {
+          p_branch_id: string
+          p_start_date?: string
+          p_end_date?: string
+        }
+        Returns: number
+      }
+      get_total_revenue: {
+        Args: {
+          p_branch_id: string
+          p_start_date?: string
+          p_end_date?: string
+        }
+        Returns: number
+      }
     }
     Enums: {
       order_status: "completed" | "voided" | "refunded" | "pending"
