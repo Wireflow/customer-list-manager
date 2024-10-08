@@ -12,10 +12,10 @@ const HomePage = (props: Props) => {
     <div className="flex flex-col gap-5">
       <HomeHeader />
       <div className="flex flex-col lg:flex-row gap-5 w-full  ">
+        <OrderHomeList />
         <SharedLists />
-        <AccountsHomeList />
       </div>{" "}
-      <OrderHomeList />
+      <AccountsHomeList />
     </div>
   );
 };
