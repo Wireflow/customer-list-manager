@@ -9,11 +9,12 @@ import { Row } from "@/types/supabase/table";
 import { formatPhoneNumber } from "@/utils/utils";
 import { useRouter } from "next/navigation";
 import { ArrowUpRight, FileSymlink } from "lucide-react";
+import { usePaginatedAccounts } from "@/hooks/queries/account/usePaginatedAccounts";
 
 type Props = {};
 
 const AccountsTable = (props: Props) => {
-  const { data: accounts, refetch } = useAccounts();
+  const { accounts, refetch } = usePaginatedAccounts({ pageSize: 10 });
   const router = useRouter();
 
   const handleNavigateToAccount = useCallback(
@@ -39,7 +40,7 @@ const AccountsTable = (props: Props) => {
           className="text-xs"
           size={"sm"}
         >
-          <ArrowUpRight/>
+          <ArrowUpRight />
         </Button>
       ),
       label: "",

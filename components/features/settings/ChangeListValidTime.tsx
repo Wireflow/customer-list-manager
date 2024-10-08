@@ -33,8 +33,8 @@ const ChangeListValidTime: React.FC<Props> = () => {
   });
   const { mutate, isPending } = useUpdateBranch();
 
-  const [hours, setHours] = useState<string>("0");
-  const [minutes, setMinutes] = useState<string>("0");
+  const [hours, setHours] = useState<string>("");
+  const [minutes, setMinutes] = useState<string>("");
 
   useEffect(() => {
     if (branch?.listValidTime) {
@@ -42,26 +42,26 @@ const ChangeListValidTime: React.FC<Props> = () => {
         branch.listValidTime
       );
 
-      if (h !== 0) {
-        setHours(h?.toString() || "0");
-      }
-
-      if (m !== undefined) {
-        setMinutes(m?.toString() || "0");
-      }
+      setHours(h?.toString() || "");
+      setMinutes(m?.toString() || "");
     }
   }, [branch?.listValidTime]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const totalMilliseconds =
-      (parseInt(hours) * 60 * 60 + parseInt(minutes) * 60) * 1000;
+      (parseInt(hours || "0") * 60 * 60 + parseInt(minutes || "0") * 60) * 1000;
     mutate({ id: branch?.id, listValidTime: totalMilliseconds });
   };
 
   const newMilliseconds = useMemo(() => {
-    return (parseInt(hours) * 60 * 60 + parseInt(minutes) * 60) * 1000;
+    return (parseInt(hours || "0") * 60 * 60 + parseInt(minutes || "0") * 60) * 1000;
   }, [hours, minutes]);
+
+  const displayValue = (value: string, unit: string) => {
+    if (value === "" || value === "0") return unit;
+    return value;
+  };
 
   return (
     <Card className="w-full max-w-md border-none shadow-none">
@@ -84,7 +84,9 @@ const ChangeListValidTime: React.FC<Props> = () => {
                 </Label>
                 <Select value={hours} onValueChange={setHours}>
                   <SelectTrigger id="hours" className="w-full">
-                    <SelectValue placeholder="Hours" />
+                    <SelectValue>
+                      {displayValue(hours, "Hours")}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {[...Array(24)].map((_, i) => (
@@ -101,7 +103,9 @@ const ChangeListValidTime: React.FC<Props> = () => {
                 </Label>
                 <Select value={minutes} onValueChange={setMinutes}>
                   <SelectTrigger id="minutes" className="w-full">
-                    <SelectValue placeholder="Minutes" />
+                    <SelectValue>
+                      {displayValue(minutes, "Minutes")}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {[...Array(60)].map((_, i) => (

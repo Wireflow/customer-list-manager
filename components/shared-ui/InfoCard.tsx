@@ -31,11 +31,11 @@ const InfoCard: React.FC<InfoCardProps> = ({
         className
       )}
     >
-      <div className="flex flex-col gap-2">
-        <CardDescription className={cn("font-bold", textColor, titleClassName)}>
+      <div className="flex flex-col gap-2 w-full">
+        <CardDescription className={cn("font-bold ", textColor, titleClassName)}>
           {title}
         </CardDescription>
-        <CardTitle className={cn("text-2xl w-40", textColor, valueClassName)}>
+        <CardTitle className={cn("text-2xl ", textColor, valueClassName)}>
           {value}
         </CardTitle>
       </div>

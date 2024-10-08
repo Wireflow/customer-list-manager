@@ -11,6 +11,7 @@ export const useSharedLists = (limit: number) => {
 
 export type SharedListWithDetails = Row<"sharedLists"> & {
   list: Row<"lists">;
+  account: Row<"accounts">;
 };
 
 export const fetchSharedLists = async (limit: number) => {
@@ -25,10 +26,19 @@ export const fetchSharedLists = async (limit: number) => {
 
   const { data: sharedLists, error } = await supabase
     .from("sharedLists")
-    .select(`* , list:listId(*)!inner`)
+    .select(
+      `
+      *,
+      list:listId(
+        *
+      ),
+      account:accountId(*)
+    `
+    )
     .order("createdAt", { ascending: false })
     .eq("branchId", branchId)
     .limit(limit)
+    .order("createdAt", { ascending: false })
     .returns<SharedListWithDetails[]>();
 
   if (error) {

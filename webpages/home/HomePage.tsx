@@ -4,6 +4,7 @@ import SharedLists from "./SharedLists";
 import AccountsList from "@/components/features/accounts/AccountsList";
 import AccountsHomeList from "./AccountsHomeList";
 import OrderHomeList from "./OrderHomeList";
+import { RadialDataChart } from "../financials/RadialDataChart";
 
 type Props = {};
 
@@ -12,10 +13,12 @@ const HomePage = (props: Props) => {
     <div className="flex flex-col gap-5">
       <HomeHeader />
       <div className="flex flex-col lg:flex-row gap-5 w-full  ">
+        <OrderHomeList />
         <SharedLists />
-        <AccountsHomeList />
       </div>{" "}
-      <OrderHomeList />
+    
+        <AccountsHomeList />
+    
     </div>
   );
 };

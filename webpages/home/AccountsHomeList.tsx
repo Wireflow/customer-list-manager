@@ -6,6 +6,8 @@ import { ArrowUpRight } from "lucide-react";
 import AccountsTable from "./AccountsTable";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
+import AccountsHomePage from "./AccountsHomePage";
 
 type Props = {};
 
@@ -17,17 +19,25 @@ const AccountsHomeList = (props: Props) => {
   };
 
   return (
-    <Card className="h-[400px] lg:flex-1 flex flex-col rounded-xl overflow-hidden">
-      <CardHeader className="flex justify-between flex-row items-center border-b border-neutral-300  rounded-t-xl p-4">
-        <CardTitle>New Accounts</CardTitle>
-        <Button className="h-0" onClick={handleNavigateToAccounts} variant={"none"} size={"sm"}>
+    <Card className="h-[500px]  flex flex-col border-none   overflow-hidden">
+      <CardHeader className="flex justify-between flex-row items-center border-b   rounded-t-xl p-4">
+        <CardTitle className="text-2xl font-bold" >
+          New Accounts
+        </CardTitle>
+        <Button
+          className="h-0"
+          onClick={handleNavigateToAccounts}
+          variant={"none"}
+          size={"sm"}
+        >
           {/* <p className="font-bold">View All Accounts</p> */}
-          <ArrowUpRight />
+          <ArrowUpRight className="text-purple-500" size={30} />
         </Button>
       </CardHeader>
-      <CardContent className="flex-1 overflow-x-auto no-scrollbar">
-        <div className="min-w-[600px] h-full">
-          <AccountsTable />
+      <CardContent className=" overflow-auto no-scrollbar p-0 border-b">
+        <div className=" h-full">
+          {/* <AccountsTable /> */}
+          <AccountsHomePage />
         </div>
       </CardContent>
     </Card>
