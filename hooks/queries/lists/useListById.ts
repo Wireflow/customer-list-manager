@@ -1,10 +1,11 @@
 import { createClient } from "@/utils/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 
-export const useListById = (listId: string) => {
+export const useListById = (listId: string, enabled: boolean = true) => {
   return useQuery({
     queryKey: ["lists", listId],
     queryFn: () => fetchListById(listId),
+    enabled,
   });
 };
 

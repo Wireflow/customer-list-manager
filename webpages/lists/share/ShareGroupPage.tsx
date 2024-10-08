@@ -19,6 +19,7 @@ import { useGroupsDetails } from "@/hooks/queries/groups/useGroupsDetails";
 import { Row } from "@/types/supabase/table";
 import { Label } from "@/components/ui/label";
 import ListToShare from "./ListToShare";
+import { list } from "postcss";
 
 const ShareGroupPage = () => {
   const [selectedAccounts, setSelectedAccounts] = useState<Row<"accounts">[]>(
@@ -72,11 +73,11 @@ const ShareGroupPage = () => {
       .filter(Boolean) as string[];
 
     try {
-      if (listId && type) {
+      if (type) {
         await mutateAsync({
           phoneNumber: phoneNumbers,
           originUrl: window.location.origin,
-          listId,
+          listId: listId ?? undefined,
           type,
         });
       }

@@ -55,7 +55,10 @@ const ProductsPage = (props: ProductsPageProps) => {
   return (
     <div className="flex flex-col">
       <div className="flex flex-col lg:flex-row items-center justify-between w-full gap-4">
-        <InfoCard title="Inventory Items" value={`${inventoryProducts?.length ?? 0}`} />
+        <InfoCard
+          title="Inventory Items"
+          value={`${inventoryProducts?.length ?? 0}`}
+        />
         <InfoCard
           title="Total Inventory Value"
           value={formatCurrency(totalCost)}
@@ -65,7 +68,7 @@ const ProductsPage = (props: ProductsPageProps) => {
           value={`${totalStockAmount ?? 0} Items`}
         />
       </div>
-      <div className="flex gap-4 flex-col lg:flex-row items-center justify-between w-full">
+      <div className="flex gap-4 flex-col lg:flex-row items-center justify-between w-full mt-4">
         <div className="w-full lg:max-w-[500px] flex flex-col lg:flex-row items-end gap-4">
           <SearchInput
             value={searchQuery}

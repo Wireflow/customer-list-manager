@@ -64,7 +64,7 @@ const ChangeListValidTime: React.FC<Props> = () => {
   }, [hours, minutes]);
 
   return (
-    <Card className="w-full max-w-md ">
+    <Card className="w-full max-w-md border-none shadow-none">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Clock className="h-5 w-5" />
