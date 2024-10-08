@@ -4,6 +4,7 @@ import SharedLists from "./SharedLists";
 import AccountsList from "@/components/features/accounts/AccountsList";
 import AccountsHomeList from "./AccountsHomeList";
 import OrderHomeList from "./OrderHomeList";
+import { RadialDataChart } from "../financials/RadialDataChart";
 
 type Props = {};
 
@@ -15,7 +16,9 @@ const HomePage = (props: Props) => {
         <OrderHomeList />
         <SharedLists />
       </div>{" "}
-      <AccountsHomeList />
+    
+        <AccountsHomeList />
+    
     </div>
   );
 };

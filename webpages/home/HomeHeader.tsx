@@ -12,12 +12,15 @@ import { toast } from "sonner";
 import { useCreateAccount } from "@/hooks/mutations/accounts/useCreateAccount";
 import { useSession } from "@/hooks/queries/auth/useSession";
 import SelectShareType from "@/components/features/shared-lists/forms/SelectShareType";
+import { usePaginatedAccounts } from "@/hooks/queries/account/usePaginatedAccounts";
+import { useSharedLists } from "@/hooks/queries/sharedLists/useSharedLists";
 
 type Props = {};
 
 const HomeHeader = (props: Props) => {
   const { data: orders } = useOrdersCountByFilter({ status: "pending" });
-  const { data: accounts } = useAccountsCountByFilter({});
+  const { accounts } = usePaginatedAccounts({ pageSize: 10 });
+  const { data: sharedLists, refetch } = useSharedLists(10);
   const [open, setOpen] = useState(false);
   const { session } = useSession();
 
@@ -48,8 +51,8 @@ const HomeHeader = (props: Props) => {
     setOpen(false);
   };
   return (
-    <div className="flex flex-col  gap-4 ">
-      <div className="flex flex-col sm:flex-row justify-end gap-4">
+    <div className="">
+      <div className="flex flex-col sm:flex-row justify-end gap-4 mb-5">
         <Dialog
           open={open}
           onOpenChange={setOpen}
@@ -72,18 +75,19 @@ const HomeHeader = (props: Props) => {
             </div>
           }
         />
-       <SelectShareType
+        <SelectShareType
           trigger={
-            <Button variant="default" size="lg" className="w-full sm:w-auto">
-              <Share className="mr-2 h-4 w-4 -ml-2" /> Share Full List
+            <Button variant="default" size="lg" className="w-full sm:w-auto ">
+              <Share className="mr-2 h-4 w-4 -ml-2" /> Share Full Catalog
             </Button>
-          } />
+          }
+        />
       </div>
-      <div className="flex flex-col md:flex-row gap-4 ">
+      {/* <div className="flex flex-col md:flex-row gap-4 ">
         <InfoCard title="Pending Orders" value={orders ?? 0} />
-        <InfoCard title="Recent Accounts" value={orders ?? 0} />
-        <InfoCard title="Shared Lists" value={orders ?? 0} />
-      </div>
+        <InfoCard title="Recent Accounts" value={accounts?.length ?? 0} />
+        <InfoCard title="Shared Lists" value={sharedLists?.length ?? 0} />
+      </div> */}
     </div>
   );
 };

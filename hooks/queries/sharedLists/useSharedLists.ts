@@ -38,6 +38,7 @@ export const fetchSharedLists = async (limit: number) => {
     .order("createdAt", { ascending: false })
     .eq("branchId", branchId)
     .limit(limit)
+    .order("createdAt", { ascending: false })
     .returns<SharedListWithDetails[]>();
 
   if (error) {

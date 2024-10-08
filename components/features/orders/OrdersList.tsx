@@ -7,6 +7,7 @@ import { OrderWithDetails } from "@/hooks/queries/orders/useGetOrders";
 import { Enum } from "@/types/supabase/enum";
 import { getOrderTotal, getOrderTotalQuantity } from "@/utils/orderUtils";
 import { formatCurrency, formatPhoneNumber } from "@/utils/utils";
+import { ArrowUpRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 type OrdersListProps = {
@@ -75,7 +76,7 @@ const OrdersList = ({ orders }: OrdersListProps) => {
           onClick={() => router.push(`/dashboard/orders/${row.id}`)}
           size={"sm"}
         >
-          View
+          <ArrowUpRight />
         </Button>
       ),
       label: "",

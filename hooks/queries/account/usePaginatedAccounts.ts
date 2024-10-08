@@ -52,6 +52,7 @@ export const usePaginatedAccounts = ({
     let query = supabase
       .from("accounts")
       .select("*", { count: "exact" })
+      .order("createdAt", { ascending: false })
       .eq("branchId", branchId);
 
     // Add search functionality

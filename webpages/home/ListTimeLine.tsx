@@ -29,17 +29,19 @@ const ListTimeLine = (props: Props) => {
     [forceExpire, refetch]
   );
 
+    if(!sharedLists) return <div className="font-bold flex flex-col justify-center items-center">No Shared List Found</div>
+    
   return (
     <div className="flex flex-col gap-3  ">
       {sharedLists?.map((list) => (
-        <Card className="flex flex-col  rounded-xl px-4 py-3" key={list.id}>
+        <Card className="flex flex-col  rounded-xl px-4 py-4" key={list.id}>
           <CardContent className="p-0">
             <div className="flex justify-between items-start mb-2">
               <div>
-                <span className="text-xs text-gray-500">
-                  {formatDateToString(new Date(list.createdAt))}
-                </span>
-                <p className="text-xs">
+                <Badge variant="outline" className="text-xs border-neutral-300 mb-1">
+                  {list.type === "custom" ? "Custom List" : "Full Catalog"}
+                </Badge>
+                <p className="text-sm">
                   You shared{" "}
                   <span className="font-black capitalize text-purple-500">
                     {list.type === "custom"
@@ -77,9 +79,9 @@ const ListTimeLine = (props: Props) => {
               </Button>
             </div>
             <div className="flex justify-between items-center">
-              <Badge variant="outline" className="text-xs border-neutral-300">
-                {list.type === "custom" ? "Custom List" : "Full Catalog"}
-              </Badge>
+              <span className="text-xs text-gray-500">
+                {formatDateToString(new Date(list.createdAt))}
+              </span>
             </div>
           </CardContent>
         </Card>
