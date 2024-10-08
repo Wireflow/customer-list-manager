@@ -43,8 +43,8 @@ const AddItems = ({ listId }: Props) => {
         toast.error("Failed to add items!");
         return;
       }
-      queryClient.refetchQueries({ queryKey: ["list", listId] });
 
+      queryClient.invalidateQueries({ queryKey: ["lists", listId] });
       toast.success("Items added successfully!");
       setOpen(false);
     },

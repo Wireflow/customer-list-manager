@@ -48,6 +48,7 @@ const AddToGroupForm = ({ accounts, setAccounts }: Props) => {
       }
       toast.success(data.message ?? "Successfully added accounts to group");
       setOpen(false);
+      setGroupId(undefined);
       setAccounts([]);
     },
   });

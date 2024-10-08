@@ -26,20 +26,22 @@ const InfoCard: React.FC<InfoCardProps> = ({
   return (
     <Card
       className={cn(
-        "flex w-full justify-between gap-2 overflow-hidden rounded-md p-4 shadow-none",
+        "flex w-full flex-col justify-between gap-2 overflow-hidden rounded-md p-4 shadow-none",
         backgroundColor,
         className
       )}
     >
       <div className="flex flex-col gap-2 w-full">
-        <CardDescription className={cn("font-bold ", textColor, titleClassName)}>
+        <CardDescription
+          className={cn("font-bold w-full", textColor, titleClassName)}
+        >
           {title}
         </CardDescription>
-        <CardTitle className={cn("text-2xl ", textColor, valueClassName)}>
+        <CardTitle className={cn("text-2xl w-full", textColor, valueClassName)}>
           {value}
         </CardTitle>
       </div>
-      <div className="h-full w-full">{action}</div>
+      {action && <div className="w-full mt-2">{action}</div>}
     </Card>
   );
 };

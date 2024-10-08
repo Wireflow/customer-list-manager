@@ -94,7 +94,7 @@ const ProductCard = ({
 
           <div className="flex flex-col ml-2">
             <CardTitle className="md:text-lg text-sm capitalize items-center justify-center">
-              {product?.name}{" "}
+              {product?.name}
             </CardTitle>
             {product?.unit && (
               <span className="text-gray-500 text-xs font-normal">
@@ -108,11 +108,9 @@ const ProductCard = ({
         <div className="flex items-center gap-2">
           <div className="flex flex-col gap-2 iteme-center justify-center">
             <Badge
-              className="self-end w-fit "
+              className="self-end w-4 h-4 p-0"
               variant={product.quantityInStock > 0 ? "success" : "destructive"}
-            >
-              {product?.quantityInStock > 0 ? "In Stock" : "Out of Stock"}
-            </Badge>
+            ></Badge>
             {!disableQuantity && onQuantityChange && (
               <div className="flex">
                 <Button

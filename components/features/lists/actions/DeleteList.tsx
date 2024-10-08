@@ -1,12 +1,15 @@
+"use client";
+
 import { deleteList } from "@/actions/lists";
 import { Button } from "@/components/ui/button";
 import DangerDialog from "@/components/ui/danger-dialog";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 const DeleteList = ({ listId }: { listId: string }) => {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
     mutationKey: ["delete-list"],
@@ -16,7 +19,8 @@ const DeleteList = ({ listId }: { listId: string }) => {
         toast.error("Failed to delete list!");
       }
 
-      router.replace("/dashboard/lists");
+      queryClient.invalidateQueries({ queryKey: ["lists"] });
+      router.back();
       router.refresh();
 
       toast.success("List deleted!");

@@ -37,7 +37,7 @@ const ListItems = ({ items, onItemsSelect, listId }: Props) => {
         return;
       }
 
-      queryClient.invalidateQueries({ queryKey: ["list", listId] });
+      queryClient.invalidateQueries({ queryKey: ["lists", listId] });
       toast.success("Item removed from list!");
     },
     onError: (error) => {

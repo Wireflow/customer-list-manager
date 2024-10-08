@@ -1,26 +1,17 @@
 "use client";
-import React, { useState } from "react";
-import InfoCard from "@/components/shared-ui/InfoCard";
-import { useAccountsCountByFilter } from "@/hooks/queries/account/useAccountsCountByFilter";
-import { useOrdersCountByFilter } from "@/hooks/queries/orders/useOrdersCountByFilter";
-import MiniRadialChart from "../financials/MiniRadialChart";
-import { Button } from "@/components/ui/button";
-import Dialog from "@/components/shared-ui/Dialog";
-import { Plus, Share } from "lucide-react";
 import CreateAccountForm from "@/components/features/accounts/forms/CreateAccountForm";
-import { toast } from "sonner";
+import SelectShareType from "@/components/features/shared-lists/forms/SelectShareType";
+import Dialog from "@/components/shared-ui/Dialog";
+import { Button } from "@/components/ui/button";
 import { useCreateAccount } from "@/hooks/mutations/accounts/useCreateAccount";
 import { useSession } from "@/hooks/queries/auth/useSession";
-import SelectShareType from "@/components/features/shared-lists/forms/SelectShareType";
-import { usePaginatedAccounts } from "@/hooks/queries/account/usePaginatedAccounts";
-import { useSharedLists } from "@/hooks/queries/sharedLists/useSharedLists";
+import { Plus, Share } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 type Props = {};
 
 const HomeHeader = (props: Props) => {
-  const { data: orders } = useOrdersCountByFilter({ status: "pending" });
-  const { accounts } = usePaginatedAccounts({ pageSize: 10 });
-  const { data: sharedLists, refetch } = useSharedLists(10);
   const [open, setOpen] = useState(false);
   const { session } = useSession();
 

@@ -58,9 +58,13 @@ const DangerDialog = ({
           </DialogDescription>
         </DialogHeader>
 
-        <DialogFooter className="mt-4">
+        <DialogFooter className="mt-4 gap-4">
           <DialogClose>
-            <Button size={"lg"} variant={"outline"}>
+            <Button
+              size={"lg"}
+              variant={"outline"}
+              className="md:w-auto w-full"
+            >
               Cancel
             </Button>
           </DialogClose>

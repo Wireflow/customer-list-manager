@@ -1,10 +1,7 @@
-import React from "react";
-import HomeHeader from "./HomeHeader";
-import SharedLists from "./SharedLists";
-import AccountsList from "@/components/features/accounts/AccountsList";
 import AccountsHomeList from "./AccountsHomeList";
+import HomeHeader from "./HomeHeader";
 import OrderHomeList from "./OrderHomeList";
-import { RadialDataChart } from "../financials/RadialDataChart";
+import SharedLists from "./SharedLists";
 
 type Props = {};
 
@@ -16,9 +13,7 @@ const HomePage = (props: Props) => {
         <OrderHomeList />
         <SharedLists />
       </div>{" "}
-    
-        <AccountsHomeList />
-    
+      <AccountsHomeList />
     </div>
   );
 };
