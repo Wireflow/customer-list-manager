@@ -20,7 +20,6 @@ const GroupsList = ({ groups }: Props) => {
     {
       key: (row) => row.accounts_count[0].count,
       label: "Accounts",
-      className: "text-right",
     },
 
     {
@@ -33,7 +32,6 @@ const GroupsList = ({ groups }: Props) => {
         </Button>
       ),
       label: "",
-      className: "text-right",
     },
   ];
 

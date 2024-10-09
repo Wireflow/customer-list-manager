@@ -1,16 +1,37 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import DangerDialog from "@/components/ui/danger-dialog";
 import { useDeleteUser } from "@/hooks/mutations/users/useDeleteUser";
 import { User } from "@supabase/supabase-js";
+import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
+import { toast } from "sonner";
 
 type Props = {
   user: User;
 };
 
 const DeleteUser = ({ user }: Props) => {
-  const { mutate, isPending } = useDeleteUser();
+  const queryClient = useQueryClient();
+
+  const { mutate, isPending } = useDeleteUser({
+    onSuccess: (data) => {
+      if (data.success) {
+        toast.success("User deleted successfully");
+        return;
+      }
+      toast.error(data.error ?? "Failed to delete user");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["users", user.user_metadata.branchId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["users"],
+      });
+    },
+  });
 
   const handleDelete = async () => {
     if (user) {
@@ -19,17 +40,24 @@ const DeleteUser = ({ user }: Props) => {
   };
 
   return (
-    <Button
-      size={"sm"}
-      className="text-xs"
-      type="button"
-      variant={"destructive"}
+    <DangerDialog
+      trigger={
+        <Button
+          size={"sm"}
+          className="text-xs w-fit"
+          type="button"
+          variant={"destructive"}
+          disabled={!user || isPending}
+          loading={isPending}
+        >
+          Delete
+        </Button>
+      }
+      onConfirm={handleDelete}
       disabled={!user || isPending}
-      onClick={handleDelete}
-      loading={isPending}
-    >
-      Delete
-    </Button>
+      title="Delete User?"
+      description={`Are you sure you want to delete ${user?.email}?`}
+    />
   );
 };
 

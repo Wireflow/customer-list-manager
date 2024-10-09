@@ -64,7 +64,11 @@ export const createAccount = async (data: ConsentType) => {
       const optedInResult = await optIn({ to: data.phoneNumber });
 
       if (!optedInResult.success) {
-        throw new Error(optedInResult.error);
+        throw new Error(
+          optedInResult.error?.includes("Unknown")
+            ? "Failed to opt in"
+            : "Unknown error"
+        );
       }
     }
 

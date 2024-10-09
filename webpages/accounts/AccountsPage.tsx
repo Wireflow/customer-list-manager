@@ -85,11 +85,13 @@ const AccountsPage = (props: Props) => {
           />
         </div>
       </div>{" "}
-      <Pagination
-        currentPage={page}
-        totalPages={totalPages}
-        onPageChange={setPage}
-      />
+      <div className="mt-6">
+        <Pagination
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
+      </div>
     </div>
   );
 };

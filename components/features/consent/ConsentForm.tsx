@@ -49,7 +49,7 @@ const ConsentForm = (props: Props) => {
       });
     }
 
-    const cleanedPhone = data.phoneNumber.replace(/[\s()]/g, "");
+    const cleanedPhone = data.phoneNumber.replace(/[\s()-]/g, "");
 
     mutate({
       ...data,

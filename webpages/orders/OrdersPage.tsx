@@ -55,11 +55,13 @@ const OrdersPage = (props: Props) => {
       <div className="mt-4">
         <OrdersList orders={orders ?? []} />
       </div>{" "}
-      <Pagination
-        currentPage={page}
-        totalPages={totalPages}
-        onPageChange={setPage}
-      />
+      <div className="mt-6">
+        <Pagination
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
+      </div>
     </div>
   );
 };

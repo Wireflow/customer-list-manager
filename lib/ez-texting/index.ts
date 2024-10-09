@@ -36,7 +36,6 @@ export async function sendMessage({
 export async function optIn({ to }: { to: string }) {
   try {
     const result = await client.createContact({ PhoneNumber: to });
-    console.log(result);
 
     if (!result.success) {
       throw new Error(result.error || "Failed to opt-in contact");

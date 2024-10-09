@@ -57,7 +57,7 @@ export const createBranch = async (branchData: Insert<"branch">) => {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
+  if (!user || user.user_metadata?.role !== "superadmin") {
     return { success: false, error: "Unauthorized" };
   }
 

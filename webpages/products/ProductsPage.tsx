@@ -60,7 +60,7 @@ const ProductsPage = (props: ProductsPageProps) => {
           title="Inventory Items"
           value={`${inventoryProducts?.length ?? 0}`}
         />
-        <WithRole role={"admin"}>
+        <WithRole role={["admin", "superadmin"]}>
           <InfoCard
             title="Total Inventory Value"
             value={formatCurrency(totalCost)}

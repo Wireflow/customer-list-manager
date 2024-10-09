@@ -133,7 +133,7 @@ const NotifiedAccounts: React.FC<Props> = () => {
         <CardHeader>
           <CardTitle>Notified Accounts</CardTitle>
         </CardHeader>
-        <CardContent className="p-0 sm:p-6">
+        <CardContent className="overflow-hidden">
           <div className="overflow-x-auto">
             <div className="inline-block min-w-full align-middle">
               <div className="overflow-hidden">
@@ -142,11 +142,13 @@ const NotifiedAccounts: React.FC<Props> = () => {
                     <Loader2 className="h-8 w-8 animate-spin" />
                   </div>
                 ) : (
-                  <DynamicTable
-                    data={notifiedAccounts ?? []}
-                    fields={fields}
-                    emptyMessage="No notified accounts added"
-                  />
+                  <div className="min-w-[500px]">
+                    <DynamicTable
+                      data={notifiedAccounts ?? []}
+                      fields={fields}
+                      emptyMessage="No notified accounts added"
+                    />
+                  </div>
                 )}
               </div>
             </div>
