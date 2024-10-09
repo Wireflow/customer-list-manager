@@ -52,7 +52,7 @@ const AccountsTable = (props: Props) => {
     <div>
       <DynamicTable
         fields={fields}
-        emptyMessage="No lists found"
+        emptyMessage="No Accounts found"
         data={accounts ?? []}
       />
     </div>

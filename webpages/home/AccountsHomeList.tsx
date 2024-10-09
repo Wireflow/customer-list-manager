@@ -36,8 +36,8 @@ const AccountsHomeList = (props: Props) => {
       </CardHeader>
       <CardContent className=" overflow-auto no-scrollbar p-0 border-b">
         <div className=" h-full">
-          {/* <AccountsTable /> */}
-          <AccountsHomePage />
+          <AccountsTable />
+          {/* <AccountsHomePage /> */}
         </div>
       </CardContent>
     </Card>

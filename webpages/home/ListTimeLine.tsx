@@ -29,7 +29,7 @@ const ListTimeLine = (props: Props) => {
     [forceExpire, refetch]
   );
 
-    if(!sharedLists) return <div className="font-bold flex flex-col justify-center items-center">No Shared List Found</div>
+    if(sharedLists?.length === 0) return <div className="font-bold flex flex-col justify-center items-center h-full">No Shared List Found</div>
     
   return (
     <div className="flex flex-col gap-3  ">
