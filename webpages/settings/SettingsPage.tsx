@@ -6,14 +6,11 @@ import ChangeListValidTime from "@/components/features/settings/ChangeListValidT
 import NotifiedAccounts from "@/components/features/settings/NotifiedAccounts";
 import UsersSettings from "@/components/features/settings/users/UsersSettings";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useSession } from "@/hooks/queries/auth/useSession";
 import { TabsContent } from "@radix-ui/react-tabs";
 
 type Props = {};
 
 const SettingsPage = (props: Props) => {
-  const { session } = useSession();
-
   return (
     <Tabs defaultValue="general">
       <TabsList>

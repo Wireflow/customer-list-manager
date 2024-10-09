@@ -30,6 +30,8 @@ const fetchTopSellingProducts = async (limit?: number) => {
     p_limit: limit,
   });
 
+  console.log(data);
+
   if (error) {
     throw error;
   }

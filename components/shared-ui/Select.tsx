@@ -1,5 +1,5 @@
+import React, { ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import { ReactNode } from "react";
 import {
   SelectContent,
   SelectItem,
@@ -11,6 +11,7 @@ import {
 export type SelectOptions = {
   value: string;
   label: string;
+  disabled?: boolean;
 };
 
 export type QuickSelectProps = {
@@ -18,7 +19,6 @@ export type QuickSelectProps = {
   onValueChange: (option?: string) => void;
   defaultValue?: string;
   className?: string;
-  disabled?: boolean;
   placeholder?: string;
   value?: string;
   emptyMessage?: string;
@@ -33,7 +33,6 @@ const Select = ({
   placeholder,
   emptyMessage = "No options available",
   value,
-  disabled = false,
   action,
 }: QuickSelectProps) => {
   const hasOptions = options && options.length > 0;
@@ -43,7 +42,6 @@ const Select = ({
       onValueChange={onValueChange}
       defaultValue={defaultValue}
       value={value}
-      disabled={disabled}
     >
       <SelectTrigger
         className={cn("bg-white capitalize h-11 text-base", className)}
@@ -60,8 +58,12 @@ const Select = ({
           options.map((option) => (
             <SelectItem
               key={option.value}
-              className="px-4 py-3 capitalize focus:bg-black focus:text-white"
+              className={cn(
+                "px-4 py-3 capitalize focus:bg-black focus:text-white",
+                option.disabled && "opacity-50 cursor-not-allowed"
+              )}
               value={option.value}
+              disabled={option.disabled}
             >
               {option.label.toLowerCase()}
             </SelectItem>
