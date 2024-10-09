@@ -53,6 +53,8 @@ const ProductsPage = (props: ProductsPageProps) => {
     0
   );
 
+  
+  
   return (
     <div className="flex flex-col">
       <div className="flex flex-col lg:flex-row items-center justify-between w-full gap-4">

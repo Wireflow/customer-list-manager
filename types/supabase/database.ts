@@ -586,6 +586,29 @@ export type Database = {
         }
         Returns: Json
       }
+      get_product_by_id: {
+        Args: {
+          p_product_id: string
+        }
+        Returns: {
+          id: string
+          name: string
+          description: string
+          imageUrl: string
+          price: number
+          costPrice: number
+          branchId: string
+          createdAt: string
+          quantityInStock: number
+          sales: number
+        }[]
+      }
+      get_product_info_by_id: {
+        Args: {
+          p_product_id: string
+        }
+        Returns: Database["public"]["CompositeTypes"]["product_info"]
+      }
       get_top_selling_products: {
         Args: {
           p_branch_id: string
@@ -634,7 +657,20 @@ export type Database = {
       shared_list_type: "custom" | "full"
     }
     CompositeTypes: {
-      [_ in never]: never
+      product_info: {
+        id: string | null
+        branchid: string | null
+        categoryid: string | null
+        costprice: number | null
+        createdat: string | null
+        description: string | null
+        imageurl: string | null
+        name: string | null
+        price: number | null
+        quantityinstock: number | null
+        unit: string | null
+        sales: number | null
+      }
     }
   }
 }

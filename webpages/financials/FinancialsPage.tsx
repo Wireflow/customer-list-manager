@@ -1,6 +1,5 @@
-"use client";
-
-import React from "react";
+'use client'
+import React, { useState } from "react";
 import { useProfit } from "@/hooks/queries/financials/useProfit";
 import { useRevenue } from "@/hooks/queries/financials/useRevenue";
 import { useTopSellingProducts } from "@/hooks/queries/financials/useTopSellingProducts";
@@ -12,9 +11,15 @@ import {
   ArrowDownRight,
   TrendingUp,
   DollarSign,
-  PieChart,
   ShoppingCart,
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const currentDate = new Date();
 const firstDayOfCurrentMonth = new Date(
@@ -34,7 +39,8 @@ const lastDayOfLastMonth = new Date(
 );
 
 const FinancialsPage = () => {
-  const { data: products } = useTopSellingProducts();
+  const [selectedLimit, setSelectedLimit] = useState(10);
+  const { data: products } = useTopSellingProducts(selectedLimit);
 
   const { data: thisMonthRevenue } = useRevenue({
     startDate: firstDayOfCurrentMonth.toISOString(),
@@ -46,6 +52,8 @@ const FinancialsPage = () => {
     endDate: lastDayOfLastMonth.toISOString(),
   });
 
+  const limits = [5, 10, 20, 50];
+
   const { data: profit } = useProfit();
 
   const profitPercentage =
@@ -55,12 +63,11 @@ const FinancialsPage = () => {
   const totalSales =
     products?.reduce((sum, product) => sum + product.sales, 0) || 0;
 
-  // Calculate the percentage change in revenue
   const revenuePercentageChange = (() => {
     if (lastMonthRevenue === 0 && (thisMonthRevenue ?? 0) > 0) {
-      return 100; // 100% increase if there were no sales last month but there are sales this month
+      return 100;
     } else if (lastMonthRevenue === 0 && (thisMonthRevenue ?? 0) === 0) {
-      return 0; // 0% change if there were no sales in both months
+      return 0;
     } else {
       return (
         ((thisMonthRevenue ?? 0 - (lastMonthRevenue ?? 0)) /
@@ -69,6 +76,10 @@ const FinancialsPage = () => {
       );
     }
   })();
+
+  const handleLimitChange = (value: string) => {
+    setSelectedLimit(Number(value));
+  };
 
   return (
     <div className="space-y-8">
@@ -141,7 +152,18 @@ const FinancialsPage = () => {
               <TrendingUp className="h-5 w-5" />
               Top Selling Products
             </h3>
-            <PieChart className="h-5 w-5 text-gray-400" />
+            <Select onValueChange={handleLimitChange} value={String(selectedLimit)}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select a limit" />
+              </SelectTrigger>
+              <SelectContent>
+                {limits.map((limit) => (
+                  <SelectItem key={limit} value={String(limit)}>
+                    {limit}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <TopSellingProductsList products={products ?? []} />
         </CardContent>

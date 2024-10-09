@@ -32,7 +32,7 @@ const ProductDetailsPage = ({ id }: Props) => {
           title="Total Stock Value"
           value={formatCurrency(StockValue)}
         />
-        <InfoCard title="Quantity sold" value={product?.quantityInStock} />
+        <InfoCard title="Total Sales" value={product?.sales} />
       </div>
      
       <ProductDetailsContainer product={product} />

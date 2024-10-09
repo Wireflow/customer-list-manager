@@ -9,7 +9,7 @@ const HomePage = (props: Props) => {
   return (
     <div className="flex flex-col gap-5">
       <HomeHeader />
-      <div className="flex flex-col lg:flex-row gap-5 w-full  ">
+      <div className="flex flex-col-reverse lg:flex-row gap-5 w-full  ">
         <OrderHomeList />
         <SharedLists />
       </div>{" "}
