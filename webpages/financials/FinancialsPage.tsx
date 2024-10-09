@@ -82,9 +82,6 @@ const FinancialsPage = () => {
     thisMonthRevenue && profit ? (profit / thisMonthRevenue) * 100 : 0;
   const isProfitPositive = profitPercentage > 0;
 
-  const totalSales =
-    products?.reduce((sum, product) => sum + product.sales, 0) || 0;
-
   const revenuePercentageChange = (() => {
     if (lastMonthRevenue === 0 && (thisMonthRevenue ?? 0) > 0) {
       return 100;

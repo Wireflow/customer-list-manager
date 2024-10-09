@@ -5,6 +5,7 @@ import { millisecondsToHoursAndMinutes } from "@/utils/dateUtils";
 import { getAccountByPhoneNumber } from "./accounts";
 import { getBranchById } from "./branches";
 import { createClient } from "@/utils/supabase/server";
+import { createShortUrl } from "./shortUrls";
 
 export type FullListParams = {
   phoneNumber: string | string[];
@@ -86,7 +87,17 @@ export const createSharedList = async (
     }
 
     const messagePromises = sharedListsData.map(async (item) => {
-      const messageBody = `View full list here: ${sharedList.originUrl}/shared/${item.id}?phone=${item.phoneNumber}`;
+      const originalUrl = `${sharedList.originUrl}/shared/${item.id}?phone=${item.phoneNumber}`;
+
+      const shortUrl = await createShortUrl({
+        originalUrl,
+      });
+
+      if (!shortUrl.success || !shortUrl.data) {
+        throw new Error("Failed to shorten URL");
+      }
+
+      const messageBody = `View full list here: ${sharedList.originUrl}/${shortUrl.data.shortCode}`;
       const response = await sendMessage({
         to: item.phoneNumber,
         body: messageBody,

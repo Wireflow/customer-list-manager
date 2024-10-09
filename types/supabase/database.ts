@@ -538,6 +538,27 @@ export type Database = {
           },
         ]
       }
+      shortUrls: {
+        Row: {
+          createdAt: string
+          id: number
+          originalUrl: string
+          shortCode: string
+        }
+        Insert: {
+          createdAt?: string
+          id?: number
+          originalUrl: string
+          shortCode: string
+        }
+        Update: {
+          createdAt?: string
+          id?: number
+          originalUrl?: string
+          shortCode?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       notified_accounts: {
@@ -636,14 +657,6 @@ export type Database = {
         | {
             Args: {
               p_branch_id: string
-              p_start_date: string
-              p_end_date: string
-            }
-            Returns: number
-          }
-        | {
-            Args: {
-              p_branch_id: string
               p_start_date?: string
               p_end_date?: string
             }
@@ -662,6 +675,22 @@ export type Database = {
               p_end_date: string
               p_branch_id: string
             }
+            Returns: Database["public"]["CompositeTypes"]["total_sales_with_comparison"]
+          }
+        | {
+            Args: {
+              p_start_date: string
+              p_end_date: string
+              p_branch_id: string
+            }
+            Returns: number
+          }
+        | {
+            Args: {
+              p_start_date?: string
+              p_end_date?: string
+              p_branch_id?: string
+            }
             Returns: number
           }
       get_total_sales_iso: {
@@ -672,6 +701,23 @@ export type Database = {
         }
         Returns: number
       }
+      get_total_sales_v2:
+        | {
+            Args: {
+              p_branch_id?: string
+              p_start_date?: string
+              p_end_date?: string
+            }
+            Returns: number
+          }
+        | {
+            Args: {
+              p_start_date?: string
+              p_end_date?: string
+              p_branch_id?: string
+            }
+            Returns: number
+          }
     }
     Enums: {
       order_status: "completed" | "voided" | "refunded" | "pending"
