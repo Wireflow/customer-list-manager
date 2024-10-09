@@ -590,18 +590,7 @@ export type Database = {
         Args: {
           p_product_id: string
         }
-        Returns: {
-          id: string
-          name: string
-          description: string
-          imageUrl: string
-          price: number
-          costPrice: number
-          branchId: string
-          createdAt: string
-          quantityInStock: number
-          sales: number
-        }[]
+        Returns: Database["public"]["CompositeTypes"]["product_with_sales"]
       }
       get_product_info_by_id: {
         Args: {
@@ -643,6 +632,46 @@ export type Database = {
         }
         Returns: number
       }
+      get_total_sales:
+        | {
+            Args: {
+              p_branch_id: string
+              p_start_date: string
+              p_end_date: string
+            }
+            Returns: number
+          }
+        | {
+            Args: {
+              p_branch_id: string
+              p_start_date?: string
+              p_end_date?: string
+            }
+            Returns: number
+          }
+        | {
+            Args: {
+              p_start_date: string
+              p_end_date: string
+            }
+            Returns: Database["public"]["CompositeTypes"]["total_sales_with_comparison"]
+          }
+        | {
+            Args: {
+              p_start_date: string
+              p_end_date: string
+              p_branch_id: string
+            }
+            Returns: number
+          }
+      get_total_sales_iso: {
+        Args: {
+          p_branch_id: string
+          p_start_date?: string
+          p_end_date?: string
+        }
+        Returns: number
+      }
     }
     Enums: {
       order_status: "completed" | "voided" | "refunded" | "pending"
@@ -670,6 +699,29 @@ export type Database = {
         quantityinstock: number | null
         unit: string | null
         sales: number | null
+      }
+      product_with_sales: {
+        id: string | null
+        name: string | null
+        description: string | null
+        imageUrl: string | null
+        price: number | null
+        costPrice: number | null
+        branchId: string | null
+        createdAt: string | null
+        quantityInStock: number | null
+        unit: string | null
+        categoryId: string | null
+        sales: number | null
+      }
+      total_sales_with_comparison: {
+        currentPeriodSales: number | null
+        previousMonthSales: number | null
+      }
+      total_sales_with_comparison_two: {
+        currentPeriodSales: number | null
+        previousMonthSales: number | null
+        debugInfo: string | null
       }
     }
   }

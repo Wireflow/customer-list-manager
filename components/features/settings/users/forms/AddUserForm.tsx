@@ -7,7 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { useCreateUser } from "@/hooks/mutations/users/useCreateUser";
 import { useSession } from "@/hooks/queries/auth/useSession";
-import { userOptions, UserSchema, UserType } from "@/types/validation/users";
+import {
+  getUserRoleOptions,
+  UserSchema,
+  UserType,
+} from "@/types/validation/users";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
@@ -21,6 +25,10 @@ type Props = {
 
 const AddUserForm = ({ branchId }: Props) => {
   const [open, setOpen] = useState(false);
+
+  const { session } = useSession();
+  const userOptions = getUserRoleOptions(session?.user.user_metadata.role);
+
   const form = useForm<UserType>({
     resolver: zodResolver(UserSchema),
     defaultValues: {

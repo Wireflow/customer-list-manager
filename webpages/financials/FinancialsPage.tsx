@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import React, { useState } from "react";
 import { useProfit } from "@/hooks/queries/financials/useProfit";
 import { useRevenue } from "@/hooks/queries/financials/useRevenue";
@@ -20,6 +20,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DatePickerWithRange } from "@/components/shared-ui/DatePickerWithRange";
+import { DateRange } from "react-day-picker";
+import { useTotalSales } from "@/hooks/queries/financials/useTotalSales";
 
 const currentDate = new Date();
 const firstDayOfCurrentMonth = new Date(
@@ -27,11 +30,13 @@ const firstDayOfCurrentMonth = new Date(
   currentDate.getMonth(),
   1
 );
+
 const firstDayOfLastMonth = new Date(
   currentDate.getFullYear(),
   currentDate.getMonth() - 1,
   1
 );
+
 const lastDayOfLastMonth = new Date(
   currentDate.getFullYear(),
   currentDate.getMonth(),
@@ -39,12 +44,16 @@ const lastDayOfLastMonth = new Date(
 );
 
 const FinancialsPage = () => {
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: firstDayOfCurrentMonth,
+    to: currentDate,
+  });
   const [selectedLimit, setSelectedLimit] = useState(10);
   const { data: products } = useTopSellingProducts(selectedLimit);
 
   const { data: thisMonthRevenue } = useRevenue({
-    startDate: firstDayOfCurrentMonth.toISOString(),
-    endDate: currentDate.toISOString(),
+    startDate: dateRange?.from?.toISOString(),
+    endDate: dateRange?.to?.toISOString(),
   });
 
   const { data: lastMonthRevenue } = useRevenue({
@@ -52,9 +61,22 @@ const FinancialsPage = () => {
     endDate: lastDayOfLastMonth.toISOString(),
   });
 
+  const { data: thisMonthSales } = useTotalSales({
+    startDate: dateRange?.from?.toISOString(),
+    endDate: dateRange?.to?.toISOString(),
+  });
+
+  const { data: lastMonthSales } = useTotalSales({
+    startDate: firstDayOfLastMonth.toISOString(),
+    endDate: lastDayOfLastMonth.toISOString(),
+  });
+
   const limits = [5, 10, 20, 50];
 
-  const { data: profit } = useProfit();
+  const { data: profit } = useProfit({
+    startDate: dateRange?.from?.toISOString(),
+    endDate: dateRange?.to?.toISOString(),
+  });
 
   const profitPercentage =
     thisMonthRevenue && profit ? (profit / thisMonthRevenue) * 100 : 0;
@@ -83,6 +105,7 @@ const FinancialsPage = () => {
 
   return (
     <div className="space-y-8">
+      <DatePickerWithRange onDateChange={setDateRange} date={dateRange} />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card className="shadow-none overflow-hidden">
           <CardContent className="p-6">
@@ -134,12 +157,12 @@ const FinancialsPage = () => {
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-sm font-medium opacity-80">Total Sales</p>
-                <p className="text-3xl font-bold mt-2">{totalSales}</p>
+                <p className="text-3xl font-bold mt-2">{thisMonthSales}</p>
               </div>
               <ShoppingCart className="h-8 w-8 opacity-80" />
             </div>
             <div className="mt-4 text-sm">
-              Across {products?.length ?? 0} products
+              Last Month: <span className="font-medium">{lastMonthSales}</span>
             </div>
           </CardContent>
         </Card>
@@ -152,7 +175,10 @@ const FinancialsPage = () => {
               <TrendingUp className="h-5 w-5" />
               Top Selling Products
             </h3>
-            <Select onValueChange={handleLimitChange} value={String(selectedLimit)}>
+            <Select
+              onValueChange={handleLimitChange}
+              value={String(selectedLimit)}
+            >
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Select a limit" />
               </SelectTrigger>

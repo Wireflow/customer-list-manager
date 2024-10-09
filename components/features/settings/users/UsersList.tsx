@@ -40,12 +40,10 @@ const UsersList = ({ users }: Props) => {
     {
       key: (row) => (
         <WithRole
-          role={["admin", "superadmin"]}
+          role={["superadmin"]}
           placeholder={<p className="capitalize">{row.user_metadata?.role}</p>}
         >
-          {row.id === session?.user.id ||
-          row.user_metadata?.role === session?.user.user_metadata?.role ||
-          row.user_metadata?.role === "superadmin" ? (
+          {row.id === session?.user.id ? (
             <p className="capitalize">{row.user_metadata?.role}</p>
           ) : (
             <RoleSelector user={row} options={userOptions ?? []} />
@@ -62,10 +60,24 @@ const UsersList = ({ users }: Props) => {
       label: "Last Sign In",
       className: "min-w-[200px] md:min-w-[0px]",
     },
-    {
-      key: (row) => <DeleteUser user={row} />,
-      label: "Status",
-    },
+    ...(session?.user.user_metadata.role === "superadmin"
+      ? [
+          {
+            key: (row: User) => <DeleteUser user={row} />,
+            label: "Delete",
+          },
+        ]
+      : []),
+
+    ...(session?.user.user_metadata.role === "admin"
+      ? [
+          {
+            key: (row: User) =>
+              row?.user_metadata?.role === "sales" && <DeleteUser user={row} />,
+            label: "Delete",
+          },
+        ]
+      : []),
   ];
 
   return (
