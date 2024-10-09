@@ -8,11 +8,22 @@ import {
 import { useUsers } from "@/hooks/queries/users/useUsers";
 import UsersList from "./UsersList";
 import AddUserForm from "./forms/AddUserForm";
+import NoData from "@/components/ui/no-data";
+import { useSession } from "@/hooks/queries/auth/useSession";
 
 type Props = {};
 
 const UsersSettings = (props: Props) => {
-  const { data: users } = useUsers();
+  const { session } = useSession();
+  const {
+    data: users,
+    isLoading,
+    isError,
+  } = useUsers(session?.user.user_metadata.branchId);
+
+  if (isLoading) return <NoData variant="loading" message="Loading users..." />;
+  if (isError)
+    return <NoData variant="error" message="Failed to load users..." />;
 
   return (
     <Card>
@@ -22,7 +33,7 @@ const UsersSettings = (props: Props) => {
             <CardTitle>Users</CardTitle>
             <CardDescription>View and manage users</CardDescription>
           </div>
-          <AddUserForm />
+          <AddUserForm branchId={session?.user.user_metadata.branchId} />
         </div>
       </CardHeader>
       <CardContent>

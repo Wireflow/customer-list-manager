@@ -1,6 +1,6 @@
 "use server";
 
-import { UserType } from "@/types/validation/users";
+import { UserRole, UserType } from "@/types/validation/users";
 import { createClient } from "@/utils/supabase/server";
 
 const supabase = createClient();
@@ -32,14 +32,17 @@ export const createUser = async (data: UserType) => {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (
-    !user ||
-    !user.user_metadata?.branchId ||
-    user.user_metadata?.role !== "admin"
-  ) {
+  const role = user?.user_metadata.role;
+  const branchId = user?.user_metadata.branchId;
+
+  if (!user || !branchId || role === "sales") {
     console.log(user);
     return { success: false, error: "Unauthorized" };
   }
+
+  const superAdminBranchId = data.branchId
+    ? data.branchId
+    : user?.user_metadata.branchId;
 
   const { data: newUser, error: userError } =
     await supabase.auth.admin.createUser({
@@ -47,7 +50,10 @@ export const createUser = async (data: UserType) => {
       password: data.password,
       email_confirm: true,
       user_metadata: {
-        branchId: user.user_metadata.branchId,
+        branchId:
+          role === "superadmin"
+            ? superAdminBranchId
+            : user?.user_metadata.branchId,
         role: data.role,
       },
     });
@@ -59,46 +65,47 @@ export const createUser = async (data: UserType) => {
   return { success: true, data: newUser };
 };
 
-export const getUsers = async (metadataFilter = {}) => {
+export const getUsers = async (branchId?: string) => {
   try {
     const {
-      data: { user },
-    } = await supabase.auth.getUser();
+      data: { session },
+      error: authError,
+    } = await supabase.auth.getSession();
 
-    if (
-      !user ||
-      !user.user_metadata?.branchId ||
-      user.user_metadata?.role !== "admin"
-    ) {
+    if (authError) {
+      throw authError;
+    }
+
+    if (!session) {
+      return { success: false, error: "User not authenticated" };
+    }
+
+    const role = session?.user.user_metadata?.role;
+    const userBranchId = session?.user.user_metadata?.branchId;
+
+    if (!userBranchId || role === "sales") {
       return { success: false, error: "Unauthorized" };
     }
 
-    const branchId = user.user_metadata.branchId;
+    const superAdminBranchId = branchId ? branchId : userBranchId;
 
     const {
       data: { users },
       error: usersError,
     } = await supabase.auth.admin.listUsers();
 
+    console.log(users);
+
     if (usersError) {
       throw usersError;
     }
 
-    // Filter users based on branchId and provided metadata filter
-    const filteredUsers = users.filter((user) => {
-      // First, check if the user's branchId matches
-      if (user.user_metadata?.branchId !== branchId) {
-        return false;
-      }
+    const filterBranchId =
+      role === "superadmin" ? superAdminBranchId : userBranchId;
 
-      // Then check other metadata filters
-      for (const [key, value] of Object.entries(metadataFilter)) {
-        if (user.user_metadata[key] !== value) {
-          return false;
-        }
-      }
-      return true;
-    });
+    const filteredUsers = users.filter(
+      (user) => user.user_metadata?.branchId === filterBranchId
+    );
 
     return { success: true, data: filteredUsers };
   } catch (error) {
@@ -115,9 +122,8 @@ export const deleteUser = async (id: string) => {
   if (
     !user ||
     !user.user_metadata?.branchId ||
-    user.user_metadata?.role !== "admin"
+    user.user_metadata?.role === "sales"
   ) {
-    console.log(user);
     return { success: false, error: "Unauthorized" };
   }
 
@@ -129,4 +135,75 @@ export const deleteUser = async (id: string) => {
   }
 
   return { success: true, data: deletedUser };
+};
+
+type RoleParams = {
+  id: string;
+  role: UserRole;
+};
+
+export const updateUserRole = async (params: RoleParams) => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (
+    !user ||
+    !user.user_metadata?.branchId ||
+    user.user_metadata?.role === "sales"
+  ) {
+    return { success: false, error: "Unauthorized" };
+  }
+
+  if (
+    (params.role === "superadmin" || params.role === "admin") &&
+    user.user_metadata?.role !== "superadmin"
+  ) {
+    return { success: false, error: "Unauthorized" };
+  }
+
+  const { data: updatedUser, error: userError } =
+    await supabase.auth.admin.updateUserById(params.id, {
+      user_metadata: {
+        role: params.role,
+      },
+    });
+
+  if (userError) {
+    return { success: false, error: userError.message };
+  }
+
+  return { success: true, data: updatedUser };
+};
+
+type BranchParams = {
+  id: string;
+  branchId: string;
+};
+
+export const updateUserBranch = async (params: BranchParams) => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (
+    !user ||
+    !user.user_metadata?.branchId ||
+    user.user_metadata?.role !== "superadmin"
+  ) {
+    return { success: false, error: "Unauthorized" };
+  }
+
+  const { data: updatedUser, error: userError } =
+    await supabase.auth.admin.updateUserById(params.id, {
+      user_metadata: {
+        branchId: params.branchId,
+      },
+    });
+
+  if (userError) {
+    return { success: false, error: userError.message };
+  }
+
+  return { success: true, data: updatedUser };
 };

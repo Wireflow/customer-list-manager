@@ -4,15 +4,14 @@ import CompleteOrder from "@/components/features/orders/actions/CompleteOrder";
 import PrintInvoice from "@/components/features/orders/actions/PrintInvoice";
 import VoidOrder from "@/components/features/orders/actions/VoidOrder";
 import PageHeader from "@/components/layout/PageHeader";
-import Dialog from "@/components/shared-ui/Dialog";
 import { Button } from "@/components/ui/button";
 import { useOrderById } from "@/hooks/queries/orders/useGetOrderId";
 import { formatPhoneNumber } from "@/utils/utils";
+import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import AddItemsToOrderForm from "../../components/features/orders/forms/AddItemsToOrderForm";
 import OrderItemsTable from "../../components/features/orders/order-items/OrderItemsList";
 import OrderDetailsHeader from "../../components/features/orders/OrderDetailsHeader";
-import { useRouter } from "next/navigation";
 
 type Props = {
   id: string;
@@ -41,8 +40,9 @@ const OrderDetailsPage = ({ id }: Props) => {
               onClick={() =>
                 router.push(`/dashboard/orders/${order?.id}/add-items`)
               }
+              className="md:w-auto w-full"
             >
-              Add Items
+              <Plus className="mr-2 h-4 w-4" /> Add Items
             </Button>
             <VoidOrder orderId={order?.id} status={order?.status} />
           </div>

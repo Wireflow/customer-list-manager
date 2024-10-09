@@ -52,7 +52,10 @@ const TopSellingProductsList = ({ products }: TopSellingProductsListProps) => {
       key: (row) => (
         <div className="flex flex-col">
           <span className="font-bold">{row.sales}</span>
-          <Progress value={(row.sales / maxSales) * 100} className="w-24 h-2" />
+          <Progress
+            value={(row.sales / maxSales) * 100}
+            className="w-24 h-1.5"
+          />
         </div>
       ),
       label: "Sales",

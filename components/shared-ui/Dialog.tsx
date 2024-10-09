@@ -57,7 +57,7 @@ const Dialog = ({
         className={cn("overflow-visible", className)}
         onCloseAutoFocus={onClose}
       >
-        <div className={cn("flex flex-col", contentClassName)}>
+        <div className={cn("flex flex-col ", contentClassName)}>
           {title || description ? (
             <DialogHeader className="flex">
               {title && (

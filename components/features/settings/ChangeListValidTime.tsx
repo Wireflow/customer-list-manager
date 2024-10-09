@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useEffect, useMemo } from "react";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -23,9 +21,7 @@ import {
 } from "@/components/ui/card";
 import { Clock } from "lucide-react";
 
-type Props = {};
-
-const ChangeListValidTime: React.FC<Props> = () => {
+const ChangeListValidTime: React.FC = () => {
   const { session } = useSession();
   const { data: branch, isLoading } = useBranchById({
     branchId: session?.user.user_metadata.branchId ?? "",
@@ -41,7 +37,6 @@ const ChangeListValidTime: React.FC<Props> = () => {
       const { hours: h, minutes: m } = millisecondsToHoursAndMinutes(
         branch.listValidTime
       );
-
       setHours(h?.toString() || "");
       setMinutes(m?.toString() || "");
     }
@@ -55,7 +50,9 @@ const ChangeListValidTime: React.FC<Props> = () => {
   };
 
   const newMilliseconds = useMemo(() => {
-    return (parseInt(hours || "0") * 60 * 60 + parseInt(minutes || "0") * 60) * 1000;
+    return (
+      (parseInt(hours || "0") * 60 * 60 + parseInt(minutes || "0") * 60) * 1000
+    );
   }, [hours, minutes]);
 
   const displayValue = (value: string, unit: string) => {
@@ -64,7 +61,7 @@ const ChangeListValidTime: React.FC<Props> = () => {
   };
 
   return (
-    <Card className="w-full max-w-md border-none shadow-none">
+    <Card className="w-full">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Clock className="h-5 w-5" />
@@ -76,15 +73,15 @@ const ChangeListValidTime: React.FC<Props> = () => {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-4">
-            <div className="flex items-center space-x-4">
-              <div className="flex-1">
+          <div className="space-y-4 sm:space-y-0">
+            <div className="flex flex-col sm:flex-row items-start sm:items-end space-y-4 sm:space-y-0 sm:space-x-4">
+              <div className="w-full sm:w-1/3">
                 <Label htmlFor="hours" className="text-sm font-medium">
                   Hours
                 </Label>
                 <Select value={hours} onValueChange={setHours}>
                   <SelectTrigger id="hours" className="w-full">
-                    <SelectValue>
+                    <SelectValue placeholder="Hours">
                       {displayValue(hours, "Hours")}
                     </SelectValue>
                   </SelectTrigger>
@@ -97,13 +94,13 @@ const ChangeListValidTime: React.FC<Props> = () => {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex-1">
+              <div className="w-full sm:w-1/3">
                 <Label htmlFor="minutes" className="text-sm font-medium">
                   Minutes
                 </Label>
                 <Select value={minutes} onValueChange={setMinutes}>
                   <SelectTrigger id="minutes" className="w-full">
-                    <SelectValue>
+                    <SelectValue placeholder="Minutes">
                       {displayValue(minutes, "Minutes")}
                     </SelectValue>
                   </SelectTrigger>
@@ -116,24 +113,19 @@ const ChangeListValidTime: React.FC<Props> = () => {
                   </SelectContent>
                 </Select>
               </div>
+              <Button
+                type="submit"
+                className="w-full sm:w-auto mt-4 sm:mt-0"
+                disabled={
+                  isPending ||
+                  newMilliseconds === branch?.listValidTime ||
+                  isLoading
+                }
+              >
+                {isPending ? "Updating..." : "Update List Valid Time"}
+              </Button>
             </div>
           </div>
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={
-              isPending ||
-              newMilliseconds === branch?.listValidTime ||
-              isLoading
-            }
-          >
-            {isPending ? "Updating..." : "Update List Valid Time"}
-          </Button>
-          {newMilliseconds === branch?.listValidTime && (
-            <p className="text-sm text-gray-400 text-center mt-2">
-              No changes made
-            </p>
-          )}
         </form>
       </CardContent>
     </Card>

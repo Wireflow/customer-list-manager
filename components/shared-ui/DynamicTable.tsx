@@ -71,71 +71,75 @@ export function DynamicTable<T extends Record<string, any>>({
 
   const renderLabel = (field: TableField<T>, index: number) => {
     if (typeof field.label === "function") {
-      // We pass an empty object as a placeholder since we don't have a specific item for the header
       return field.label({} as T);
     }
     return field.label;
   };
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          {fields.map(
-            (field, index) =>
-              !field?.disabled && (
-                <TableHead
-                  key={
-                    typeof field.key === "function"
-                      ? `${index}-${typeof field.label === "function" ? index : field.label}`
-                      : (field.key as string)
-                  }
-                  className={field.className}
-                >
-                  {renderLabel(field, index)}
-                </TableHead>
-              )
-          )}
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {data.length > 0 ? (
-          data.map((item, rowIndex) => (
-            <TableRow
-              key={rowIndex}
-              onClick={() => onRowClick && onRowClick(item)}
-              className={
-                onRowClick
-                  ? "cursor-pointer hover:bg-gray-100"
-                  : "hover:bg-gray-100"
-              }
-            >
-              {fields.map(
-                (field, cellIndex) =>
-                  !field.disabled && (
-                    <TableCell
-                      key={
-                        typeof field.key === "function"
-                          ? `${rowIndex}-${cellIndex}`
-                          : (field.key as string)
-                      }
-                      className={`py-3 ${field.className || ""} `}
-                    >
-                      {renderCellValue(item, field)}
-                    </TableCell>
-                  )
-              )}
-            </TableRow>
-          ))
-        ) : (
-          <TableRow>
-            <TableCell colSpan={fields.length} className="py-4 text-center">
-              {emptyMessage}
-            </TableCell>
+    <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+      <Table className="w-full">
+        <TableHeader>
+          <TableRow className="bg-gray-50">
+            {fields.map(
+              (field, index) =>
+                !field?.disabled && (
+                  <TableHead
+                    key={
+                      typeof field.key === "function"
+                        ? `${index}-${typeof field.label === "function" ? index : field.label}`
+                        : (field.key as string)
+                    }
+                    className={`px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wider ${field.className}`}
+                  >
+                    {renderLabel(field, index)}
+                  </TableHead>
+                )
+            )}
           </TableRow>
-        )}
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody>
+          {data.length > 0 ? (
+            data.map((item, rowIndex) => (
+              <TableRow
+                key={rowIndex}
+                onClick={() => onRowClick && onRowClick(item)}
+                className={`
+                  ${onRowClick ? "cursor-pointer" : ""}
+                  transition-colors hover:bg-gray-50
+                  ${rowIndex % 2 === 0 ? "bg-white" : "bg-gray-50"}
+                `}
+              >
+                {fields.map(
+                  (field, cellIndex) =>
+                    !field.disabled && (
+                      <TableCell
+                        key={
+                          typeof field.key === "function"
+                            ? `${rowIndex}-${cellIndex}`
+                            : (field.key as string)
+                        }
+                        className={`px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm ${field.className || ""}`}
+                      >
+                        {renderCellValue(item, field)}
+                      </TableCell>
+                    )
+                )}
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell
+                colSpan={fields.length}
+                className="px-2 sm:px-4 py-4 sm:py-8 text-center text-gray-500 text-sm"
+              >
+                {emptyMessage}
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </div>
   );
 }
 

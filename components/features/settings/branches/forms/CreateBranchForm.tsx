@@ -1,58 +1,46 @@
 "use client";
 
 import InputField from "@/components/form/InputField"; // Assume this is in the same directory
-import SelectField from "@/components/form/SelectField";
 import Dialog from "@/components/shared-ui/Dialog";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { useCreateUser } from "@/hooks/mutations/users/useCreateUser";
-import { useSession } from "@/hooks/queries/auth/useSession";
-import { userOptions, UserSchema, UserType } from "@/types/validation/users";
+import { useCreateBranch } from "@/hooks/mutations/branches/useCreateBranch";
+import { BranchSchema, BranchType } from "@/types/validation/branches";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-type Props = {
-  branchId?: string;
-};
+type Props = {};
 
-const AddUserForm = ({ branchId }: Props) => {
+const CreateBranchForm = (props: Props) => {
   const [open, setOpen] = useState(false);
-  const form = useForm<UserType>({
-    resolver: zodResolver(UserSchema),
+  const form = useForm<BranchType>({
+    resolver: zodResolver(BranchSchema),
     defaultValues: {
-      email: "",
-      password: "",
-      confirmPassword: "",
-      role: undefined,
-      branchId,
+      name: "",
     },
     mode: "onChange",
   });
 
-  const queryClient = useQueryClient();
-
-  const { mutate, isPending } = useCreateUser({
+  const { mutate, isPending } = useCreateBranch({
     onSuccess: (data) => {
       if (data.success) {
         setOpen(false);
         form.reset();
-        toast.success("User added successfully");
-        queryClient.invalidateQueries({ queryKey: ["users", branchId] });
-        queryClient.invalidateQueries({ queryKey: ["users"] });
-
+        toast.success("Branch added successfully");
         return;
       }
 
-      toast.error(data.error ?? "Failed to add user");
+      toast.error(data.error ?? "Failed to add branch");
     },
   });
 
-  const onSubmit = (data: UserType) => {
-    mutate(data);
+  const onSubmit = (data: BranchType) => {
+    mutate({
+      name: data.name,
+    });
   };
 
   const onCancel = () => {
@@ -69,7 +57,7 @@ const AddUserForm = ({ branchId }: Props) => {
       trigger={
         <Button type="button" className="w-full md:w-auto">
           <Plus className="mr-2 h-4 w-4" />
-          Add User
+          Create Branch
         </Button>
       }
       content={
@@ -78,32 +66,11 @@ const AddUserForm = ({ branchId }: Props) => {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <InputField
                 control={form.control}
-                name="email"
-                label="Email"
-                type="email"
-                placeholder="Enter your email"
+                name="name"
+                label="Branch Name"
+                placeholder="Enter branch name "
               />
-              <InputField
-                control={form.control}
-                name="password"
-                label="Password"
-                type="password"
-                placeholder="Enter password"
-              />
-              <InputField
-                control={form.control}
-                name="confirmPassword"
-                label="Confirm Password"
-                type="password"
-                placeholder="Confirm password"
-              />
-              <SelectField
-                control={form.control}
-                options={userOptions}
-                name="role"
-                label="User Role"
-                placeholder="Select Role"
-              />
+
               <div className="flex md:flex-row flex-col justify-between gap-4 mt-4">
                 <Button
                   variant={"outline"}
@@ -119,7 +86,7 @@ const AddUserForm = ({ branchId }: Props) => {
                   disabled={isPending}
                   loading={isPending}
                 >
-                  Add User
+                  Create Branch
                 </Button>
               </div>
             </form>
@@ -130,4 +97,4 @@ const AddUserForm = ({ branchId }: Props) => {
   );
 };
 
-export default AddUserForm;
+export default CreateBranchForm;

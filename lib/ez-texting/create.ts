@@ -127,13 +127,12 @@ class EZTextingClient {
         throw new Error(JSON.stringify(response.data.Response.Errors ?? []));
       }
     } catch (error) {
-      console.log(error);
       if (axios.isAxiosError(error) && error.response) {
         const responseData = error.response.data as EZTextingResponse;
         return {
           success: false,
           error:
-            responseData.Response.Errors?.join(", ") ||
+            responseData?.Response?.Errors?.join(", ") ||
             "Unknown error occurred",
         };
       }
