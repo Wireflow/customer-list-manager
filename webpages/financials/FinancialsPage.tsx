@@ -46,7 +46,10 @@ const FinancialsPage = () => {
     endDate: lastDayOfLastMonth.toISOString(),
   });
 
-  const { data: profit } = useProfit();
+  const { data: profit } = useProfit({
+    startDate: firstDayOfCurrentMonth.toISOString(),
+    endDate: currentDate.toISOString(),
+  });
 
   const profitPercentage =
     thisMonthRevenue && profit ? (profit / thisMonthRevenue) * 100 : 0;
