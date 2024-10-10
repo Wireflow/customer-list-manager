@@ -113,6 +113,7 @@ const ProductForm = ({ mode = "new", trigger }: Props) => {
       }
     },
     onSuccess: (data) => {
+      console.log(data);
       if (!data.success) {
         toast.error(
           product ? "Failed to update product!" : "Failed to create product!"

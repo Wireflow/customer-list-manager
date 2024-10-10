@@ -71,6 +71,7 @@ export const createProduct = async (formData: FormData) => {
     .insert({
       ...productData,
       imageUrl,
+      categoryId: productData.categoryId ? productData.categoryId : null,
       branchId: session.user.user_metadata.branchId,
     })
     .select()
