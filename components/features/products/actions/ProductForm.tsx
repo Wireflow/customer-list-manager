@@ -98,10 +98,6 @@ const ProductForm = ({ mode = "new", trigger }: Props) => {
   const { mutate, isPending } = useMutation({
     mutationKey: ["product-action"],
     mutationFn: async (data: CreateProductType) => {
-      if (!selectedImage && !product) {
-        throw new Error("Please select an image for the product.");
-      }
-
       const formData = new FormData();
       const base64Image =
         selectedImage && (await convertToBase64(selectedImage));
@@ -156,7 +152,7 @@ const ProductForm = ({ mode = "new", trigger }: Props) => {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        {mode === "edit" ? (
+        {trigger ? (
           trigger
         ) : (
           <Button size="lg" className="w-full md:w-auto">
@@ -164,7 +160,7 @@ const ProductForm = ({ mode = "new", trigger }: Props) => {
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-w-[800px] max-h-[700px]">
+      <DialogContent className="max-w-[800px] md:max-h-[700px] max-h-[600px]">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <DialogHeader>

@@ -95,24 +95,26 @@ export const updateProduct = async (id: string, formData: FormData) => {
   const productData = JSON.parse(
     formData.get("product") as string
   ) as CreateProductType;
-  const imageBase64 = formData.get("imageBase64") as string;
-  const fileName = formData.get("fileName") as string;
+  const imageBase64 = formData.get("imageBase64") as string | null;
+  const fileName = formData.get("fileName") as string | null;
 
-  let imageUrl = undefined;
+  let updateData: Partial<CreateProductType> & { imageUrl?: string } = {
+    ...productData,
+  };
 
   if (imageBase64 && fileName) {
     const uploadResult = await uploadProductImage(imageBase64, fileName);
     if (!uploadResult.success) {
       return { success: false, error: uploadResult.error };
     }
-    imageUrl = uploadResult.publicUrl;
+    updateData.imageUrl = uploadResult.publicUrl;
   }
 
   const { error, data } = await supabase
     .from("products")
     .update({
-      ...productData,
-      imageUrl,
+      ...updateData,
+      categoryId: updateData.categoryId ? updateData.categoryId : null,
       branchId: session.user.user_metadata.branchId,
     })
     .eq("id", id)

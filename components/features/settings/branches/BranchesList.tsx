@@ -1,7 +1,6 @@
 import Dialog from "@/components/shared-ui/Dialog";
 import DynamicTable, { TableField } from "@/components/shared-ui/DynamicTable";
 import { Button } from "@/components/ui/button";
-import { useUpdateUserBranch } from "@/hooks/mutations/users/useUpdateUserBranch";
 import { useUsers } from "@/hooks/queries/users/useUsers";
 import { formatDateToString } from "@/lib/utils";
 import { Row } from "@/types/supabase/table";
@@ -40,25 +39,9 @@ export default BranchesList;
 
 const BranchActions: React.FC<{ branchId: string }> = ({ branchId }) => {
   const { data: users, isLoading } = useUsers(branchId);
-  const { mutate, isPending } = useUpdateUserBranch();
-
-  const handleBranchChange = async (branchId: string) => {
-    mutate({ id: branchId, branchId });
-  };
 
   return (
     <div className="flex gap-4">
-      {/* <DangerDialog
-        title="Change Branch"
-        description="Change the branch for this list"
-        trigger={
-          <Button size="sm" className="text-sm w-fit" variant="outline">
-            Switch to this branch
-          </Button>
-        }
-        onConfirm={() => handleBranchChange(branchId)}
-        disabled={isPending}
-      /> */}
       <Dialog
         title="Users"
         description="View branch users"
@@ -74,7 +57,7 @@ const BranchActions: React.FC<{ branchId: string }> = ({ branchId }) => {
           </Button>
         }
         content={
-          <div className="mt-4 md:max-w-[100%] max-w-[calc(100%-175px)] overflow-x-auto">
+          <div className="mt-4 md:max-w-[100%]  overflow-x-auto">
             <div className="flex items-end justify-end">
               <AddUserForm branchId={branchId} />
             </div>

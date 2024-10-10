@@ -27,9 +27,11 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-type Props = {};
+type Props = {
+  trigger?: React.ReactNode;
+};
 
-const CategoryForm = (props: Props) => {
+const CategoryForm = ({ trigger }: Props) => {
   const { open, setOpen, category, setCategory } = useCategoryStore();
   const queryClient = useQueryClient();
 
@@ -108,9 +110,13 @@ const CategoryForm = (props: Props) => {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button size="lg" className="w-full mt-3">
-          <PlusCircle className="mr-2 h-4 w-4 -ml-2" /> Create new category
-        </Button>
+        {trigger ? (
+          trigger
+        ) : (
+          <Button size="lg" className="w-full mt-3">
+            <PlusCircle className="mr-2 h-4 w-4 -ml-2" /> Create new category
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="max-w-[500px] max-h-[700px]">
         <Form {...form}>

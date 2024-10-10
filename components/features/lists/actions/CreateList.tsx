@@ -85,7 +85,7 @@ const CreateList = (props: Props) => {
             This name will be used as label for the list.
           </p>
         </div>
-        <DialogFooter>
+        <DialogFooter className="gap-4">
           <DialogClose asChild>
             <Button variant={"outline"} disabled={isPending}>
               Cancel

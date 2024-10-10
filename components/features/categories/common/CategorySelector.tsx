@@ -33,7 +33,6 @@ const CategorySelector = ({
       value={selectedCategory ?? "ALL"}
       placeholder="Select category"
       emptyMessage="No categories found"
-      action={!disableAction && <CategoryForm />}
     />
   );
 };

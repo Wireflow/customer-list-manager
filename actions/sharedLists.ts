@@ -25,8 +25,6 @@ export const createSharedList = async (
       data: { user },
     } = await supabase.auth.getUser();
 
-    console.log("signed in user", user);
-
     if (!user || !user.user_metadata?.branchId) {
       throw new Error("Unauthorized or missing branch ID");
     }

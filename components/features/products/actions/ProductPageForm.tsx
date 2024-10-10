@@ -24,7 +24,6 @@ type Props = {
 };
 
 const ProductPageForm = ({ product }: Props) => {
-  const { setOpen } = useProductStore();
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const { data: categories } = useCategories();
 
@@ -61,12 +60,13 @@ const ProductPageForm = ({ product }: Props) => {
     mutationKey: ["product-update"],
     mutationFn: async (data: CreateProductType) => {
       const formData = new FormData();
-      const base64Image =
-        selectedImage && (await convertToBase64(selectedImage));
-
       formData.append("product", JSON.stringify(data));
-      base64Image && formData.append("imageBase64", base64Image);
-      selectedImage && formData.append("fileName", selectedImage.name);
+
+      if (selectedImage) {
+        const base64Image = await convertToBase64(selectedImage);
+        formData.append("imageBase64", base64Image);
+        formData.append("fileName", selectedImage.name);
+      }
 
       return updateProduct(product.id, formData);
     },
@@ -76,20 +76,17 @@ const ProductPageForm = ({ product }: Props) => {
         return;
       }
 
+      setSelectedImage(null);
       toast.success("Product updated!");
       queryClient.invalidateQueries({ queryKey: ["products"] });
     },
     onError: (err: Error) => {
+      console.error(err);
       toast.error(err.message || "Failed to update product!");
     },
   });
 
   const onSubmit = (data: CreateProductType) => {
-    if (!data.categoryId) {
-      toast.error("Category of the product is required.");
-      return;
-    }
-
     mutate(data);
   };
 
@@ -98,6 +95,8 @@ const ProductPageForm = ({ product }: Props) => {
       label: category.name,
       value: category.id,
     })) ?? [];
+
+  const isDirty = form.formState.isDirty || !!selectedImage;
 
   return (
     <Form {...form}>
@@ -182,10 +181,7 @@ const ProductPageForm = ({ product }: Props) => {
         </div>
 
         <div className="flex justify-end mt-10">
-          <Button
-            type="submit"
-            disabled={isPending || !form.formState.isDirty}
-          >
+          <Button type="submit" disabled={isPending || !isDirty}>
             {isPending ? "Updating..." : "Update Product"}
           </Button>
         </div>

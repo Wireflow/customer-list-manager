@@ -54,12 +54,12 @@ const Dialog = ({
             e.preventDefault();
           }
         }}
-        className={cn("overflow-visible", className)}
+        className={cn("overflow-hidden max-h-[90vh] flex flex-col", className)}
         onCloseAutoFocus={onClose}
       >
-        <div className={cn("flex flex-col ", contentClassName)}>
+        <div className={cn("flex flex-col h-full", contentClassName)}>
           {title || description ? (
-            <DialogHeader className="flex">
+            <DialogHeader className="flex-shrink-0">
               {title && (
                 <DialogTitle className="text-2xl font-bold">
                   {title}
@@ -72,8 +72,10 @@ const Dialog = ({
               )}
             </DialogHeader>
           ) : null}
-          <div className="relative">{content}</div>
-          {footer && <DialogFooter>{footer}</DialogFooter>}
+          <div className="flex-grow overflow-auto px-1">{content}</div>
+          {footer && (
+            <DialogFooter className="flex-shrink-0">{footer}</DialogFooter>
+          )}
         </div>
       </DialogContent>
     </ShadcnDialog>
