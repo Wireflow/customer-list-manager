@@ -5,16 +5,13 @@ import { Button } from "@/components/ui/button";
 import { useUpdateUserRole } from "@/hooks/mutations/users/useUpdateUserRole";
 import { useSession } from "@/hooks/queries/auth/useSession";
 import { cn, formatDateToString } from "@/lib/utils";
-import {
-  getUserRoleOptions,
-  userOptions,
-  UserRole,
-} from "@/types/validation/users";
+import { getUserRoleOptions, UserRole } from "@/types/validation/users";
 import { User } from "@supabase/supabase-js";
 import { useState } from "react";
 import { toast } from "sonner";
 import WithRole from "../../roles/WithRole";
 import DeleteUser from "./DeleteUser";
+import { isStringInArray } from "@/utils/supabase/utils";
 
 type Props = {
   users: User[];
@@ -23,6 +20,14 @@ type Props = {
 const UsersList = ({ users }: Props) => {
   const { session } = useSession();
   const userOptions = getUserRoleOptions(session?.user.user_metadata.role);
+
+  const canDeleteUser = (currentUserRole: string, targetUserRole: string) => {
+    if (currentUserRole === "owner") return true;
+    if (currentUserRole === "superadmin")
+      return ["admin", "sales"].includes(targetUserRole);
+    if (currentUserRole === "admin") return targetUserRole === "sales";
+    return false;
+  };
 
   const fields: TableField<User>[] = [
     {
@@ -40,10 +45,10 @@ const UsersList = ({ users }: Props) => {
     {
       key: (row) => (
         <WithRole
-          role={["superadmin"]}
+          role={["superadmin", "owner"]}
           placeholder={<p className="capitalize">{row.user_metadata?.role}</p>}
         >
-          {row.id === session?.user.id ? (
+          {row.id === session?.user.id || row.user_metadata.role === "owner" ? (
             <p className="capitalize">{row.user_metadata?.role}</p>
           ) : (
             <RoleSelector user={row} options={userOptions ?? []} />
@@ -60,24 +65,21 @@ const UsersList = ({ users }: Props) => {
       label: "Last Sign In",
       className: "min-w-[200px] md:min-w-[0px]",
     },
-    ...(session?.user.user_metadata.role === "superadmin"
-      ? [
-          {
-            key: (row: User) => <DeleteUser user={row} />,
-            label: "Delete",
-          },
-        ]
-      : []),
+    {
+      key: (row: User) => {
+        const currentUserRole = session?.user.user_metadata.role;
+        const targetUserRole = row.user_metadata.role;
 
-    ...(session?.user.user_metadata.role === "admin"
-      ? [
-          {
-            key: (row: User) =>
-              row?.user_metadata?.role === "sales" && <DeleteUser user={row} />,
-            label: "Delete",
-          },
-        ]
-      : []),
+        if (
+          canDeleteUser(currentUserRole, targetUserRole) &&
+          row.id !== session?.user.id
+        ) {
+          return <DeleteUser user={row} />;
+        }
+        return "";
+      },
+      label: "Delete",
+    },
   ];
 
   return (

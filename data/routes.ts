@@ -34,11 +34,11 @@ export const dashboardRoutes: Route[] = [
   {
     route: "/dashboard/financials",
     label: "Financials",
-    roles: ["admin", "superadmin"],
+    roles: ["admin", "superadmin", "owner"],
   },
   {
     route: "/dashboard/settings",
     label: "Settings",
-    roles: ["admin", "superadmin"],
+    roles: ["admin", "superadmin", "owner"],
   },
 ];

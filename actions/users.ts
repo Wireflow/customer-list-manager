@@ -2,6 +2,7 @@
 
 import { UserRole, UserType } from "@/types/validation/users";
 import { createClient } from "@/utils/supabase/server";
+import { isStringInArray } from "@/utils/supabase/utils";
 
 const supabase = createClient();
 
@@ -76,6 +77,8 @@ export const getUsers = async (branchId?: string) => {
       throw authError;
     }
 
+    console.log(authError);
+
     if (!session) {
       return { success: false, error: "User not authenticated" };
     }
@@ -94,14 +97,13 @@ export const getUsers = async (branchId?: string) => {
       error: usersError,
     } = await supabase.auth.admin.listUsers();
 
-    console.log(users);
-
     if (usersError) {
       throw usersError;
     }
 
-    const filterBranchId =
-      role === "superadmin" ? superAdminBranchId : userBranchId;
+    const filterBranchId = isStringInArray(role, ["superadmin", "owner"])
+      ? superAdminBranchId
+      : userBranchId;
 
     const filteredUsers = users.filter(
       (user) => user.user_metadata?.branchId === filterBranchId
@@ -157,7 +159,7 @@ export const updateUserRole = async (params: RoleParams) => {
 
   if (
     (params.role === "superadmin" || params.role === "admin") &&
-    user.user_metadata?.role !== "superadmin"
+    !isStringInArray(user.user_metadata?.role, ["superadmin", "owner"])
   ) {
     return { success: false, error: "Unauthorized" };
   }

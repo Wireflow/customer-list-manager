@@ -16,10 +16,10 @@ const SettingsPage = (props: Props) => {
       <TabsList>
         <TabsTrigger value="general">General</TabsTrigger>
         <TabsTrigger value="notifications">Notifications</TabsTrigger>
-        <WithRole role={["admin", "superadmin"]}>
+        <WithRole role={["admin", "superadmin", "owner"]}>
           <TabsTrigger value="users">Users</TabsTrigger>
         </WithRole>
-        <WithRole role={"superadmin"}>
+        <WithRole role={["owner"]}>
           <TabsTrigger value="branches">Branches</TabsTrigger>
         </WithRole>
       </TabsList>
@@ -30,12 +30,12 @@ const SettingsPage = (props: Props) => {
         <TabsContent value="notifications">
           <NotifiedAccounts />
         </TabsContent>
-        <WithRole role={["admin", "superadmin"]}>
+        <WithRole role={["admin", "superadmin", "owner"]}>
           <TabsContent value="users">
             <UsersSettings />
           </TabsContent>
         </WithRole>
-        <WithRole role={"superadmin"}>
+        <WithRole role={["owner"]}>
           <TabsContent value="branches">
             <BranchesSettings />
           </TabsContent>

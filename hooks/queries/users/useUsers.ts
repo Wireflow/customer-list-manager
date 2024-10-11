@@ -14,8 +14,6 @@ export const useUsers = (branchId?: string) => {
 
       const { data, error, success } = await getUsers(branchId);
 
-      console.log(data);
-
       if (!success || error) {
         throw new Error(JSON.stringify(error) ?? "Failed to fetch users");
       }

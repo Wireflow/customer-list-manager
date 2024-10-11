@@ -1,7 +1,7 @@
 import { SelectOptions } from "@/components/shared-ui/Select";
 import { z } from "zod";
 
-export type UserRole = "admin" | "sales" | "superadmin";
+export type UserRole = "admin" | "sales" | "superadmin" | "owner";
 export const USER_ROLES = ["admin", "sales", "superadmin"] as const;
 export const userOptions: SelectOptions[] = USER_ROLES.map((role) => ({
   label: role,
@@ -9,11 +9,14 @@ export const userOptions: SelectOptions[] = USER_ROLES.map((role) => ({
 }));
 
 export const getUserRoleOptions = (role: UserRole) => {
+  if (role === "sales") {
+    return [{ label: "Sales", value: "sales", disabled: true }];
+  }
+
   if (role === "admin") {
     return [
       { label: "Sales", value: "sales", disabled: false },
       { label: "Admin", value: "admin", disabled: true },
-      { label: "Superadmin", value: "superadmin", disabled: true },
     ];
   }
 
@@ -21,15 +24,14 @@ export const getUserRoleOptions = (role: UserRole) => {
     return [
       { label: "Sales", value: "sales", disabled: false },
       { label: "Admin", value: "admin", disabled: false },
-      { label: "Superadmin", value: "superadmin", disabled: false },
     ];
   }
 
-  if (role === "sales") {
+  if (role === "owner") {
     return [
-      { label: "Sales", value: "sales", disabled: true },
-      { label: "Admin", value: "admin", disabled: true },
-      { label: "Superadmin", value: "superadmin", disabled: true },
+      { label: "Sales", value: "sales", disabled: false },
+      { label: "Admin", value: "admin", disabled: false },
+      { label: "Superadmin", value: "superadmin", disabled: false },
     ];
   }
 };

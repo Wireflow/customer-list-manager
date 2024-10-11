@@ -12,7 +12,7 @@ export const fetchBranches = async () => {
   const supabase = createClient();
   const { data } = await supabase.auth.getUser();
 
-  if (data.user?.user_metadata?.role !== "superadmin") {
+  if (data.user?.user_metadata?.role !== "owner") {
     throw new Error("Unauthorized");
   }
 
