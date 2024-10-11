@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { updateProduct } from "@/actions/products";
@@ -11,7 +11,6 @@ import SelectField from "@/components/form/SelectField";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { useCategories } from "@/hooks/queries/categories/useCategories";
-import { useProductStore } from "@/store/useProductStore";
 import { Row } from "@/types/supabase/table";
 import {
   CreateProductSchema,
@@ -19,12 +18,16 @@ import {
 } from "@/types/validation/product";
 import { convertToBase64 } from "@/utils/utils";
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+const MAX_IMAGE_DIMENSION = 1000;
+
 type Props = {
   product: Row<"products">;
 };
 
 const ProductPageForm = ({ product }: Props) => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imageError, setImageError] = useState<string | null>(null);
   const { data: categories } = useCategories();
 
   const queryClient = useQueryClient();
@@ -56,6 +59,94 @@ const ProductPageForm = ({ product }: Props) => {
     }
   }, [product, form]);
 
+  const resizeImage = (file: File): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_IMAGE_DIMENSION) {
+            height *= MAX_IMAGE_DIMENSION / width;
+            width = MAX_IMAGE_DIMENSION;
+          }
+        } else {
+          if (height > MAX_IMAGE_DIMENSION) {
+            width *= MAX_IMAGE_DIMENSION / height;
+            height = MAX_IMAGE_DIMENSION;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext("2d");
+        ctx?.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              resolve(blob);
+            } else {
+              reject(new Error("Canvas to Blob conversion failed"));
+            }
+          },
+          "image/jpeg",
+          0.8
+        ); // Compress to JPEG with 80% quality
+      };
+      img.onerror = (error) => reject(error);
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
+  const checkAndConvertImage = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      if (file.size > MAX_FILE_SIZE) {
+        reject(
+          new Error(
+            `File size should not exceed ${MAX_FILE_SIZE / (1024 * 1024)} MB`
+          )
+        );
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64 = e.target?.result as string;
+        // Remove the data URL prefix
+        const base64Data = base64.split(",")[1];
+        resolve(base64Data);
+      };
+      reader.onerror = (error) => reject(error);
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleImageSelect = async (file: File | null) => {
+    setImageError(null);
+    if (file) {
+      try {
+        if (file.size > MAX_FILE_SIZE) {
+          throw new Error(
+            `File size should not exceed ${MAX_FILE_SIZE / (1024 * 1024)} MB`
+          );
+        }
+        const resizedBlob = await resizeImage(file);
+        setSelectedImage(
+          new File([resizedBlob], file.name, { type: "image/jpeg" })
+        );
+      } catch (error) {
+        setImageError((error as Error).message);
+        setSelectedImage(null);
+      }
+    } else {
+      setSelectedImage(null);
+    }
+  };
+
   const { mutate, isPending } = useMutation({
     mutationKey: ["product-update"],
     mutationFn: async (data: CreateProductType) => {
@@ -63,15 +154,14 @@ const ProductPageForm = ({ product }: Props) => {
       formData.append("product", JSON.stringify(data));
 
       if (selectedImage) {
-        const base64Image = await convertToBase64(selectedImage);
-        formData.append("imageBase64", base64Image);
-        formData.append("fileName", selectedImage.name);
+        formData.append("image", selectedImage);
       }
 
       return updateProduct(product.id, formData);
     },
     onSuccess: (data) => {
       if (!data.success) {
+        console.log(data);
         toast.error("Failed to update product!");
         return;
       }
@@ -105,7 +195,7 @@ const ProductPageForm = ({ product }: Props) => {
           <div className="mt-4 ">
             <ImageUpload
               height={400}
-              onImageSelect={setSelectedImage}
+              onImageSelect={handleImageSelect}
               image={selectedImage}
               previewUrl={product?.imageUrl || ""}
             />

@@ -3,6 +3,7 @@
 import { Insert } from "@/types/supabase/table";
 import { CreateProductType } from "@/types/validation/product";
 import { createClient } from "@/utils/supabase/server";
+import sharp from "sharp";
 
 const supabase = createClient();
 
@@ -23,38 +24,52 @@ export const deleteProduct = async (productId: string) => {
   return { success: true };
 };
 
-async function uploadProductImage(base64Image: string, fileName: string) {
-  const { error } = await supabase.storage
-    .from("products")
-    .upload(fileName, Buffer.from(base64Image.split(",")[1], "base64"), {
-      contentType: "image/png", // Adjust this based on the actual image type
-    });
+async function uploadProductImage(file: File, fileName: string) {
+  try {
+    const { error } = await supabase.storage
+      .from("products")
+      .upload(fileName, file, {
+        contentType: "image/jpeg",
+      });
 
-  if (error) {
-    return { success: false, error: error.message };
+    if (error) {
+      console.error("Upload error:", error);
+      return { success: false, error: error.message };
+    }
+
+    const { data: urlData } = supabase.storage
+      .from("products")
+      .getPublicUrl(fileName);
+
+    console.log("Upload successful, public URL:", urlData.publicUrl);
+    return { success: true, publicUrl: urlData.publicUrl };
+  } catch (error) {
+    console.error("Unexpected error in uploadProductImage:", error);
+    return {
+      success: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "Unknown error processing image",
+    };
   }
-
-  const { data: urlData } = supabase.storage
-    .from("products")
-    .getPublicUrl(fileName);
-
-  return { success: true, publicUrl: urlData.publicUrl };
 }
 
 export const createProduct = async (formData: FormData) => {
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (!session) {
+  if (!user) {
     return { success: false, error: "Unauthorized" };
   }
 
   const productData = JSON.parse(
     formData.get("product") as string
   ) as CreateProductType;
-  const imageBase64 = formData.get("imageBase64") as string;
-  const fileName = formData.get("fileName") as string;
+  const imageBase64 = formData.get("image") as File;
+  const fileName = (formData.get("fileName") +
+    new Date().toLocaleDateString()) as string;
 
   let imageUrl = null;
 
@@ -72,7 +87,7 @@ export const createProduct = async (formData: FormData) => {
       ...productData,
       imageUrl,
       categoryId: productData.categoryId ? productData.categoryId : null,
-      branchId: session.user.user_metadata.branchId,
+      branchId: user.user_metadata.branchId,
     })
     .select()
     .single();
@@ -96,19 +111,24 @@ export const updateProduct = async (id: string, formData: FormData) => {
   const productData = JSON.parse(
     formData.get("product") as string
   ) as CreateProductType;
-  const imageBase64 = formData.get("imageBase64") as string | null;
-  const fileName = formData.get("fileName") as string | null;
+  const imageFile = formData.get("image") as File | null;
 
   let updateData: Partial<CreateProductType> & { imageUrl?: string } = {
     ...productData,
   };
 
-  if (imageBase64 && fileName) {
-    const uploadResult = await uploadProductImage(imageBase64, fileName);
+  if (imageFile) {
+    console.log("Attempting to upload image");
+    const fileName = `${Date.now()}_${imageFile.name}`;
+    const uploadResult = await uploadProductImage(imageFile, fileName);
+
     if (!uploadResult.success) {
+      console.error("Image upload failed:", uploadResult.error);
       return { success: false, error: uploadResult.error };
     }
     updateData.imageUrl = uploadResult.publicUrl;
+  } else {
+    console.log("No image to upload");
   }
 
   const { error, data } = await supabase
@@ -123,8 +143,10 @@ export const updateProduct = async (id: string, formData: FormData) => {
     .single();
 
   if (error) {
+    console.error("Error updating product:", error);
     return { success: false, error: error.message };
   }
 
+  console.log("Product updated successfully");
   return { success: true, data };
 };
