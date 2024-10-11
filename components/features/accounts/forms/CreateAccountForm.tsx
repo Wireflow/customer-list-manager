@@ -33,7 +33,6 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 
   const handleSubmit = () => {
     onSubmit(phone, name);
-    console.log(phone, name);
   };
 
   return (

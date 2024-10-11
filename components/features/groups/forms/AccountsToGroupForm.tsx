@@ -32,7 +32,6 @@ const AccountsToGroupForm = ({ trigger }: Props) => {
   const handleSelectAccount = (option: Option) => {
     setSelectedAccount(option);
     // Here you can add logic to handle the selected account
-    console.log("Selected account:", option);
   };
 
   return (

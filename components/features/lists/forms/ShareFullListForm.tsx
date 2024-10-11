@@ -34,8 +34,6 @@ const ShareFullListForm: React.FC<ShareFullListFormProps> = ({
       value: account.phoneNumber,
     })) ?? [];
 
-  console.log(accountOptions);
-
   const handlePhoneChange = (value: string) => {
     setPhone(value);
   };

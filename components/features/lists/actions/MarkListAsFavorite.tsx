@@ -16,7 +16,6 @@ const MarkListAsFavorite = ({ listId }: Props) => {
   const { mutate, isPending } = useUpdateList(listId)({
     onSuccess: (data) => {
       if (!data.success) {
-        console.log(data.error);
         toast.error(data.error ?? "Failed to changed favorite status");
         return;
       }

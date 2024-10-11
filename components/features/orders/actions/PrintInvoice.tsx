@@ -19,7 +19,6 @@ const PrintInvoice = ({ orderId }: Props) => {
   const handlePrint = useReactToPrint({
     contentRef: componentRef,
     documentTitle: `Invoice - Order ${order?.orderNumber}`,
-    onAfterPrint: () => console.log("Printed successfully"),
     pageStyle: `
       @page {
         size: auto;

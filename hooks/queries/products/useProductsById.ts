@@ -10,10 +10,7 @@ export const useProductsById = (productId: string) => {
   });
 };
 
-
-export const fetchProduct = async (
-  productId: string
-) => {
+export const fetchProduct = async (productId: string) => {
   const supabase = createClient();
   const {
     data: { session },
@@ -27,7 +24,7 @@ export const fetchProduct = async (
     .rpc("get_product_by_id", {
       p_product_id: productId,
     })
-  .returns<ProductWithSales>();
+    .returns<ProductWithSales>();
   if (error) {
     throw error;
   }
@@ -35,9 +32,6 @@ export const fetchProduct = async (
   if (!product) {
     throw new Error("Product not found");
   }
-
-  console.log(product)
-
 
   return product;
 };

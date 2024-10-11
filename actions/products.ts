@@ -33,7 +33,6 @@ async function uploadProductImage(file: File, fileName: string) {
       });
 
     if (error) {
-      console.error("Upload error:", error);
       return { success: false, error: error.message };
     }
 
@@ -41,10 +40,8 @@ async function uploadProductImage(file: File, fileName: string) {
       .from("products")
       .getPublicUrl(fileName);
 
-    console.log("Upload successful, public URL:", urlData.publicUrl);
     return { success: true, publicUrl: urlData.publicUrl };
   } catch (error) {
-    console.error("Unexpected error in uploadProductImage:", error);
     return {
       success: false,
       error:
@@ -118,17 +115,14 @@ export const updateProduct = async (id: string, formData: FormData) => {
   };
 
   if (imageFile) {
-    console.log("Attempting to upload image");
     const fileName = `${Date.now()}_${imageFile.name}`;
     const uploadResult = await uploadProductImage(imageFile, fileName);
 
     if (!uploadResult.success) {
-      console.error("Image upload failed:", uploadResult.error);
       return { success: false, error: uploadResult.error };
     }
     updateData.imageUrl = uploadResult.publicUrl;
   } else {
-    console.log("No image to upload");
   }
 
   const { error, data } = await supabase
@@ -143,10 +137,8 @@ export const updateProduct = async (id: string, formData: FormData) => {
     .single();
 
   if (error) {
-    console.error("Error updating product:", error);
     return { success: false, error: error.message };
   }
 
-  console.log("Product updated successfully");
   return { success: true, data };
 };

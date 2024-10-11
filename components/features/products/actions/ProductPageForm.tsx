@@ -161,7 +161,6 @@ const ProductPageForm = ({ product }: Props) => {
     },
     onSuccess: (data) => {
       if (!data.success) {
-        console.log(data);
         toast.error("Failed to update product!");
         return;
       }

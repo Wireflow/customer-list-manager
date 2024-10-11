@@ -48,7 +48,6 @@ const CartPage = ({ toggleExpand }: Props) => {
 
   const { mutate, isPending } = useSubmitOrder({
     onSuccess: (data) => {
-      console.log(data);
       if (!data?.success) {
         toast.error(data.error ?? "Failed to send order");
         return;
@@ -69,22 +68,6 @@ const CartPage = ({ toggleExpand }: Props) => {
       toast.error(error?.message ?? "Failed to send order");
     },
   });
-
-  useEffect(() => {
-    console.log({
-      orderItems: cart.map((item) => ({
-        productId: item.productId ?? "",
-        quantity: item.quantity ?? 0,
-        price: item.price ?? 0,
-        name: item.name ?? "",
-        imageUrl: item.imageUrl ?? "",
-        unit: item.unit ?? "",
-        description: item.description ?? "",
-      })),
-      phoneNumber,
-      sharedListId: id,
-    });
-  }, [cart]);
 
   const handleSendOrder = () => {
     mutate({

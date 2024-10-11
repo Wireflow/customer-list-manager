@@ -37,7 +37,6 @@ export const createUser = async (data: UserType) => {
   const branchId = user?.user_metadata.branchId;
 
   if (!user || !branchId || role === "sales") {
-    console.log(user);
     return { success: false, error: "Unauthorized" };
   }
 
@@ -76,8 +75,6 @@ export const getUsers = async (branchId?: string) => {
     if (authError) {
       throw authError;
     }
-
-    console.log(authError);
 
     if (!session) {
       return { success: false, error: "User not authenticated" };
