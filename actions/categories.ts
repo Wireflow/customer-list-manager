@@ -1,5 +1,7 @@
+"use server";
+
 import { CreateCategoryType } from "@/types/validation/catgories";
-import { createClient } from "@/utils/supabase/client";
+import { createClient } from "@/utils/supabase/server";
 
 const supabase = createClient();
 
@@ -15,8 +17,6 @@ export const createCategory = async (formData: FormData) => {
   const CategoryData = JSON.parse(
     formData.get("categories") as string
   ) as CreateCategoryType;
- 
-
 
   const { error, data } = await supabase
     .from("categories")
@@ -34,6 +34,31 @@ export const createCategory = async (formData: FormData) => {
   return { success: true, data };
 };
 
+export const deleteCategory = async (categoryId: string) => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { success: false, error: "Unauthorized" };
+  }
+
+  if (user.user_metadata.role === "sales") {
+    return { success: false, error: "Only Admins can delete categories" };
+  }
+
+  const { error } = await supabase
+    .from("categories")
+    .delete()
+    .eq("id", categoryId);
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  return { success: true };
+};
+
 export const updateCategory = async (id: string, formData: FormData) => {
   const {
     data: { session },
@@ -46,9 +71,6 @@ export const updateCategory = async (id: string, formData: FormData) => {
   const CategoryData = JSON.parse(
     formData.get("categories") as string
   ) as CreateCategoryType;
-
-
-
 
   const { error, data } = await supabase
     .from("categories")

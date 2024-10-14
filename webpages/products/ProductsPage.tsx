@@ -17,6 +17,7 @@ import { useProducts } from "@/hooks/queries/products/useProducts";
 import { useProductsCountByFilter } from "@/hooks/queries/products/useProductsCount";
 import { formatCurrency } from "@/utils/utils";
 import { ChevronDown, Plus } from "lucide-react";
+import Link from "next/link";
 
 type ProductsPageProps = {};
 
@@ -38,6 +39,7 @@ const ProductsPage = (props: ProductsPageProps) => {
     pageSize: 10,
   });
   const { data: inventoryProducts } = useProducts();
+
   if (isLoading)
     return <NoData variant="loading" message="Loading products..." />;
 
@@ -127,6 +129,16 @@ const ProductsPage = (props: ProductsPageProps) => {
                     </Button>
                   }
                 />
+                <Link href={"/dashboard/categories"}>
+                  <Button
+                    size={"lg"}
+                    className="w-full"
+                    variant={"secondary"}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    View Categories
+                  </Button>
+                </Link>
               </div>
             }
           />

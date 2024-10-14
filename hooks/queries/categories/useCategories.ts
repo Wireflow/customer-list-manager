@@ -14,14 +14,19 @@ export const fetchCategories = async (branchId?: string) => {
 
   const loggedInBranchId = data.user?.user_metadata.branchId;
 
-  const { data: lists, error } = await supabase
+  const { data: categories, error } = await supabase
     .from("categories")
     .select(`*, products: products(count)`)
     .eq("branchId", loggedInBranchId ?? branchId);
+
+  const formattedCategories = categories?.map((category) => ({
+    ...category,
+    count: category.products[0].count,
+  }));
 
   if (error) {
     throw error;
   }
 
-  return lists;
+  return formattedCategories;
 };
