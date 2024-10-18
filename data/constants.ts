@@ -1,8 +1,7 @@
 import { SelectOptions } from "@/components/shared-ui/Select";
 import { Enum } from "@/types/supabase/enum";
 
-export const PLACEHOLDER_IMG_URL =
-  "https://archive.org/download/placeholder-image/placeholder-image.jpg";
+export const PLACEHOLDER_IMG_URL = "/placeholder.webp";
 
 export const PAYMENT_METHODS: Enum<"payment_method">[] = [
   "check",

@@ -1,12 +1,11 @@
 "use client";
 
+import { ProductWithSales } from "@/hooks/queries/products/useProductsById";
 import useCartStore from "@/store/useCartStore";
-import { Row } from "@/types/supabase/table";
-import { useEffect } from "react";
 import SharedProductCard from "./SharedProductCard";
 
 type SharedProductsListProps = {
-  products: Row<"products">[];
+  products: ProductWithSales[];
 };
 
 const SharedProductsList = ({ products }: SharedProductsListProps) => {
@@ -18,7 +17,7 @@ const SharedProductsList = ({ products }: SharedProductsListProps) => {
   const cart = useCartStore((state) => state.cart);
 
   const handleQuantityChange = (
-    product: Row<"products">,
+    product: ProductWithSales,
     newQuantity: number
   ) => {
     const currentQuantity = getCartItem(product.id)?.quantity ?? 0;

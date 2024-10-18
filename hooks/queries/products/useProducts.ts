@@ -20,7 +20,7 @@ export const fetchProducts = async () => {
 
   const { data: products, error } = await supabase
     .from("products")
-    .select("*")
+    .select("*, imageUrls:product_images(*)")
     .eq("branchId", branchId);
 
   if (error) {

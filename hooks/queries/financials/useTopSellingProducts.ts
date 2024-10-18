@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export type ProductWithSales = Row<"products"> & {
   sales: number;
+  imageUrls: Row<"product_images">[];
 };
 
 export const useTopSellingProducts = (limit?: number) => {

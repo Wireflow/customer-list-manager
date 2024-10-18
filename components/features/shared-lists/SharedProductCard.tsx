@@ -1,6 +1,8 @@
 "use client";
 
-import SubmitButton from "@/components/form/SubmitButton";
+import React from "react";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -8,19 +10,22 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import DangerDialog from "@/components/ui/danger-dialog";
 import { PLACEHOLDER_IMG_URL } from "@/data/constants";
+import { ProductWithSales } from "@/hooks/queries/products/useProductsById";
 import { Row } from "@/types/supabase/table";
 import { cn } from "@/utils/cn";
 import { formatCurrency } from "@/utils/utils";
-import { Trash, Plus, Minus } from "lucide-react";
-import Image from "next/image";
-import React from "react";
-import { Button } from "@/components/ui/button";
-import { on } from "events";
+import { Minus, Plus } from "lucide-react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 type Props = {
-  product: Row<"products">;
+  product: ProductWithSales;
   disableSelect?: boolean;
   disableDelete?: boolean;
   disableQuantity?: boolean;
@@ -35,21 +40,18 @@ type Props = {
   quantity?: number;
 };
 
-const SharedProductCard = ({
+const SharedProductCard: React.FC<Props> = ({
   product,
   onClick,
-  disableDelete = false,
   disableSelect = false,
   disableQuantity = false,
-  isDeleting = false,
   onChecked,
-  onDelete,
   onQuantityChange,
   checked = false,
   disableAdd,
   onAdd,
   quantity = 0,
-}: Props) => {
+}) => {
   const handleIncrement = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (onQuantityChange) {
@@ -74,23 +76,42 @@ const SharedProductCard = ({
     >
       <CardContent className="py-4 px-6 flex flex-col gap-4 h-full justify-between">
         <div className="flex flex-col items-center gap-2">
-          <div className="flex gap-4  items-center">
-            {!disableSelect ? (
+          <div className="flex gap-4 items-center">
+            {!disableSelect && (
               <Checkbox
                 checked={checked}
                 onClick={onChecked}
                 className="w-[20px] h-[20px]"
               />
-            ) : null}
-            <div className="relative flex-shrink-0 overflow-hidden">
-              <Image
-                src={product?.imageUrl || PLACEHOLDER_IMG_URL}
-                alt="product image"
-                width={200}
-                height={200}
-                style={{ objectFit: "contain" }}
-              />
-            </div>
+            )}
+            {product.imageUrls.length > 0 ? (
+              <Carousel className="w-[300px]">
+                <CarouselContent>
+                  {product.imageUrls.map((img, index) => (
+                    <CarouselItem key={index}>
+                      <div className="relative flex-shrink-0 overflow-hidden w-[300px] h-[200px]">
+                        <Image
+                          src={img.imageUrl ?? PLACEHOLDER_IMG_URL}
+                          alt={`product image ${index + 1}`}
+                          layout="fill"
+                          objectFit="contain"
+                        />
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+              </Carousel>
+            ) : (
+              <div className="relative flex-shrink-0 overflow-hidden">
+                <Image
+                  src={product?.imageUrls[0]?.imageUrl || PLACEHOLDER_IMG_URL}
+                  alt="product image"
+                  width={270}
+                  height={200}
+                  style={{ objectFit: "contain" }}
+                />
+              </div>
+            )}
           </div>
         </div>
 
@@ -130,12 +151,15 @@ const SharedProductCard = ({
             </div>
           )}
 
-          {onAdd ? (
+          {onAdd && (
             <Button
               type="button"
               className="w-full"
-              size={"lg"}
-              onClick={() => onAdd(product)}
+              size="lg"
+              onClick={(e) => {
+                e.stopPropagation();
+                onAdd(product);
+              }}
               disabled={disableAdd || product.quantityInStock === 0}
             >
               {disableAdd
@@ -144,7 +168,7 @@ const SharedProductCard = ({
                   ? "Out of Stock"
                   : "Add to Cart"}
             </Button>
-          ) : null}
+          )}
         </div>
       </CardContent>
     </Card>

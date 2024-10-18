@@ -12,7 +12,8 @@ export const useListById = (listId: string, enabled: boolean = true) => {
 export const fetchListById = async (listId: string) => {
   const supabase = createClient();
 
-  if (!supabase.auth.getSession()) {
+  const { data: session } = await supabase.auth.getSession();
+  if (!session) {
     throw new Error("Unauthorized");
   }
 
@@ -23,15 +24,33 @@ export const fetchListById = async (listId: string) => {
       *,
       items:listItems( 
         *,
-        product:products!inner(*)
+        product:products!inner(
+          *,
+          imageUrls:product_images(*)
+        )
       )
     `
     )
     .eq("id", listId)
+    .order("createdAt", {
+      foreignTable: "items.product.imageUrls",
+      ascending: true,
+    })
     .single();
 
   if (error) {
     throw error;
+  }
+
+  if (list && list.items) {
+    list.items.forEach((item) => {
+      if (item.product && item.product.imageUrls) {
+        item.product.imageUrls.sort(
+          (a, b) =>
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        );
+      }
+    });
   }
 
   return list;

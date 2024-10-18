@@ -19,7 +19,7 @@ import Image from "next/image";
 import React from "react";
 
 type Props = {
-  product: Row<"products">;
+  product: Row<"products"> & { imageUrls?: Row<"product_images">[] };
   disableSelect?: boolean;
   disableDelete?: boolean;
   disableQuantity?: boolean;
@@ -63,6 +63,16 @@ const ProductCard = ({
     }
   };
 
+  const getImageSrc = () => {
+    if (product.imageUrls && product.imageUrls.length > 0) {
+      return getImageUrl(product.imageUrls[0].imageUrl);
+    }
+    if (product.imageUrl) {
+      return getImageUrl(product.imageUrl);
+    }
+    return "/placeholder-image.jpg"; // Provide a placeholder image path
+  };
+
   return (
     <Card
       onClick={onClick}
@@ -81,13 +91,12 @@ const ProductCard = ({
                 className="w-[20px] h-[20px]"
               />
             ) : null}
-            <div className="relative flex-shrink-0 overflow-hidden md:w-auto md:h-auto h-16 w-16">
+            <div className="relative flex-shrink-0 overflow-hidden h-20 w-20">
               <Image
-                src={getImageUrl(product?.imageUrl)}
-                alt="product image"
-                width={75}
-                height={75}
-                style={{ objectFit: "contain", overflow: "hidden" }}
+                src={getImageSrc()}
+                layout="fill"
+                objectFit="contain"
+                alt={product.name}
               />
             </div>
           </div>

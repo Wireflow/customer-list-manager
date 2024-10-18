@@ -1,9 +1,13 @@
 "use server";
 
 import { Insert } from "@/types/supabase/table";
-import { CreateProductType } from "@/types/validation/product";
+import {
+  CreateProductType,
+  UpdateProductType,
+} from "@/types/validation/product";
 import { createClient } from "@/utils/supabase/server";
 import sharp from "sharp";
+import { createProductImages } from "./product_images";
 
 const supabase = createClient();
 
@@ -52,7 +56,10 @@ async function uploadProductImage(file: File, fileName: string) {
   }
 }
 
-export const createProduct = async (formData: FormData) => {
+export const createProduct = async (
+  productData: CreateProductType,
+  images?: FormData
+) => {
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -61,28 +68,10 @@ export const createProduct = async (formData: FormData) => {
     return { success: false, error: "Unauthorized" };
   }
 
-  const productData = JSON.parse(
-    formData.get("product") as string
-  ) as CreateProductType;
-  const imageBase64 = formData.get("image") as File;
-  const fileName = (formData.get("fileName") +
-    new Date().toLocaleDateString()) as string;
-
-  let imageUrl = null;
-
-  if (imageBase64 && fileName) {
-    const uploadResult = await uploadProductImage(imageBase64, fileName);
-    if (!uploadResult.success) {
-      return { success: false, error: uploadResult.error };
-    }
-    imageUrl = uploadResult.publicUrl;
-  }
-
-  const { error, data } = await supabase
+  const { data: product, error } = await supabase
     .from("products")
     .insert({
       ...productData,
-      imageUrl,
       categoryId: productData.categoryId ? productData.categoryId : null,
       branchId: user.user_metadata.branchId,
     })
@@ -93,48 +82,56 @@ export const createProduct = async (formData: FormData) => {
     return { success: false, error: error.message };
   }
 
-  return { success: true, data };
-};
+  if (images) {
+    const imageFiles = Array.from(images.getAll("images")) as File[];
+    if (imageFiles.length > 0) {
+      const productImages = await createProductImages(imageFiles, product.id);
 
-export const updateProduct = async (id: string, formData: FormData) => {
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  if (!session) {
-    return { success: false, error: "Unauthorized" };
+      if (!productImages.length) {
+        return { success: false, error: "Failed to create product images" };
+      }
+    }
   }
 
-  const productData = JSON.parse(
-    formData.get("product") as string
-  ) as CreateProductType;
-  const imageFile = formData.get("image") as File | null;
+  return { success: true, data: product };
+};
 
-  let updateData: Partial<CreateProductType> & { imageUrl?: string } = {
-    ...productData,
-  };
+export const updateProduct = async (
+  productData: UpdateProductType,
+  images?: FormData
+) => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (imageFile) {
-    const fileName = `${Date.now()}_${imageFile.name}`;
-    const uploadResult = await uploadProductImage(imageFile, fileName);
-
-    if (!uploadResult.success) {
-      return { success: false, error: uploadResult.error };
-    }
-    updateData.imageUrl = uploadResult.publicUrl;
-  } else {
+  if (!user) {
+    return { success: false, error: "Unauthorized" };
   }
 
   const { error, data } = await supabase
     .from("products")
     .update({
-      ...updateData,
-      categoryId: updateData.categoryId ? updateData.categoryId : null,
-      branchId: session.user.user_metadata.branchId,
+      ...productData,
+      categoryId: productData.categoryId ? productData.categoryId : null,
+      branchId: user.user_metadata.branchId,
     })
-    .eq("id", id)
+    .eq("id", productData.id)
     .select()
     .single();
+
+  if (images) {
+    const imageFiles = Array.from(images.getAll("images")) as File[];
+    if (imageFiles.length > 0) {
+      const productImages = await createProductImages(
+        imageFiles,
+        productData.id
+      );
+
+      if (!productImages.length) {
+        return { success: false, error: "Failed to create product images" };
+      }
+    }
+  }
 
   if (error) {
     return { success: false, error: error.message };

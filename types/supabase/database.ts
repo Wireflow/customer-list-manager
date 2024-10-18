@@ -56,18 +56,21 @@ export type Database = {
       branch: {
         Row: {
           createdAt: string
+          disabled: boolean
           id: string
           listValidTime: number
           name: string
         }
         Insert: {
           createdAt?: string
+          disabled?: boolean
           id?: string
           listValidTime?: number
           name: string
         }
         Update: {
           createdAt?: string
+          disabled?: boolean
           id?: string
           listValidTime?: number
           name?: string
@@ -212,6 +215,13 @@ export type Database = {
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "listItems_productId_fkey"
+            columns: ["productId"]
+            isOneToOne: false
+            referencedRelation: "products_with_sales"
+            referencedColumns: ["id"]
+          },
         ]
       }
       lists: {
@@ -296,6 +306,13 @@ export type Database = {
             columns: ["productId"]
             isOneToOne: false
             referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orderItems_productId_fkey"
+            columns: ["productId"]
+            isOneToOne: false
+            referencedRelation: "products_with_sales"
             referencedColumns: ["id"]
           },
         ]
@@ -412,6 +429,45 @@ export type Database = {
             columns: ["orderId"]
             isOneToOne: false
             referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_images: {
+        Row: {
+          createdAt: string
+          id: number
+          imageUrl: string
+          path: string
+          productId: string
+        }
+        Insert: {
+          createdAt?: string
+          id?: number
+          imageUrl: string
+          path: string
+          productId: string
+        }
+        Update: {
+          createdAt?: string
+          id?: number
+          imageUrl?: string
+          path?: string
+          productId?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_images_productId_fkey"
+            columns: ["productId"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_images_productId_fkey"
+            columns: ["productId"]
+            isOneToOne: false
+            referencedRelation: "products_with_sales"
             referencedColumns: ["id"]
           },
         ]
@@ -593,6 +649,38 @@ export type Database = {
           },
         ]
       }
+      products_with_sales: {
+        Row: {
+          branchId: string | null
+          categoryId: string | null
+          costPrice: number | null
+          createdAt: string | null
+          description: string | null
+          id: string | null
+          imageUrl: string | null
+          name: string | null
+          price: number | null
+          quantityInStock: number | null
+          sales: number | null
+          unit: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_branchId_fkey"
+            columns: ["branchId"]
+            isOneToOne: false
+            referencedRelation: "branch"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_categoryId_fkey"
+            columns: ["categoryId"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       create_order: {
@@ -611,7 +699,19 @@ export type Database = {
         Args: {
           p_product_id: string
         }
-        Returns: Database["public"]["CompositeTypes"]["product_with_sales"]
+        Returns: {
+          id: string
+          name: string
+          description: string
+          price: number
+          costPrice: number
+          branchId: string
+          createdAt: string
+          quantityInStock: number
+          unit: string
+          categoryId: string
+          sales: number
+        }[]
       }
       get_product_info_by_id: {
         Args: {
@@ -746,6 +846,9 @@ export type Database = {
         unit: string | null
         sales: number | null
       }
+      product_with_details: {
+        sales: number | null
+      }
       product_with_sales: {
         id: string | null
         name: string | null
@@ -853,4 +956,19 @@ export type Enums<
   ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
     ? PublicSchema["Enums"][PublicEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof PublicSchema["CompositeTypes"]
+    | { schema: keyof Database },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof Database
+  }
+    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
+    ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never

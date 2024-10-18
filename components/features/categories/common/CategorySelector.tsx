@@ -1,12 +1,13 @@
+import React from "react";
 import Select, { SelectOptions } from "@/components/shared-ui/Select";
 import { useCategories } from "@/hooks/queries/categories/useCategories";
-import CategoryForm from "../forms/CategoryForm";
 
 type Props = {
   onSelect: (category: string) => void;
-  selectedCategory: string;
+  selectedCategory?: string;
   disableAction?: boolean;
   branchId?: string;
+  removeAll?: boolean;
 };
 
 const CategorySelector = ({
@@ -14,6 +15,7 @@ const CategorySelector = ({
   selectedCategory,
   disableAction,
   branchId,
+  removeAll = false,
 }: Props) => {
   const { data: categories } = useCategories(branchId);
 
@@ -22,7 +24,9 @@ const CategorySelector = ({
     value: category.id,
   })) ?? []) as SelectOptions[];
 
-  const allCategories = [{ label: "All", value: "ALL" }, ...formatedCategories];
+  const allCategories: SelectOptions[] = removeAll
+    ? formatedCategories
+    : [{ label: "All", value: "ALL" }, ...formatedCategories];
 
   return (
     <Select
@@ -30,7 +34,7 @@ const CategorySelector = ({
       defaultValue="ALL"
       options={allCategories}
       onValueChange={(value) => onSelect(value ?? "ALL")}
-      value={selectedCategory ?? "ALL"}
+      value={selectedCategory ?? (removeAll ? "ALL" : selectedCategory)}
       placeholder="Select category"
       emptyMessage="No categories found"
     />

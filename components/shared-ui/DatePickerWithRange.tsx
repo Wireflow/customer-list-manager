@@ -51,7 +51,7 @@ export function DatePickerWithRange({
             variant={"outline"}
             id="date"
             className={cn(
-              "flex h-14 w-[280px] items-center justify-between rounded-lg border-gray-200 text-left text-[15px] font-semibold text-gray-500",
+              "flex h-14 w-full md:w-[280px] items-center justify-between rounded-lg border-gray-200 text-left text-[15px] font-semibold text-gray-500",
               !date && "text-muted-foreground"
             )}
           >

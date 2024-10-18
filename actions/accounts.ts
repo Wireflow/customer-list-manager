@@ -47,16 +47,17 @@ export const createAccount = async (data: ConsentType) => {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
   const branchId = user?.user_metadata.branchId;
 
   try {
     const { data: accountData, error: accountError } = await supabase
       .from("accounts")
-      .select("phoneNumber, id, opted")
+      .select("phoneNumber, id, opted, branchId")
       .eq("phoneNumber", data.phoneNumber)
       .single();
 
-    if (accountData?.opted) {
+    if (accountData?.opted && branchId === accountData.branchId) {
       return { success: false, error: "Account already opted in" };
     }
 
@@ -72,7 +73,7 @@ export const createAccount = async (data: ConsentType) => {
       }
     }
 
-    if (accountData) {
+    if (accountData && branchId === accountData.branchId) {
       const response = await updateAccount({
         id: accountData.id,
         data: { opted: data.opted, optedAt: data.optedAt, name: data.name },
@@ -87,12 +88,12 @@ export const createAccount = async (data: ConsentType) => {
       throw new Error(accountError.message);
     }
 
-    if (!accountData) {
+    if (!accountData || accountData.branchId !== branchId) {
       const { error } = await supabase
         .from("accounts")
         .insert({
           phoneNumber: data.phoneNumber,
-          branchId,
+          branchId: branchId,
           name: data.name,
           opted: data.opted,
           optedAt: data.optedAt,

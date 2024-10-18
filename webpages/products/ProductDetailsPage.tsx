@@ -1,9 +1,12 @@
 "use client";
+import ProductUpdateForm from "@/components/features/products/actions/ProductUpdateForm";
 import PageHeader from "@/components/layout/PageHeader";
 import InfoCard from "@/components/shared-ui/InfoCard";
-import { useProductsById } from "@/hooks/queries/products/useProductsById";
+import {
+  ProductWithSales,
+  useProductsById,
+} from "@/hooks/queries/products/useProductsById";
 import { formatCurrency } from "@/utils/utils";
-import ProductDetailsContainer from "./ProductDetailsContainer";
 
 type Props = {
   id: string;
@@ -11,11 +14,13 @@ type Props = {
 
 const ProductDetailsPage = ({ id }: Props) => {
   const { data: product } = useProductsById(id);
+
   const StockValue = product?.costPrice
-    ? product?.costPrice * product?.quantityInStock
+    ? product?.costPrice * (product?.quantityInStock ?? 0)
     : 0;
 
   if (!product) return <div>Product not found</div>;
+
   return (
     <div className="flex flex-col gap-5">
       <PageHeader title="Product Details" description="View product details" />
@@ -28,7 +33,7 @@ const ProductDetailsPage = ({ id }: Props) => {
         <InfoCard title="Total Sales" value={product?.sales} />
       </div>
 
-      <ProductDetailsContainer product={product} />
+      <ProductUpdateForm product={product as ProductWithSales} />
     </div>
   );
 };

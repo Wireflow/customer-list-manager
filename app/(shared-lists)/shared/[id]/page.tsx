@@ -33,11 +33,16 @@ const SharedList = async ({ params: { id } }: Props) => {
   if (sharedList.type === "full") {
     const { data: fullList } = await supabase
       .from("products")
-      .select("*")
+      .select("*, imageUrls:product_images(*)")
+      .order("createdAt", {
+        referencedTable: "product.imageUrls",
+        ascending: true,
+      })
       .eq("branchId", sharedList.branchId);
 
     return (
       <CustomListPage
+        sharedList={sharedList}
         products={fullList ?? []}
         branchId={sharedList.branchId}
       />
@@ -47,7 +52,11 @@ const SharedList = async ({ params: { id } }: Props) => {
   if (sharedList.type === "custom" && sharedList.listId) {
     const { data: customList } = await supabase
       .from("listItems")
-      .select("*, product:products!inner(*)")
+      .select("*, product:products!inner(*, imageUrls:product_images(*))")
+      .order("createdAt", {
+        referencedTable: "product.imageUrls",
+        ascending: true,
+      })
       .eq("listId", sharedList?.listId);
 
     const formattedListItems = customList?.map((item) => ({
@@ -56,6 +65,7 @@ const SharedList = async ({ params: { id } }: Props) => {
 
     return (
       <CustomListPage
+        sharedList={sharedList}
         products={formattedListItems ?? []}
         branchId={sharedList.branchId}
       />

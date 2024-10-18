@@ -66,7 +66,7 @@ const ProductsPage = (props: ProductsPageProps) => {
           title="Inventory Items"
           value={`${inventoryProducts?.length ?? 0}`}
         />
-        <WithRole role={["admin", "superadmin"]}>
+        <WithRole role={["admin", "superadmin", "owner"]}>
           <InfoCard
             title="Total Inventory Value"
             value={formatCurrency(totalCost)}
@@ -117,6 +117,7 @@ const ProductsPage = (props: ProductsPageProps) => {
                     </Button>
                   }
                 />
+
                 <CategoryForm
                   trigger={
                     <Button

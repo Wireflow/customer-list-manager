@@ -1,8 +1,8 @@
-import ProductPageForm from "@/components/features/products/actions/ProductPageForm";
-import { Row } from "@/types/supabase/table";
+import ProductPageForm from "@/components/features/products/actions/ProductUpdateForm";
+import { Row, ViewRow } from "@/types/supabase/table";
 
 type Props = {
-  product: Row<"products">;
+  product: ViewRow<"products_with_sales">;
 };
 
 const ProductDetailsContainer = ({ product }: Props) => {

@@ -59,7 +59,12 @@ export const usePaginatedProducts = ({
 
     let query = supabase
       .from("products")
-      .select("*", { count: "exact" })
+      .select("*, imageUrls:product_images(*)", { count: "exact" })
+      .order("createdAt", {
+        referencedTable: "product_images",
+        ascending: true,
+      })
+      .order("createdAt", { ascending: true })
       .eq("branchId", branchId);
 
     if (categoryId !== "ALL") {

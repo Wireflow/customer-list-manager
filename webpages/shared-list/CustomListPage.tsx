@@ -6,19 +6,21 @@ import FloatingCartButton from "@/components/features/shared-lists/cart/Floating
 import SharedProductsList from "@/components/features/shared-lists/SharedProductsList";
 import PageHeader from "@/components/layout/PageHeader";
 import { Label } from "@/components/ui/label";
+import { ProductWithSales } from "@/hooks/queries/products/useProductsById";
 import { useFilterItems } from "@/hooks/useFilterItems";
 import { Row } from "@/types/supabase/table";
 import { useEffect, useState } from "react";
 
 type Props = {
-  products: Row<"products">[];
+  products: ProductWithSales[];
+  sharedList?: Row<"sharedLists">;
   branchId: string;
 };
 
-const CustomListPage = ({ products, branchId }: Props) => {
+const CustomListPage = ({ products, branchId, sharedList }: Props) => {
   const [categoryId, setCategoryId] = useState("ALL");
   const [categoryFilteredItems, setCategoryFilteredItems] = useState<
-    Row<"products">[]
+    ProductWithSales[]
   >(products ?? []);
 
   useEffect(() => {
@@ -39,7 +41,7 @@ const CustomListPage = ({ products, branchId }: Props) => {
       <div className="flex flex-col h-full relative pb-24">
         <PageHeader
           title="List"
-          description="View list and place order"
+          description={`View list and place order. ${sharedList?.instructions}`}
           disableMargin
         />
         <div className="flex md:flex-row flex-col items-center gap-4 ">

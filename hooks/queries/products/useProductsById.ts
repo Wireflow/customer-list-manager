@@ -1,11 +1,10 @@
+import { Row } from "@/types/supabase/table";
 import { createClient } from "@/utils/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { Row } from "@/types/supabase/table";
-import { ProductWithSales } from "../financials/useTopSellingProducts";
 
 export const useProductsById = (productId: string) => {
   return useQuery({
-    queryKey: ["product", productId],
+    queryKey: ["products", productId],
     queryFn: () => fetchProduct(productId),
   });
 };
@@ -21,10 +20,12 @@ export const fetchProduct = async (productId: string) => {
   }
 
   const { data: product, error } = await supabase
-    .rpc("get_product_by_id", {
-      p_product_id: productId,
-    })
-    .returns<ProductWithSales>();
+    .from("products_with_sales")
+    .select("*, imageUrls:product_images(*)")
+    .eq("id", productId)
+    .order("createdAt", { referencedTable: "product_images", ascending: true })
+    .single();
+
   if (error) {
     throw error;
   }
@@ -34,4 +35,9 @@ export const fetchProduct = async (productId: string) => {
   }
 
   return product;
+};
+
+export type ProductWithSales = Row<"products"> & {
+  sales?: number | null;
+  imageUrls: Row<"product_images">[];
 };

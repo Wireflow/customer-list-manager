@@ -1,34 +1,33 @@
 "use client";
 
 import { createProduct, updateProduct } from "@/actions/products";
-import ImageUpload from "@/components/form/ImageUpload";
 import InputField from "@/components/form/InputField";
+import MultiImageUpload from "@/components/form/MultiImageUpload";
 import SelectField from "@/components/form/SelectField";
-import { SelectOptions } from "@/components/shared-ui/Select";
+import TextareaField from "@/components/form/TextareaField";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { useCategories } from "@/hooks/queries/categories/useCategories";
 import { useProductStore } from "@/store/useProductStore";
 import {
   CreateProductSchema,
   CreateProductType,
+  ImageFile,
 } from "@/types/validation/product";
-
-import { convertToBase64 } from "@/utils/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { PlusCircle } from "lucide-react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -39,9 +38,8 @@ type Props = {
 
 const ProductForm = ({ mode = "new", trigger }: Props) => {
   const { open, setOpen, setProduct, product } = useProductStore();
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [selectedImages, setSelectedImages] = useState<ImageFile[]>([]);
   const { data: categories } = useCategories();
-
   const queryClient = useQueryClient();
 
   const form = useForm<CreateProductType>({
@@ -68,17 +66,15 @@ const ProductForm = ({ mode = "new", trigger }: Props) => {
         quantityInStock: product.quantityInStock ?? 0,
         categoryId: product.categoryId ?? undefined,
       });
+      setSelectedImages(
+        product.imageUrls?.map((img) => ({
+          file: new File([], img.imageUrl),
+          preview: img.imageUrl,
+          id: img.id,
+        })) || []
+      );
     } else {
-      form.reset({
-        name: undefined,
-        price: 0,
-        description: undefined,
-        unit: undefined,
-        costPrice: 0,
-        quantityInStock: 0,
-        categoryId: undefined,
-      });
-      setSelectedImage(null);
+      resetForm();
     }
   }, [product, form]);
 
@@ -90,8 +86,9 @@ const ProductForm = ({ mode = "new", trigger }: Props) => {
       unit: "",
       costPrice: 0,
       quantityInStock: 0,
+      categoryId: undefined,
     });
-    setSelectedImage(null);
+    setSelectedImages([]);
     setProduct(undefined);
   };
 
@@ -99,18 +96,12 @@ const ProductForm = ({ mode = "new", trigger }: Props) => {
     mutationKey: ["product-action"],
     mutationFn: async (data: CreateProductType) => {
       const formData = new FormData();
-      const base64Image =
-        selectedImage && (await convertToBase64(selectedImage));
 
-      formData.append("product", JSON.stringify(data));
-      base64Image && formData.append("imageBase64", base64Image);
-      selectedImage && formData.append("fileName", selectedImage.name);
+      selectedImages.forEach((img, index) => {
+        formData.append(`images`, img.file, img.file.name);
+      });
 
-      if (product) {
-        return updateProduct(product.id, formData);
-      } else {
-        return createProduct(formData);
-      }
+      return createProduct(data, formData);
     },
     onSuccess: (data) => {
       if (!data.success) {
@@ -119,7 +110,6 @@ const ProductForm = ({ mode = "new", trigger }: Props) => {
         );
         return;
       }
-
       toast.success(product ? "Product updated!" : "Product created!");
       queryClient.invalidateQueries({ queryKey: ["products"] });
       setOpen(false);
@@ -144,45 +134,49 @@ const ProductForm = ({ mode = "new", trigger }: Props) => {
     }
   };
 
-  const formatedCategories = (categories?.map((category) => ({
-    label: category.name,
-    value: category.id,
-  })) ?? []) as SelectOptions[];
+  const formatedCategories =
+    categories?.map((category) => ({
+      label: category.name,
+      value: category.id,
+    })) ?? [];
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        {trigger ? (
-          trigger
-        ) : (
+    <Sheet open={open} onOpenChange={handleOpenChange}>
+      <SheetTrigger asChild>
+        {trigger ?? (
           <Button size="lg" className="w-full md:w-auto">
             <PlusCircle className="mr-2 h-4 w-4 -ml-2" /> New Product
           </Button>
         )}
-      </DialogTrigger>
-      <DialogContent className="max-w-[800px] md:max-h-[700px] max-h-[600px]">
+      </SheetTrigger>
+      <SheetContent className="w-full sm:max-w-[600px] overflow-y-auto">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <DialogHeader>
-              <DialogTitle>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <SheetHeader>
+              <SheetTitle>
                 {product ? "Edit Product" : "New Product"}
-              </DialogTitle>
-              <DialogDescription>
+              </SheetTitle>
+              <SheetDescription>
                 {product
                   ? "Update product information"
                   : "Fill out required information to add a product"}
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4">
-              <div className="mt-4">
-                <ImageUpload
-                  onImageSelect={setSelectedImage}
-                  image={selectedImage}
-                  previewUrl={product?.imageUrl || ""}
+              </SheetDescription>
+            </SheetHeader>
+
+            <div className="space-y-8">
+              <section>
+                <h3 className="text-lg font-semibold mb-4">Product Images</h3>
+                <MultiImageUpload
+                  onImagesSelect={(files) => setSelectedImages(files)}
+                  images={selectedImages}
                 />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="grid md:grid-cols-2 w-full gap-4 col-span-2">
+              </section>
+
+              <section>
+                <h3 className="text-lg font-semibold mb-4">
+                  Basic Information
+                </h3>
+                <div className="space-y-4">
                   <InputField
                     name="name"
                     control={form.control}
@@ -199,41 +193,7 @@ const ProductForm = ({ mode = "new", trigger }: Props) => {
                     label="Category"
                     description="Category of the product"
                   />
-                </div>
-                <div className="grid md:grid-cols-3 gap-4 col-span-2">
-                  <InputField
-                    name="costPrice"
-                    control={form.control}
-                    label="Cost Price ($)"
-                    type="number"
-                    step="0.01"
-                    className="no-spinners"
-                    placeholder="ex. 25.99"
-                    description="Cost price of the product"
-                  />
-                  <InputField
-                    name="price"
-                    control={form.control}
-                    label="Selling Price ($)"
-                    type="number"
-                    step="0.01"
-                    className="no-spinners"
-                    placeholder="ex. 29.99"
-                    description="Display price lists will have"
-                  />
-                  <InputField
-                    name="quantityInStock"
-                    control={form.control}
-                    label="Quantity in Stock"
-                    type="number"
-                    step="0.01"
-                    className="no-spinners"
-                    placeholder="ex. 100"
-                    description="Quantity in stock of the product"
-                  />
-                </div>
 
-                <div className="grid md:grid-cols-2 gap-4 col-span-2">
                   <InputField
                     name="unit"
                     control={form.control}
@@ -241,22 +201,67 @@ const ProductForm = ({ mode = "new", trigger }: Props) => {
                     placeholder="ex. 24 PK, 10oz, 1 lb"
                     description="Units the product is sold at"
                   />
+                </div>
+              </section>
+
+              <section>
+                <h3 className="text-lg font-semibold mb-4">
+                  Pricing and Inventory
+                </h3>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <InputField
+                      name="costPrice"
+                      control={form.control}
+                      label="Cost Price ($)"
+                      type="number"
+                      step="0.01"
+                      className="no-spinners"
+                      placeholder="ex. 25.99"
+                      description="Cost price of the product"
+                    />
+                    <InputField
+                      name="price"
+                      control={form.control}
+                      label="Selling Price ($)"
+                      type="number"
+                      step="0.01"
+                      className="no-spinners"
+                      placeholder="ex. 29.99"
+                      description="Display price lists will have"
+                    />
+                  </div>
+
                   <InputField
-                    name="description"
+                    name="quantityInStock"
                     control={form.control}
-                    label="Description (optional)"
-                    description="Description of the product"
+                    label="Quantity in Stock"
+                    type="number"
+                    step="1"
+                    className="no-spinners"
+                    placeholder="ex. 100"
+                    description="Quantity in stock of the product"
                   />
                 </div>
-              </div>
+              </section>
+
+              <section>
+                <h3 className="text-lg font-semibold mb-4">Product Details</h3>
+                <TextareaField
+                  name="description"
+                  control={form.control}
+                  label="Description (optional)"
+                  description="Detailed description of the product"
+                />
+              </section>
             </div>
 
-            <DialogFooter className="gap-4 mt-4">
-              <DialogClose asChild>
+            <SheetFooter className="pt-4 gap-4">
+              <SheetClose asChild>
                 <Button variant="outline" disabled={isPending}>
                   Cancel
                 </Button>
-              </DialogClose>
+              </SheetClose>
               <Button
                 type="submit"
                 disabled={
@@ -275,11 +280,11 @@ const ProductForm = ({ mode = "new", trigger }: Props) => {
                     ? "Update Product"
                     : "Create Product"}
               </Button>
-            </DialogFooter>
+            </SheetFooter>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 };
 
