@@ -3,6 +3,7 @@ import ProductUpdateForm from "@/components/features/products/actions/ProductUpd
 import PageHeader from "@/components/layout/PageHeader";
 import InfoCard from "@/components/shared-ui/InfoCard";
 import {
+  ProductWithDetails,
   ProductWithSales,
   useProductsById,
 } from "@/hooks/queries/products/useProductsById";
@@ -19,6 +20,8 @@ const ProductDetailsPage = ({ id }: Props) => {
     ? product?.costPrice * (product?.quantityInStock ?? 0)
     : 0;
 
+  console.log(product);
+
   if (!product) return <div>Product not found</div>;
 
   return (
@@ -33,7 +36,7 @@ const ProductDetailsPage = ({ id }: Props) => {
         <InfoCard title="Total Sales" value={product?.sales} />
       </div>
 
-      <ProductUpdateForm product={product as ProductWithSales} />
+      <ProductUpdateForm product={product as ProductWithDetails} />
     </div>
   );
 };

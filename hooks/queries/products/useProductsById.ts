@@ -21,7 +21,7 @@ export const fetchProduct = async (productId: string) => {
 
   const { data: product, error } = await supabase
     .from("products_with_sales")
-    .select("*, imageUrls:product_images(*)")
+    .select("*, imageUrls:product_images(*), options:product_options(*)")
     .eq("id", productId)
     .order("createdAt", { referencedTable: "product_images", ascending: true })
     .single();
@@ -40,4 +40,8 @@ export const fetchProduct = async (productId: string) => {
 export type ProductWithSales = Row<"products"> & {
   sales?: number | null;
   imageUrls: Row<"product_images">[];
+};
+
+export type ProductWithDetails = ProductWithSales & {
+  options: Row<"product_options">[];
 };

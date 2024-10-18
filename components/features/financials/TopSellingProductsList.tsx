@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown, Minus, AlertTriangle } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { PLACEHOLDER_IMG_URL } from "@/data/constants";
+import Image from "next/image";
 
 type TopSellingProductsListProps = {
   products: ProductWithSales[];
@@ -38,11 +40,6 @@ const TopSellingProductsList = ({ products }: TopSellingProductsListProps) => {
     {
       key: (row) => (
         <div className="flex items-center space-x-2">
-          <img
-            src={row.imageUrl || "/placeholder.png"}
-            alt={row.name}
-            className="w-10 h-10 rounded-full object-cover"
-          />
           <span className="font-medium">{row.name}</span>
         </div>
       ),

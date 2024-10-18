@@ -472,6 +472,42 @@ export type Database = {
           },
         ]
       }
+      product_options: {
+        Row: {
+          createdAt: string
+          id: string
+          name: string
+          productId: string
+        }
+        Insert: {
+          createdAt?: string
+          id?: string
+          name: string
+          productId: string
+        }
+        Update: {
+          createdAt?: string
+          id?: string
+          name?: string
+          productId?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_options_productId_fkey"
+            columns: ["productId"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_options_productId_fkey"
+            columns: ["productId"]
+            isOneToOne: false
+            referencedRelation: "products_with_sales"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           branchId: string
